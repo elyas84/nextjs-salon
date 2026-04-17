@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+/* Base styles to apply the fonts automatically */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    --font-dm-sans: var(--font-body);
+    --font-dm-serif: var(--font-heading);
+  }
+
+  html {
+    background-color: #09090b; /* zinc-950 */
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    background-color: #09090b; /* zinc-950 */
+    color: #fafafa; /* zinc-50 */
+    min-height: 100vh;
+    @apply antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+
+  /* Keep browser autofill consistent with dark theme inputs */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: #0f172a;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(248, 250, 252, 0.95) inset;
+    box-shadow: 0 0 0px 1000px rgba(248, 250, 252, 0.95) inset;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    transition: background-color 9999s ease-out 0s;
+  }
+
+  /* Hide the default "clear" (x) button on search inputs (we render our own). */
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  ::selection {
+    background: rgba(249, 115, 22, 0.25); /* orange-500 */
+    color: #fafafa;
+  }
+}
+
+/* Optional helper classes if you need them specifically */
+.brand-mark {
+  font-family: var(--font-heading);
+  letter-spacing: 0.04em;
+}
+
+.kinetic-gradient {
+  background: linear-gradient(135deg, #ffb693 0%, #ff6b00 100%);
+}
+
+.kinetic-gradient-text {
+  background: linear-gradient(135deg, #ffb693 0%, #ff6b00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.surface-panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 20px 60px rgba(0, 0, 0, 0.25);
+  backdrop-filter: saturate(140%) blur(10px);
+}
+
+.price-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.price-slider::-webkit-slider-runnable-track {
+  height: 0.35rem;
+  background: transparent;
+}
+
+.price-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.325rem;
+  border-radius: 9999px;
+  background: #22d3ee;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 6px rgba(34, 211, 238, 0.12);
+  cursor: pointer;
+}
+
+.price-slider::-moz-range-track {
+  height: 0.35rem;
+  background: transparent;
+}
+
+.price-slider::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background: #22d3ee;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 6px rgba(34, 211, 238, 0.12);
+  cursor: pointer;
+}
+
+/* Dual range: let thumbs receive drags while tracks overlap */
+.price-slider.price-range-dual {
+  pointer-events: none;
+}
+
+.price-slider.price-range-dual::-webkit-slider-thumb {
+  pointer-events: auto;
+}
+
+.price-slider.price-range-dual::-moz-range-thumb {
+  pointer-events: auto;
+}
+
+.price-range-min {
+  z-index: 3;
+}
+
+.price-range-max {
+  z-index: 4;
+}
+
+.price-range-min:focus,
+.price-range-min:focus-visible {
+  z-index: 10;
+}
+
+.price-range-max:focus,
+.price-range-max:focus-visible {
+  z-index: 10;
+}
