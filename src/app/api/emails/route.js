@@ -8,6 +8,8 @@ const normalizeMessage = (item) => ({
   name: String(item.name || ""),
   email: String(item.email || ""),
   company: String(item.company || ""),
+  phone: String(item.phone || ""),
+  topic: String(item.topic || ""),
   message: String(item.message || ""),
   isRead: Boolean(item.isRead),
   readAt: item.readAt,

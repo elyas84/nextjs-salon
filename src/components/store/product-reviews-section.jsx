@@ -36,7 +36,7 @@ function StarRating({ rating = 0, size = "size-3.5" }) {
   const stars = useMemo(() => getStars(rating), [rating]);
 
   return (
-    <div className="flex items-center gap-0.5 text-amber-300">
+    <div className="flex items-center gap-0.5 text-amber-500">
       {stars.map((state, index) => {
         if (state === "full") {
           return (
@@ -59,7 +59,7 @@ function StarRating({ rating = 0, size = "size-3.5" }) {
         return (
           <Star
             key={`empty-${index}`}
-            className={`${size} text-zinc-700`}
+            className={`${size} text-stone-600`}
           />
         );
       })}
@@ -250,28 +250,28 @@ export default function ProductReviewsSection({
   };
 
   return (
-    <section className="mt-12 surface-panel rounded-3xl p-6 sm:p-8">
+    <section className="mt-12 rounded-3xl border border-stone-800/70 bg-[#0c0b09]/55 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500/90">
             Reviews
           </p>
-          <h2 className="mt-3 font-heading text-2xl font-extrabold text-zinc-50">
-            What buyers are saying
+          <h2 className="mt-3 font-heading text-2xl font-semibold text-stone-50">
+            What guests are saying
           </h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-300">
+          <p className="mt-2 text-sm leading-6 text-stone-400">
             Reviews are only published after admin approval.
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-3 shadow-sm">
+        <div className="rounded-3xl border border-stone-700/60 bg-stone-950/40 px-4 py-3 shadow-sm">
           <div className="flex items-center gap-3">
             <StarRating rating={summary.averageRating || 0} size="size-3" />
             <div>
-              <p className="text-sm font-semibold text-zinc-50">
+              <p className="text-sm font-semibold text-stone-50">
                 {summary.averageRating ? summary.averageRating.toFixed(1) : "0.0"}
               </p>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-stone-500">
                 {summary.reviewCount || 0} approved review{summary.reviewCount === 1 ? "" : "s"}
               </p>
             </div>
@@ -280,27 +280,27 @@ export default function ProductReviewsSection({
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-sm">
-          <p className="text-sm font-semibold text-zinc-50">Write a review</p>
+        <div className="rounded-3xl border border-stone-800/70 bg-stone-950/30 p-5 shadow-sm">
+          <p className="text-sm font-semibold text-stone-50">Write a review</p>
 
           {authLoading ? (
-            <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-zinc-300">
+            <div className="mt-5 rounded-2xl border border-stone-800/60 bg-black/25 p-4 text-sm text-stone-400">
               Checking your account...
             </div>
           ) : currentUser ? (
             <div className="mt-5 space-y-4">
               {myReview && !editingReview ? (
-                <article className="rounded-3xl border border-white/10 bg-black/20 p-5 shadow-sm">
+                <article className="rounded-3xl border border-stone-800/70 bg-black/25 p-5 shadow-sm">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-zinc-50">
+                      <p className="text-sm font-semibold text-stone-50">
                         Your review
                       </p>
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-stone-500">
                         {myReview.productName}
                       </p>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold text-zinc-200 shadow-sm">
+                    <span className="rounded-full border border-stone-700/60 bg-stone-950/50 px-3 py-1 text-[11px] font-semibold text-stone-200 shadow-sm">
                       {myReview.status}
                     </span>
                   </div>
@@ -309,7 +309,7 @@ export default function ProductReviewsSection({
                     <StarRating rating={myReview.rating} size="size-3" />
                   </div>
 
-                  <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-zinc-200">
+                  <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-stone-300">
                     {myReview.comment}
                   </p>
 
@@ -317,7 +317,7 @@ export default function ProductReviewsSection({
                     <button
                       type="button"
                       onClick={startEditing}
-                      className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-zinc-100 shadow-sm transition-colors hover:bg-white/10"
+                      className="inline-flex items-center gap-2 rounded-xl border border-stone-700/60 bg-stone-950/40 px-4 py-2 text-sm font-semibold text-stone-100 shadow-sm transition-colors hover:bg-stone-900/50"
                     >
                       <PencilLine className="size-4" />
                       Edit
@@ -325,7 +325,7 @@ export default function ProductReviewsSection({
                     <button
                       type="button"
                       onClick={() => setDeleteOpen(true)}
-                      className="inline-flex items-center gap-2 rounded-xl border border-rose-500/25 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-200 shadow-sm transition-colors hover:bg-rose-500/15"
+                      className="inline-flex items-center gap-2 rounded-xl border border-red-500/35 bg-red-950/40 px-4 py-2 text-sm font-semibold text-red-200 shadow-sm transition-colors hover:bg-red-950/55"
                     >
                       <Trash2 className="size-4" />
                       Delete
@@ -342,7 +342,7 @@ export default function ProductReviewsSection({
                   ) : null}
 
                   <div>
-                    <span className="block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                    <span className="block text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
                       {editingReview ? "Update your rating" : "Your rating"}
                     </span>
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -356,8 +356,8 @@ export default function ProductReviewsSection({
                             onClick={() => setRating(value)}
                             className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-sm transition-colors ${
                               active
-                                ? "border-orange-500/40 bg-orange-500/10 text-orange-100"
-                                : "border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
+                                ? "border-amber-500/50 bg-amber-500/15 text-amber-100"
+                                : "border-stone-700/60 bg-stone-950/40 text-stone-200 hover:bg-stone-900/50"
                             }`}
                           >
                             <Star className="size-3 fill-current" />
@@ -369,7 +369,7 @@ export default function ProductReviewsSection({
                   </div>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                    <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
                       Comment
                     </span>
                     <textarea
@@ -377,12 +377,12 @@ export default function ProductReviewsSection({
                       value={comment}
                       onChange={(event) => setComment(event.target.value)}
                       placeholder="Tell other buyers about your experience..."
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                      className="w-full rounded-xl border border-stone-700/60 bg-stone-950/40 px-4 py-3 text-sm text-stone-100 shadow-sm outline-none placeholder:text-stone-600 focus:ring-2 focus:ring-amber-500/35"
                     />
                   </label>
 
                   {error ? (
-                    <p className="rounded-2xl border border-rose-500/25 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                    <p className="rounded-2xl border border-red-500/30 bg-red-950/35 px-4 py-3 text-sm text-red-200">
                       {error}
                     </p>
                   ) : null}
@@ -397,7 +397,7 @@ export default function ProductReviewsSection({
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="kinetic-gradient inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-3 text-sm font-semibold uppercase tracking-tight text-stone-950 shadow-md shadow-amber-500/15 transition-colors hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {submitting ? (
                         <>
@@ -416,7 +416,7 @@ export default function ProductReviewsSection({
                       <button
                         type="button"
                         onClick={cancelEditing}
-                        className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-100 shadow-sm transition-colors hover:bg-white/10"
+                        className="inline-flex items-center gap-2 rounded-xl border border-stone-700/60 bg-stone-950/40 px-5 py-3 text-sm font-semibold text-stone-100 shadow-sm transition-colors hover:bg-stone-900/50"
                       >
                         Cancel
                       </button>
@@ -427,12 +427,12 @@ export default function ProductReviewsSection({
             </div>
           ) : (
             <div className="mt-5 space-y-4">
-              <p className="text-sm leading-6 text-zinc-300">
+              <p className="text-sm leading-6 text-stone-400">
                 Please sign in to rate and comment on this product.
               </p>
               <Link
                 href="/login"
-                className="kinetic-gradient inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110"
+                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-3 text-sm font-semibold uppercase tracking-tight text-stone-950 shadow-md shadow-amber-500/15 transition-colors hover:brightness-105"
               >
                 Sign in to review
               </Link>
@@ -445,26 +445,26 @@ export default function ProductReviewsSection({
             reviews.map((review) => (
               <article
                 key={review._id}
-                className="rounded-3xl border border-white/10 bg-black/20 p-5 shadow-sm"
+                className="rounded-3xl border border-stone-800/70 bg-black/25 p-5 shadow-sm"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-zinc-50">
+                    <p className="text-sm font-semibold text-stone-50">
                       {review.userName}
                     </p>
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <p className="mt-1 text-xs text-stone-500">
                       Verified buyer
                     </p>
                   </div>
                   <StarRating rating={review.rating} size="size-3" />
                 </div>
-                <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-zinc-200">
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-stone-300">
                   {review.comment}
                 </p>
               </article>
             ))
           ) : (
-            <div className="rounded-3xl border border-dashed border-white/15 bg-white/5 p-8 text-center text-sm text-zinc-300">
+            <div className="rounded-3xl border border-dashed border-stone-700/50 bg-stone-950/25 p-8 text-center text-sm text-stone-400">
               No approved reviews yet. Be the first to share feedback after
               your review is approved.
             </div>
@@ -473,37 +473,37 @@ export default function ProductReviewsSection({
       </div>
 
       {deleteOpen && myReview ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
-          <div className="surface-panel w-full max-w-md rounded-3xl p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/65 px-4 py-10 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-stone-800/80 bg-[#0c0b09]/95 p-6 shadow-2xl ring-1 ring-white/[0.06]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500/90">
                   Delete review
                 </p>
-                <h3 className="mt-2 text-xl font-extrabold text-zinc-50">
+                <h3 className="mt-2 text-xl font-semibold text-stone-50">
                   Remove your review?
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setDeleteOpen(false)}
-                className="rounded-full p-2 text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+                className="rounded-full p-2 text-stone-500 transition-colors hover:bg-white/10 hover:text-stone-100"
                 aria-label="Close dialog"
               >
                 <X className="size-5" />
               </button>
             </div>
 
-            <p className="mt-4 text-sm leading-6 text-zinc-300">
+            <p className="mt-4 text-sm leading-6 text-stone-400">
               This will permanently remove your review for{" "}
-              <span className="font-semibold text-zinc-50">{myReview.productName}</span>.
+              <span className="font-semibold text-stone-100">{myReview.productName}</span>.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 type="button"
                 onClick={() => setDeleteOpen(false)}
-                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-100 shadow-sm transition-colors hover:bg-white/10"
+                className="rounded-xl border border-stone-700/60 bg-stone-950/40 px-5 py-3 text-sm font-semibold text-stone-100 shadow-sm transition-colors hover:bg-stone-900/50"
               >
                 Cancel
               </button>
@@ -511,7 +511,7 @@ export default function ProductReviewsSection({
                 type="button"
                 onClick={deleteMyReview}
                 disabled={deleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {deleteLoading ? (
                   <>

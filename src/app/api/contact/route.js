@@ -4,9 +4,10 @@ import path from "node:path";
 import { connectDB } from "@/lib/db";
 import ContactMessage from "@/lib/models/ContactMessage";
 import { sendEmail } from "@/lib/mailer";
+import { SALON } from "@/lib/email-templates/salon-email-brand";
 
 const normalize = (value) => String(value || "").trim();
-const EMAIL_LOGO_CID = "ecom-logo";
+const EMAIL_LOGO_CID = "studio-salon-logo";
 const escapeHtml = (value) =>
   String(value || "")
     .replaceAll("&", "&amp;")
@@ -19,29 +20,34 @@ const buildManagerEmailHtml = ({
   name,
   email,
   company,
+  phone,
+  topic,
   message,
   submittedAt,
   hasLogo,
 }) => `
-  <div style="margin:0;padding:0;background:#f1f5f9;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9;padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${SALON.outerBg};padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;margin:0 auto;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid #e2e8f0;border-radius:20px;background:#ffffff;box-shadow:0 12px 40px rgba(15,23,42,0.08);">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;margin:0 auto;border-collapse:separate;border-spacing:0;overflow:hidden;border:${SALON.cardBorder};border-radius:${SALON.radiusLg};background:${SALON.cardBg};box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;background:#ffffff;">
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};background:${SALON.cardBg};">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                   <tr>
                     <td style="vertical-align:middle;">
                       ${
                         hasLogo
-                          ? `<img src="cid:${EMAIL_LOGO_CID}" alt="eCom" style="height:34px;width:auto;display:block;" />`
-                          : `<div style="font-weight:800;letter-spacing:.04em;font-size:16px;color:#0f172a;">eCom</div>`
+                          ? `<img src="cid:${EMAIL_LOGO_CID}" alt="Studio Salon" style="height:34px;width:auto;display:block;" />`
+                          : `<div style="font-weight:800;letter-spacing:.04em;font-size:16px;color:${SALON.text};">Studio Salon</div>`
                       }
                     </td>
                     <td align="right" style="vertical-align:middle;">
-                      <span style="display:inline-block;padding:6px 10px;border:1px solid #e2e8f0;border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;background:#f8fafc;">
-                        New message
+                      <span style="display:inline-block;padding:6px 10px;border:${SALON.pillBorder};border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${SALON.accent};background:${SALON.pillBg};">
+                        Website inquiry
                       </span>
                     </td>
                   </tr>
@@ -51,33 +57,47 @@ const buildManagerEmailHtml = ({
 
             <tr>
               <td style="padding:22px 24px 8px;">
-                <h1 style="margin:0;font-size:22px;line-height:1.25;color:#0f172a;">New contact form submission</h1>
-                <p style="margin:10px 0 0;font-size:14px;line-height:1.7;color:#475569;">
-                  A customer reached out via the store contact form. Details are below.
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.accentBright};">Contact · Team inbox</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">New message from a guest</h1>
+                <p style="margin:10px 0 0;font-size:14px;line-height:1.7;color:${SALON.textBody};">
+                  This came from the Studio Salon website contact form. Reply from your mail client using the address below.
                 </p>
               </td>
             </tr>
 
             <tr>
               <td style="padding:0 24px 18px;">
-                <div style="margin:14px 0 0;padding:16px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:16px;">
+                <div style="margin:14px 0 0;padding:16px;border:${SALON.panelBorder};background:${SALON.panelBg};border-radius:${SALON.radiusMd};">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="padding:6px 0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.12em;">Name</td>
-                      <td style="padding:6px 0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.12em;" align="right">Submitted</td>
+                      <td style="padding:6px 0;font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;">Name</td>
+                      <td style="padding:6px 0;font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;" align="right">Submitted</td>
                     </tr>
                     <tr>
-                      <td style="padding:0 0 10px;font-size:14px;color:#0f172a;font-weight:800;">${escapeHtml(name)}</td>
-                      <td style="padding:0 0 10px;font-size:14px;color:#0f172a;font-weight:700;" align="right">${escapeHtml(submittedAt)}</td>
+                      <td style="padding:0 0 10px;font-size:14px;color:${SALON.text};font-weight:800;">${escapeHtml(name)}</td>
+                      <td style="padding:0 0 10px;font-size:14px;color:${SALON.text};font-weight:700;" align="right">${escapeHtml(submittedAt)}</td>
                     </tr>
                     <tr>
-                      <td style="padding:6px 0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.12em;">Email</td>
-                      <td style="padding:6px 0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.12em;" align="right">Company</td>
+                      <td colspan="2" style="padding:8px 0 0;">
+                        <div style="font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;">Email</div>
+                        <div style="margin-top:4px;font-size:13px;color:${SALON.text};font-weight:700;">${escapeHtml(email)}</div>
+                      </td>
                     </tr>
-                    <tr>
-                      <td style="padding:0;font-size:13px;color:#0f172a;font-weight:700;">${escapeHtml(email)}</td>
-                      <td style="padding:0;font-size:13px;color:#0f172a;font-weight:700;" align="right">${escapeHtml(company || "Not specified")}</td>
-                    </tr>
+                    ${
+                      phone
+                        ? `<tr><td colspan="2" style="padding:10px 0 0;"><div style="font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;">Phone</div><div style="margin-top:4px;font-size:13px;color:${SALON.text};font-weight:700;">${escapeHtml(phone)}</div></td></tr>`
+                        : ""
+                    }
+                    ${
+                      topic
+                        ? `<tr><td colspan="2" style="padding:10px 0 0;"><div style="font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;">Topic</div><div style="margin-top:4px;font-size:13px;color:${SALON.text};font-weight:700;">${escapeHtml(topic)}</div></td></tr>`
+                        : ""
+                    }
+                    ${
+                      company
+                        ? `<tr><td colspan="2" style="padding:10px 0 0;"><div style="font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;">Extra detail</div><div style="margin-top:4px;font-size:13px;color:${SALON.text};font-weight:700;">${escapeHtml(company)}</div></td></tr>`
+                        : ""
+                    }
                   </table>
                 </div>
               </td>
@@ -85,15 +105,15 @@ const buildManagerEmailHtml = ({
 
             <tr>
               <td style="padding:0 24px 22px;">
-                <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.12em;margin:0 0 8px;">Message</div>
-                <div style="border:1px solid #e2e8f0;background:#ffffff;border-radius:16px;padding:16px;font-size:14px;line-height:1.75;color:#0f172a;white-space:pre-wrap;">${escapeHtml(message)}</div>
+                <div style="font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;margin:0 0 8px;">Message</div>
+                <div style="border:${SALON.panelBorder};background:${SALON.cardBg};border-radius:${SALON.radiusMd};padding:16px;font-size:14px;line-height:1.75;color:${SALON.text};white-space:pre-wrap;">${escapeHtml(message)}</div>
               </td>
             </tr>
 
             <tr>
-              <td style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;">
-                <p style="margin:0;font-size:12px;line-height:1.7;color:#64748b;">
-                  Reply directly to the customer from your inbox.
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.7;color:${SALON.textMuted};">
+                  <strong style="color:${SALON.accent};">Studio Salon</strong> · Reply to <span style="color:${SALON.text};font-weight:600;">${escapeHtml(email)}</span> to reach this guest.
                 </p>
               </td>
             </tr>
@@ -105,25 +125,28 @@ const buildManagerEmailHtml = ({
 `;
 
 const buildCustomerEmailHtml = ({ name, hasLogo }) => `
-  <div style="margin:0;padding:0;background:#f1f5f9;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9;padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${SALON.outerBg};padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;margin:0 auto;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid #e2e8f0;border-radius:20px;background:#ffffff;box-shadow:0 12px 40px rgba(15,23,42,0.08);">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;margin:0 auto;border-collapse:separate;border-spacing:0;overflow:hidden;border:${SALON.cardBorder};border-radius:${SALON.radiusLg};background:${SALON.cardBg};box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;background:#ffffff;">
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};background:${SALON.cardBg};">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
                   <tr>
                     <td style="vertical-align:middle;">
                       ${
                         hasLogo
-                          ? `<img src="cid:${EMAIL_LOGO_CID}" alt="eCom" style="height:34px;width:auto;display:block;" />`
-                          : `<div style="font-weight:800;letter-spacing:.04em;font-size:16px;color:#0f172a;">eCom</div>`
+                          ? `<img src="cid:${EMAIL_LOGO_CID}" alt="Studio Salon" style="height:34px;width:auto;display:block;" />`
+                          : `<div style="font-weight:800;letter-spacing:.04em;font-size:16px;color:${SALON.text};">Studio Salon</div>`
                       }
                     </td>
                     <td align="right" style="vertical-align:middle;">
-                      <span style="display:inline-block;padding:6px 10px;border:1px solid #e2e8f0;border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;background:#f8fafc;">
-                        Support
+                      <span style="display:inline-block;padding:6px 10px;border:${SALON.pillBorder};border-radius:9999px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${SALON.accent};background:${SALON.pillBg};">
+                        Thank you
                       </span>
                     </td>
                   </tr>
@@ -133,21 +156,22 @@ const buildCustomerEmailHtml = ({ name, hasLogo }) => `
 
             <tr>
               <td style="padding:22px 24px 8px;">
-                <h1 style="margin:0;font-size:22px;line-height:1.25;color:#0f172a;">We received your message</h1>
-                <p style="margin:10px 0 0;font-size:14px;line-height:1.7;color:#475569;">
-                  Thanks, ${escapeHtml(name)}. Our team will reply to this email as soon as possible.
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.accentBright};">We’re on it</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">We received your message</h1>
+                <p style="margin:10px 0 0;font-size:14px;line-height:1.7;color:${SALON.textBody};">
+                  Hi ${escapeHtml(name)}, thank you for reaching out to Studio Salon. A member of our team will reply to this email address as soon as we can — typically within one business day.
                 </p>
               </td>
             </tr>
 
             <tr>
               <td style="padding:0 24px 18px;">
-                <div style="margin:14px 0 0;padding:16px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:16px;">
-                  <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.12em;">What happens next</div>
-                  <ol style="margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.75;color:#0f172a;">
-                    <li>We review your message.</li>
-                    <li>We reply to the email address you provided.</li>
-                    <li>If needed, we’ll ask for any clarifying details.</li>
+                <div style="margin:14px 0 0;padding:16px;border:${SALON.panelBorder};background:${SALON.panelBg};border-radius:${SALON.radiusMd};">
+                  <div style="font-size:12px;color:${SALON.textMuted};text-transform:uppercase;letter-spacing:.12em;">What happens next</div>
+                  <ol style="margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.75;color:${SALON.text};">
+                    <li>We read your note — whether it’s about appointments, services, or our retail products.</li>
+                    <li>We respond here, to the email address you used on the form.</li>
+                    <li>If you’d prefer a call, mention a few times that work for you.</li>
                   </ol>
                 </div>
               </td>
@@ -155,17 +179,19 @@ const buildCustomerEmailHtml = ({ name, hasLogo }) => `
 
             <tr>
               <td style="padding:0 24px 22px;">
-                <p style="margin:0;font-size:13px;line-height:1.7;color:#475569;">
-                  If your request is urgent, reply to this email with any additional context.
-                  If you did not submit the contact form, you can safely ignore this message.
+                <p style="margin:0;font-size:13px;line-height:1.7;color:${SALON.textBody};">
+                  Need something sooner? Reply to this email and we’ll prioritize it when we can.
+                  If you didn’t send this request, you can ignore this message.
                 </p>
               </td>
             </tr>
 
             <tr>
-              <td style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;">
-                <p style="margin:0;font-size:12px;line-height:1.7;color:#64748b;">
-                  Please don’t share sensitive information (passwords, full card numbers) by email.
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.7;color:${SALON.textMuted};">
+                  For your security, please don’t send passwords or full card numbers by email.
+                  <br /><br />
+                  <strong style="color:${SALON.accent};">Studio Salon</strong>
                 </p>
               </td>
             </tr>
@@ -202,6 +228,8 @@ export async function POST(req) {
     const name = normalize(body.name);
     const email = normalize(body.email).toLowerCase();
     const company = normalize(body.company);
+    const phone = normalize(body.phone);
+    const topic = normalize(body.topic);
     const message = normalize(body.message);
 
     if (!name || !email || !message) {
@@ -215,6 +243,8 @@ export async function POST(req) {
       name,
       email,
       company,
+      phone,
+      topic,
       message,
     });
 
@@ -234,11 +264,13 @@ export async function POST(req) {
       try {
         await sendEmail({
           to: adminReceiver,
-          subject: `New Inquiry: ${name} (${email})`,
+          subject: `Studio Salon · New inquiry from ${name}`,
           html: buildManagerEmailHtml({
             name,
             email,
             company,
+            phone,
+            topic,
             message,
             submittedAt,
             hasLogo,
@@ -253,7 +285,7 @@ export async function POST(req) {
     try {
       await sendEmail({
         to: email,
-        subject: "We received your message — eCom Support",
+        subject: "We received your message — Studio Salon",
         html: buildCustomerEmailHtml({ name, hasLogo }),
         attachments: logoAttachments,
       });

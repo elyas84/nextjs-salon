@@ -17,12 +17,17 @@ export async function GET(req) {
   try {
     const products = await listProducts();
     const matches = computeProductSearchSuggestions(products, q, limit);
-    const suggestions = matches.map((p) => ({
-      name: p.name,
-      slug: p.slug,
-      category: p.category,
-      price: p.price,
-    }));
+    const suggestions = matches.map((p) => {
+      const gallery = Array.isArray(p.gallery) ? p.gallery : [];
+      const image = String(gallery[0] || "").trim();
+      return {
+        name: p.name,
+        slug: p.slug,
+        category: p.category,
+        price: p.price,
+        ...(image ? { image } : {}),
+      };
+    });
     return NextResponse.json({ suggestions });
   } catch (err) {
     console.error("Store search error:", err);

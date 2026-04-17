@@ -44,7 +44,7 @@ export async function POST(req) {
 
     await sendEmail({
       to: user.email,
-      subject: "FixPro — reset your password",
+      subject: "Studio Salon — reset your password",
       html: buildResetPasswordEmailHtml({
         resetUrl,
         userEmail: user.email,

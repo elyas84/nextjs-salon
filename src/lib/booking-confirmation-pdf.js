@@ -2,7 +2,6 @@
 import PDFDocument from "pdfkit/js/pdfkit.standalone";
 import { bookingRefCode } from "@/lib/booking-ref";
 import { formatSlotLabel } from "@/lib/booking-slots";
-import { formatVehicleRegistration } from "@/lib/vehicle-registration";
 
 const safe = (value) => String(value || "").replace(/\s+/g, " ").trim();
 
@@ -21,22 +20,22 @@ function pdfCopyForStatus(statusRaw) {
   const s = safe(statusRaw).toLowerCase();
   if (s === "completed") {
     return {
-      headline: "Service booking completed",
+      headline: "Appointment completed",
       docTitleSuffix: "Completed",
       footnote:
-        "This visit is recorded as completed. Thank you for choosing us — we hope to see you again for your next service.",
+        "This visit is recorded as completed. Thank you for choosing us — we hope to see you again soon.",
     };
   }
   if (s === "cancelled") {
     return {
-      headline: "Service booking cancelled",
+      headline: "Appointment cancelled",
       docTitleSuffix: "Cancelled",
       footnote:
-        "This appointment has been cancelled. If you did not request this or have questions, please contact the workshop as soon as possible.",
+        "This appointment has been cancelled. If you did not request this or have questions, please contact the salon as soon as possible.",
     };
   }
   return {
-    headline: "Service booking confirmation",
+    headline: "Appointment confirmation",
     docTitleSuffix: "Confirmation",
     footnote:
       "Please arrive on time for your slot. If you need to reschedule, contact us as soon as possible.",
@@ -59,7 +58,7 @@ function formatBookingDate(iso) {
 
 export async function renderBookingConfirmationPdfBuffer(booking) {
   const shopName = safe(
-    process.env.BOOKING_SHOP_NAME || process.env.INVOICE_SELLER_NAME || "Service workshop",
+    process.env.BOOKING_SHOP_NAME || process.env.INVOICE_SELLER_NAME || "Studio Salon",
   );
   const envFullAddress = safe(
     process.env.BOOKING_SHOP_ADDRESS || process.env.INVOICE_SELLER_ADDRESS || "",
@@ -132,12 +131,10 @@ export async function renderBookingConfirmationPdfBuffer(booking) {
   if (safe(booking?.phone)) doc.text(`Phone: ${safe(booking?.phone)}`);
 
   doc.moveDown(0.85);
-  doc.font("Helvetica-Bold").fontSize(11).fillColor("#0f172a").text("Vehicle & service");
+  doc.font("Helvetica-Bold").fontSize(11).fillColor("#0f172a").text("Visit & service");
   doc.moveDown(0.25);
   doc.font("Helvetica").fontSize(10).fillColor("#334155");
-  doc.text(
-    `Registration / plate: ${safe(formatVehicleRegistration(booking?.registrationNumber))}`,
-  );
+  doc.text(`Booking reference: ${safe(booking?.registrationNumber)}`);
   doc.text(`Service type: ${safe(booking?.serviceType)}`);
 
   doc.moveDown(0.85);

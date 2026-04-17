@@ -85,17 +85,17 @@ export default function RegisterClient() {
   };
 
   const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-3.5 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20";
+    "w-full rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-3.5 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/20";
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-15%,rgba(234,88,12,0.14),transparent_55%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-15%,rgba(244,114,182,0.12),transparent_55%)]"
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_100%_100%,rgba(234,88,12,0.06),transparent_50%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_100%_100%,rgba(244,114,182,0.06),transparent_50%)]"
           aria-hidden
         />
         <div
@@ -108,7 +108,7 @@ export default function RegisterClient() {
           aria-hidden
         />
         <div
-          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/25 to-transparent"
+          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/25 to-transparent"
           aria-hidden
         />
       </div>
@@ -117,18 +117,18 @@ export default function RegisterClient() {
         <header className="flex shrink-0 items-center justify-between gap-4">
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 transition hover:text-orange-300"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 transition hover:text-rose-300"
           >
             <ArrowRight className="size-4 rotate-180 transition group-hover:-translate-x-0.5" />
-            <span className="font-heading text-xs font-black uppercase tracking-[0.2em] text-zinc-200 group-hover:text-orange-200">
-              Fix<span className="text-orange-400">Pro</span>
+            <span className="font-heading text-xs font-black uppercase tracking-[0.2em] text-zinc-200 group-hover:text-rose-200">
+              Studio <span className="text-rose-400">Salon</span>
             </span>
           </Link>
         </header>
 
         <div className="grid flex-1 grid-cols-1 items-center gap-12 py-12 lg:grid-cols-2 lg:gap-20 lg:py-16">
           <div className="max-w-lg">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-300/90">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-rose-300/90">
               Create account
             </p>
             <h1 className="mt-4 font-heading text-4xl font-black uppercase leading-[1.05] tracking-tight text-zinc-50 sm:text-5xl lg:text-6xl">
@@ -140,7 +140,7 @@ export default function RegisterClient() {
               under a minute.
             </p>
             <div className="mt-10 hidden items-center gap-4 sm:flex">
-              <div className="h-px w-16 bg-gradient-to-r from-orange-500/60 to-transparent" />
+              <div className="h-px w-16 bg-gradient-to-r from-rose-500/60 to-transparent" />
               <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-600">
                 Secure registration
               </span>
@@ -150,7 +150,7 @@ export default function RegisterClient() {
           <div className="w-full justify-self-stretch lg:max-w-md lg:justify-self-end">
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl sm:p-10">
               <div className="mb-8 lg:hidden">
-                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-orange-300/90">
+                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-rose-300/90">
                   Create account
                 </p>
                 <h2 className="mt-2 font-heading text-2xl font-bold text-zinc-50">
@@ -260,16 +260,16 @@ export default function RegisterClient() {
                     type="checkbox"
                     checked={acceptTerms}
                     onChange={(e) => setAcceptTerms(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-white/20 bg-zinc-950 text-orange-500 focus:ring-2 focus:ring-orange-500/30 focus:ring-offset-0 focus:ring-offset-zinc-950"
+                    className="mt-1 h-4 w-4 rounded border-white/20 bg-zinc-950 text-rose-500 focus:ring-2 focus:ring-rose-500/30 focus:ring-offset-0 focus:ring-offset-zinc-950"
                   />
                   <label
                     className="text-xs leading-relaxed text-zinc-400"
                     htmlFor="terms"
                   >
                     I agree to the{" "}
-                    <span className="text-orange-300/90">terms of service</span>
+                    <span className="text-rose-300/90">terms of service</span>
                     {" "}and{" "}
-                    <span className="text-orange-300/90">privacy policy</span>
+                    <span className="text-rose-300/90">privacy policy</span>
                     .
                   </label>
                 </div>
@@ -299,7 +299,7 @@ export default function RegisterClient() {
                 Already have an account?{" "}
                 <Link
                   href="/login"
-                  className="font-semibold text-orange-300 transition hover:text-orange-200"
+                  className="font-semibold text-rose-300 transition hover:text-rose-200"
                 >
                   Sign in
                 </Link>
@@ -311,7 +311,7 @@ export default function RegisterClient() {
 
       <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-white/5 bg-zinc-950/80 px-4 py-4 backdrop-blur-md sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-zinc-600 sm:flex-row">
-          <span>© FixPro</span>
+          <span>© Studio Salon</span>
           <div className="flex gap-6">
             <Link href="/" className="transition hover:text-zinc-400">
               Home

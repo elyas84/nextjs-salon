@@ -1,13 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { Package } from "lucide-react";
 import { formatCurrency } from "@/lib/store/cart";
+
+function suggestionImageUrl(item) {
+  const direct = String(item.image || "").trim();
+  if (direct) return direct;
+  const g = item.gallery;
+  if (Array.isArray(g) && g[0]) return String(g[0]).trim();
+  return "";
+}
 
 /**
  * @param {{
  *   id: string,
  *   open: boolean,
- *   suggestions: Array<{ name?: string, slug?: string, category?: string, price?: number }>,
+ *   suggestions: Array<{ name?: string, slug?: string, category?: string, price?: number, image?: string, gallery?: string[] }>,
  *   highlightedIndex: number,
  *   onHighlight: (index: number) => void,
  *   loading?: boolean,
@@ -15,6 +25,7 @@ import { formatCurrency } from "@/lib/store/cart";
  *   emptyLabel?: string,
  *   className?: string,
  *   variant?: "light" | "dark",
+ *   onNavigate?: () => void,
  * }} props
  */
 export default function ProductSearchSuggestionsDropdown({
@@ -23,6 +34,7 @@ export default function ProductSearchSuggestionsDropdown({
   suggestions,
   highlightedIndex,
   onHighlight,
+  onNavigate,
   loading = false,
   showEmpty = false,
   emptyLabel = "No matching products",
@@ -84,6 +96,8 @@ export default function ProductSearchSuggestionsDropdown({
         const slug = String(item.slug || "");
         if (!slug) return null;
         const active = index === highlightedIndex;
+        const thumb = suggestionImageUrl(item);
+        const name = String(item.name || "Product");
         return (
           <li key={slug} role="presentation">
             <Link
@@ -91,7 +105,8 @@ export default function ProductSearchSuggestionsDropdown({
               role="option"
               id={`${id}-option-${index}`}
               aria-selected={active}
-              className={`flex flex-col gap-0.5 px-3 py-2.5 text-left text-sm transition-colors ${
+              onClick={() => onNavigate?.()}
+              className={`flex items-start gap-3 px-3 py-2.5 text-left text-sm transition-colors ${
                 variant === "dark"
                   ? active
                     ? "bg-white/10 text-zinc-50"
@@ -104,19 +119,50 @@ export default function ProductSearchSuggestionsDropdown({
               onMouseDown={(event) => event.preventDefault()}
             >
               <span
-                className={
-                  variant === "dark" ? "font-medium text-zinc-50" : "font-medium text-slate-900"
-                }
+                className={`relative mt-0.5 size-10 shrink-0 overflow-hidden rounded-lg border ${
+                  variant === "dark"
+                    ? "border-white/10 bg-zinc-800/80"
+                    : "border-slate-200 bg-slate-100"
+                }`}
               >
-                {item.name}
+                {thumb ? (
+                  <Image
+                    src={thumb}
+                    alt={name}
+                    width={40}
+                    height={40}
+                    className="size-10 object-cover"
+                    sizes="40px"
+                  />
+                ) : (
+                  <span className="flex size-10 items-center justify-center">
+                    <Package
+                      className={
+                        variant === "dark" ? "size-4 text-zinc-500" : "size-4 text-slate-400"
+                      }
+                      aria-hidden
+                    />
+                  </span>
+                )}
               </span>
-              <span
-                className={variant === "dark" ? "text-xs text-zinc-400" : "text-xs text-slate-500"}
-              >
-                {item.category || "Product"}
-                {item.price != null && Number.isFinite(Number(item.price))
-                  ? ` · ${formatCurrency(Number(item.price))}`
-                  : ""}
+              <span className="min-w-0 flex-1">
+                <span
+                  className={`block font-medium leading-snug ${
+                    variant === "dark" ? "text-zinc-50" : "text-slate-900"
+                  }`}
+                >
+                  {name}
+                </span>
+                <span
+                  className={
+                    variant === "dark" ? "mt-0.5 block text-xs text-zinc-400" : "mt-0.5 block text-xs text-slate-500"
+                  }
+                >
+                  {item.category || "Product"}
+                  {item.price != null && Number.isFinite(Number(item.price))
+                    ? ` · ${formatCurrency(Number(item.price))}`
+                    : ""}
+                </span>
               </span>
             </Link>
           </li>

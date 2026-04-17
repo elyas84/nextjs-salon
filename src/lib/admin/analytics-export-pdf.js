@@ -97,7 +97,7 @@ export function downloadAnalyticsPdf({
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(24, 24, 27);
-  doc.text("FixPro — Analytics (paid orders)", 14, 16);
+  doc.text("Studio Salon — Analytics (paid orders)", 14, 16);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(82, 82, 91);
@@ -140,7 +140,7 @@ export function downloadReportPdf({
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(24, 24, 27);
-  doc.text("FixPro — Admin report", 14, 16);
+  doc.text("Studio Salon — Admin report", 14, 16);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);

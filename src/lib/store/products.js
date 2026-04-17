@@ -104,7 +104,7 @@ export const products = [
       "A next-gen gaming console with quick load times and a simple living-room setup.",
     description:
       "PlayBox X is a straightforward console choice for households that want great gaming without the complexity of a full PC setup. It is built for fast resumes, smooth 4K output, and easy controller pairing.",
-    accent: "from-amber-400/20 via-orange-500/15 to-slate-900",
+    accent: "from-amber-400/20 via-rose-500/15 to-slate-900",
     features: [
       "4K gaming output",
       "1TB storage",

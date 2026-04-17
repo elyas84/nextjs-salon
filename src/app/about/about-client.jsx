@@ -12,9 +12,9 @@ import {
 import { ArrowRight, ChevronRight, Star } from "lucide-react";
 
 const DEFAULT_TEAM = [
-  { name: "Marcus Thorne", role: "Master Technician / Shop Lead" },
-  { name: "Elena Rodriguez", role: "Systems Specialist" },
-  { name: "Julian Vance", role: "Performance Specialist" },
+  { name: "Avery Kim", role: "Lead stylist / Color director" },
+  { name: "Jordan Ellis", role: "Senior stylist" },
+  { name: "Sam Rivera", role: "Treatment & extension specialist" },
 ];
 
 function txt(s, key, fallback) {
@@ -104,25 +104,25 @@ export default function AboutPageClient({
                 {txt(
                   settings,
                   "aboutHeritageBody",
-                  "Founded in 1998 as a specialized tuning shop, Kinetic Precision has evolved into the region's premier destination for European and exotic vehicle care. Our journey is defined by an obsession with technical data and a deep respect for automotive engineering.",
+                  "Studio Salon began as a small chair-and-mirror studio and grew into a neighborhood destination for thoughtful hair and beauty. We still believe the best results start with listening — then cut, color, and finish with care.",
                 )}
               </p>
 
               <div className="mt-10 grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
                 <div>
-                  <span className="block font-heading text-4xl font-black text-orange-300">
+                  <span className="block font-heading text-4xl font-black text-rose-300">
                     {txt(settings, "aboutHeritageStat1Value", "25+")}
                   </span>
                   <span className="mt-2 block text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                    {txt(settings, "aboutHeritageStat1Label", "Years of Excellence")}
+                    {txt(settings, "aboutHeritageStat1Label", "Years in the chair")}
                   </span>
                 </div>
                 <div>
-                  <span className="block font-heading text-4xl font-black text-orange-300">
+                  <span className="block font-heading text-4xl font-black text-rose-300">
                     {txt(settings, "aboutHeritageStat2Value", "12k+")}
                   </span>
                   <span className="mt-2 block text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                    {txt(settings, "aboutHeritageStat2Label", "Projects Completed")}
+                    {txt(settings, "aboutHeritageStat2Label", "Guests styled")}
                   </span>
                 </div>
               </div>
@@ -145,7 +145,7 @@ export default function AboutPageClient({
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent opacity-60" />
               <div className="absolute bottom-8 left-8">
                 <span className="font-heading text-2xl font-bold text-zinc-50">
-                  {txt(settings, "aboutHeritageImageCaption", "PRECISION DIAGNOSTICS")}
+                  {txt(settings, "aboutHeritageImageCaption", "THE STUDIO FLOOR")}
                 </span>
               </div>
             </div>
@@ -153,26 +153,26 @@ export default function AboutPageClient({
         </div>
       </section>
 
-      <section className="px-4 py-24 sm:px-6 lg:px-8">
+      {/* <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-screen-2xl">
           <div className="mb-16 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div className="max-w-2xl">
               <h2 className="font-heading text-4xl font-black uppercase tracking-tight text-zinc-50 sm:text-5xl">
-                {txt(settings, "aboutEngineersHeadline", "THE ENGINEERS")}
+                {txt(settings, "aboutEngineersHeadline", "THE TEAM")}
               </h2>
               <p className="mt-4 text-lg text-zinc-300">
                 {txt(
                   settings,
                   "aboutEngineersIntro",
-                  "An elite collective of certified technicians dedicated to the craft of mechanical restoration and performance optimization.",
+                  "Stylists and specialists who train continuously — so your cut, color, and care stay current.",
                 )}
               </p>
             </div>
             <HeroCtaLink
               href={txt(settings, "aboutEngineersCtaHref", "/services")}
-              className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-orange-300 transition-colors hover:text-orange-200"
+              className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-rose-300 transition-colors hover:text-rose-200"
             >
-              {txt(settings, "aboutEngineersCtaLabel", "View All Certifications")}{" "}
+              {txt(settings, "aboutEngineersCtaLabel", "Explore services")}{" "}
               <ArrowRight className="size-4" />
             </HeroCtaLink>
           </div>
@@ -205,7 +205,7 @@ export default function AboutPageClient({
                   <h3 className="font-heading text-base font-bold leading-snug tracking-tight text-zinc-50 sm:text-lg">
                     {m.name}
                   </h3>
-                  <p className="mt-2 text-[10px] font-semibold uppercase leading-relaxed tracking-widest text-orange-300/95 sm:text-xs">
+                  <p className="mt-2 text-[10px] font-semibold uppercase leading-relaxed tracking-widest text-rose-300/95 sm:text-xs">
                     {m.role}
                   </p>
                 </div>
@@ -213,18 +213,18 @@ export default function AboutPageClient({
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="bg-black px-4 py-24 sm:px-6 lg:px-8">
+      <section className="border-y border-white/[0.04] bg-zinc-950/25 px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-screen-2xl">
           <div className="mb-12 text-center sm:mb-16">
             <h2 className="font-heading text-4xl font-black uppercase tracking-tight text-zinc-50 sm:text-5xl">
               {sectionHeadline}
             </h2>
-            <div className="mx-auto mt-6 h-1 w-24 bg-orange-500" />
+            <div className="mx-auto mt-6 h-1 w-24 bg-rose-500" />
             {hasTestimonials ? (
               <p className="mx-auto mt-8 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-                Honest words from people who’ve trusted us with their cars—we’re
+                Honest words from guests who’ve sat in our chairs — we’re
                 grateful for every one.
               </p>
             ) : null}
@@ -240,7 +240,7 @@ export default function AboutPageClient({
                   className="group flex h-full flex-col rounded-xl bg-gradient-to-b from-white/[0.05] to-transparent p-6 sm:p-8"
                 >
                   <div
-                    className="mb-5 flex gap-0.5 text-orange-400/90"
+                    className="mb-5 flex gap-0.5 text-rose-400/90"
                     aria-hidden
                     title={`Priority ${starLevel} of 5`}
                   >
@@ -249,7 +249,7 @@ export default function AboutPageClient({
                         key={n}
                         className={`size-4 shrink-0 ${
                           n <= starLevel
-                            ? "fill-orange-400 text-orange-400"
+                            ? "fill-rose-400 text-rose-400"
                             : "fill-none text-zinc-700"
                         }`}
                       />
@@ -260,7 +260,7 @@ export default function AboutPageClient({
                   </p>
                   <div className="mt-6 flex items-center gap-4 pt-2">
                     <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500/25 via-orange-500/10 to-zinc-900 font-heading text-sm font-bold tracking-tight text-orange-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-500/25 via-rose-500/10 to-zinc-900 font-heading text-sm font-bold tracking-tight text-rose-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                       aria-hidden
                     >
                       {initialsFromName(t.name)}
@@ -288,7 +288,7 @@ export default function AboutPageClient({
 
       <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-screen-xl">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 p-10 text-center sm:p-14 lg:p-16">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500 to-rose-700 p-10 text-center sm:p-14 lg:p-16">
             <div className="pointer-events-none absolute inset-0 opacity-10">
               {showCtaBg ? (
                 <Image
@@ -304,20 +304,20 @@ export default function AboutPageClient({
             </div>
             <div className="relative">
               <h2 className="font-heading text-3xl font-black uppercase tracking-tighter text-zinc-950 sm:text-5xl">
-                {txt(settings, "aboutCtaHeadline", "Ready for Peak Performance?")}
+                {txt(settings, "aboutCtaHeadline", "Ready for a fresh chapter?")}
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-base font-medium text-zinc-900/80 sm:text-xl">
                 {txt(
                   settings,
                   "aboutCtaBody",
-                  "Join our exclusive circle of clients who demand nothing but technical perfection.",
+                  "Book a consultation or your next appointment — we’ll make a plan that fits your hair and your life.",
                 )}
               </p>
               <HeroCtaLink
                 href={txt(settings, "aboutCtaButtonHref", "/book-a-service")}
                 className="mt-10 inline-flex items-center justify-center rounded-md bg-zinc-950 px-10 py-5 text-sm font-black uppercase tracking-widest text-white shadow-xl transition hover:bg-zinc-900"
               >
-                {txt(settings, "aboutCtaButtonLabel", "Schedule Your Audit")}{" "}
+                {txt(settings, "aboutCtaButtonLabel", "Book your visit")}{" "}
                 <ChevronRight className="ml-2 size-4" />
               </HeroCtaLink>
             </div>

@@ -143,29 +143,29 @@ export default function DatePicker({
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className={[
-          "flex h-10 w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3.5 text-left text-sm text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow,background-color] duration-200",
-          "hover:border-white/[0.12] focus:border-orange-500/45 focus:bg-white/[0.05] focus:ring-2 focus:ring-orange-500/20",
+          "flex h-10 w-full items-center justify-between gap-2 rounded-xl border border-stone-700/60 bg-stone-950/40 px-3.5 text-left text-sm text-stone-100 shadow-sm outline-none transition-[border-color,box-shadow,background-color] duration-200",
+          "hover:border-stone-600/80 focus:border-amber-500/45 focus:bg-stone-900/50 focus:ring-2 focus:ring-amber-500/20",
           disabled ? "cursor-not-allowed opacity-60" : "",
         ].join(" ")}
       >
-        <span className={selected ? "text-zinc-100" : "text-zinc-500"}>
+        <span className={selected ? "text-stone-100" : "text-stone-500"}>
           {selected ? toIsoDate(selected) : placeholder}
         </span>
-        <CalendarDays className="size-4 text-zinc-500" aria-hidden />
+        <CalendarDays className="size-4 text-stone-500" aria-hidden />
       </button>
 
       {open ? (
         <div
           role="dialog"
           aria-label="Date picker"
-          className="absolute left-0 top-11 z-50 w-[min(18rem,100%)] overflow-hidden rounded-xl border border-white/10 bg-zinc-950 shadow-2xl shadow-black/50"
+          className="absolute left-0 top-11 z-50 w-[min(18rem,100%)] overflow-hidden rounded-xl border border-stone-800/80 bg-[#0c0b09] shadow-2xl shadow-black/50"
         >
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-            <div className="text-sm font-black text-zinc-100">{monthLabel}</div>
+          <div className="flex items-center justify-between gap-3 border-b border-stone-800/80 px-4 py-3">
+            <div className="text-sm font-semibold text-stone-100">{monthLabel}</div>
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/5 text-zinc-200 transition hover:bg-white/10 active:scale-95"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-stone-700/60 bg-stone-950/50 text-stone-200 transition hover:bg-stone-900/80 active:scale-95"
                 onClick={() => setMonth((m) => addMonths(m, -1))}
                 aria-label="Previous month"
               >
@@ -173,7 +173,7 @@ export default function DatePicker({
               </button>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/5 text-zinc-200 transition hover:bg-white/10 active:scale-95"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-stone-700/60 bg-stone-950/50 text-stone-200 transition hover:bg-stone-900/80 active:scale-95"
                 onClick={() => setMonth((m) => addMonths(m, 1))}
                 aria-label="Next month"
               >
@@ -183,7 +183,7 @@ export default function DatePicker({
           </div>
 
           <div className="px-4 pb-3 pt-3">
-            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-black uppercase tracking-widest text-zinc-500">
+            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-semibold uppercase tracking-widest text-stone-500">
               {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
                 <div key={i} className="py-1">
                   {d}
@@ -211,14 +211,14 @@ export default function DatePicker({
                     }}
                     className={[
                       "h-9 rounded-md text-sm font-semibold transition active:scale-95",
-                      inMonth ? "text-zinc-100" : "text-zinc-600",
+                      inMonth ? "text-stone-100" : "text-stone-600",
                       isSelected
-                        ? "bg-orange-500 text-zinc-950"
+                        ? "bg-amber-500 text-stone-950"
                         : dis
-                          ? "cursor-not-allowed text-zinc-600 opacity-35"
-                          : "hover:bg-white/10",
+                          ? "cursor-not-allowed text-stone-600 opacity-35"
+                          : "hover:bg-stone-800/80",
                       isToday && !isSelected && !dis
-                        ? "ring-1 ring-orange-500/40"
+                        ? "ring-1 ring-amber-500/45"
                         : "",
                     ].join(" ")}
                     aria-pressed={isSelected}
@@ -232,10 +232,10 @@ export default function DatePicker({
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-white/10 px-4 py-3">
+          <div className="flex items-center justify-between border-t border-stone-800/80 px-4 py-3">
             <button
               type="button"
-              className="text-xs font-black uppercase tracking-widest text-zinc-400 transition hover:text-zinc-100"
+              className="text-xs font-semibold uppercase tracking-widest text-stone-400 transition hover:text-stone-100"
               onClick={() => setValue(null)}
             >
               Clear
@@ -243,7 +243,7 @@ export default function DatePicker({
             <button
               type="button"
               disabled={!todaySelectable}
-              className="text-xs font-black uppercase tracking-widest text-orange-300 transition hover:text-orange-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-orange-300"
+              className="text-xs font-semibold uppercase tracking-widest text-amber-300/95 transition hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-amber-300/95"
               onClick={() => {
                 if (!todaySelectable) return;
                 setValue(today);

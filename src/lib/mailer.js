@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { requiredEnv } from "@/lib/env";
+import { salonEmailFromDisplayName } from "@/lib/email-templates/salon-email-brand";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -40,7 +41,7 @@ export const sendEmail = async ({ to, subject, html, attachments = [] }) => {
 
   const transporter = createTransporter(smtp);
   await transporter.sendMail({
-    from: `"eComElectronicStore" <${smtp.from}>`,
+    from: `"${salonEmailFromDisplayName()}" <${smtp.from}>`,
     to,
     subject,
     html,

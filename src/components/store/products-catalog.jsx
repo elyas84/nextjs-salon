@@ -283,57 +283,41 @@ export default function ProductsCatalog({
   }, [products]);
 
   return (
-    <section className="mx-auto w-full max-w-screen-2xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
+    <section className="mx-auto w-full max-w-screen-2xl px-4 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8">
       <div className="hidden md:block">
         <Breadcrumbs items={breadcrumbItems} />
       </div>
 
-      <header className="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
-            Engineered Inventory
-          </p>
-          <h1 className="mt-4 font-heading text-3xl font-extrabold tracking-tighter text-zinc-50 sm:text-5xl md:text-6xl">
-            PRECISION <span className="text-zinc-500">COMPONENTS</span>
-          </h1>
-          <p className="mt-4 max-w-lg text-sm leading-relaxed text-zinc-300 sm:text-base">
-            Every part is a performance statement. Explore our curated selection
-            of high-end automotive essentials designed for the discerning
-            enthusiast.
-          </p>
-        </div>
-
-        <div className="flex w-full flex-col items-start gap-3 sm:max-w-md sm:items-end">
-          <div className="flex items-center justify-between text-xs text-zinc-500">
-            <span>
-              {filteredProducts.length} result
-              {filteredProducts.length === 1 ? "" : "s"}
-              {filteredProducts.length > 0 && totalPages > 1 ? (
-                <span className="text-zinc-600">
-                  {" "}
-                  · {pageStart}–{pageEnd}
-                </span>
-              ) : null}
+      <header className="mt-6 flex flex-col gap-4 border-b border-stone-800/60 pb-8 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-stone-400">
+          <span className="font-medium text-stone-200">
+            {filteredProducts.length} result
+            {filteredProducts.length === 1 ? "" : "s"}
+          </span>
+          {filteredProducts.length > 0 && totalPages > 1 ? (
+            <span className="text-stone-500">
+              {" "}
+              · showing {pageStart}–{pageEnd}
             </span>
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="inline-flex items-center gap-1 font-semibold text-zinc-300 hover:text-white"
-            >
-              <X className="size-3.5" />
-              Clear
-            </button>
-          </div>
-        </div>
+          ) : null}
+        </p>
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="inline-flex w-fit items-center gap-2 rounded-full border border-stone-700/70 bg-stone-950/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-stone-300 transition hover:border-stone-600 hover:bg-stone-900/60 hover:text-stone-100"
+        >
+          <X className="size-3.5" />
+          Clear filters
+        </button>
       </header>
 
-      <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-12">
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
         <aside className="space-y-10 lg:col-span-3 lg:sticky lg:top-24 lg:self-start">
           <div className="lg:hidden">
             <button
               type="button"
               onClick={() => setFiltersOpen((current) => !current)}
-              className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-zinc-100 shadow-sm lg:hidden"
+              className="flex w-full items-center justify-between gap-3 rounded-2xl border border-stone-700/70 bg-stone-950/50 px-4 py-3 text-sm font-semibold text-stone-100 shadow-sm lg:hidden"
               aria-expanded={filtersOpen}
             >
               <span className="inline-flex items-center gap-2">
@@ -349,7 +333,7 @@ export default function ProductsCatalog({
           <div className={filtersOpen ? "block" : "hidden lg:block"}>
             <div className="grid gap-10">
                 <div>
-                  <h3 className="mb-6 text-sm font-extrabold uppercase tracking-widest text-zinc-100">
+                  <h3 className="mb-6 text-[11px] font-semibold uppercase tracking-[0.28em] text-stone-400">
                     Category
                   </h3>
                   <div className="space-y-3">
@@ -373,14 +357,14 @@ export default function ProductsCatalog({
                                 return list;
                               });
                             }}
-                            className="rounded-sm border-white/20 bg-white/5 text-orange-500 focus:ring-orange-500/40 focus:ring-offset-zinc-950"
+                            className="rounded-sm border-stone-600 bg-stone-950/50 text-amber-500 focus:ring-amber-500/40 focus:ring-offset-[#0a0908]"
                           />
                           <span
                             className={[
                               "ml-3 text-sm transition-colors",
                               checked
-                                ? "text-zinc-100"
-                                : "text-zinc-400 group-hover:text-zinc-100",
+                                ? "text-stone-100"
+                                : "text-stone-500 group-hover:text-stone-200",
                             ].join(" ")}
                           >
                             {category}
@@ -393,16 +377,16 @@ export default function ProductsCatalog({
 
                 <div>
                   <div className="mb-4 flex items-baseline justify-between gap-2">
-                    <h3 className="text-sm font-extrabold uppercase tracking-widest text-zinc-100">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-stone-400">
                       Price range
                     </h3>
-                    <span className="shrink-0 text-xs font-semibold tabular-nums text-zinc-400">
+                    <span className="shrink-0 text-xs font-semibold tabular-nums text-stone-500">
                       {formatCurrency(sliderMin)} – {formatCurrency(sliderMax)}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <label className="block">
-                      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-stone-500">
                         Min
                       </span>
                       <input
@@ -413,11 +397,11 @@ export default function ProductsCatalog({
                         step={1}
                         value={minInputValue}
                         onChange={onMinNumberChange}
-                        className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm tabular-nums text-zinc-100 outline-none transition focus:border-orange-500/45 focus:ring-2 focus:ring-orange-500/20"
+                        className="w-full rounded-xl border border-stone-700/70 bg-stone-950/50 px-3 py-2 text-sm tabular-nums text-stone-100 outline-none transition focus:border-amber-500/45 focus:ring-2 focus:ring-amber-500/20"
                       />
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-stone-500">
                         Max
                       </span>
                       <input
@@ -428,17 +412,17 @@ export default function ProductsCatalog({
                         step={1}
                         value={maxInputValue}
                         onChange={onMaxNumberChange}
-                        className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm tabular-nums text-zinc-100 outline-none transition focus:border-orange-500/45 focus:ring-2 focus:ring-orange-500/20"
+                        className="w-full rounded-xl border border-stone-700/70 bg-stone-950/50 px-3 py-2 text-sm tabular-nums text-stone-100 outline-none transition focus:border-amber-500/45 focus:ring-2 focus:ring-amber-500/20"
                       />
                     </label>
                   </div>
                   <div className="relative mt-6 pb-1">
                     <div
-                      className="pointer-events-none absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-lg bg-white/10"
+                      className="pointer-events-none absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-lg bg-stone-800/90"
                       aria-hidden
                     />
                     <div
-                      className="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-lg bg-orange-500/70"
+                      className="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-lg bg-amber-500/75"
                       style={{
                         left: `${rangeFillLeft}%`,
                         width: `${rangeFillWidth}%`,
@@ -470,14 +454,14 @@ export default function ProductsCatalog({
                       />
                     </div>
                   </div>
-                  <div className="mt-2 flex justify-between gap-2 text-xs tabular-nums text-zinc-500">
+                  <div className="mt-2 flex justify-between gap-2 text-xs tabular-nums text-stone-500">
                     <span>{formatCurrency(priceBounds.min)}</span>
                     <span>{formatCurrency(priceBounds.max)}</span>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="mb-6 text-sm font-extrabold uppercase tracking-widest text-zinc-100">
+                  <h3 className="mb-6 text-[11px] font-semibold uppercase tracking-[0.28em] text-stone-400">
                     Brand
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -496,10 +480,10 @@ export default function ProductsCatalog({
                             });
                           }}
                           className={[
-                            "rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-tighter transition-colors",
+                            "rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] transition-colors",
                             active
-                              ? "bg-zinc-200 text-zinc-950"
-                              : "bg-white/5 text-zinc-300 hover:bg-white/10",
+                              ? "bg-amber-400/90 text-stone-950"
+                              : "border border-stone-700/60 bg-stone-950/40 text-stone-400 hover:border-stone-600 hover:bg-stone-900/50 hover:text-stone-200",
                           ].join(" ")}
                         >
                           {brand}
@@ -522,7 +506,7 @@ export default function ProductsCatalog({
               </div>
               {totalPages > 1 ? (
                 <nav
-                  className="mt-12 flex flex-col items-center gap-3 border-t border-white/10 pt-8"
+                  className="mt-12 flex flex-col items-center gap-3 border-t border-stone-800/70 pt-8"
                   aria-label="Product list pagination"
                 >
                   <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
@@ -531,7 +515,7 @@ export default function ProductsCatalog({
                       onClick={() => goToPage(currentPage - 1)}
                       disabled={currentPage <= 1}
                       aria-label="Previous page"
-                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-stone-700/70 bg-stone-950/50 text-stone-200 transition hover:border-stone-600 hover:bg-stone-900/60 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <ChevronLeft className="size-5" aria-hidden />
                     </button>
@@ -541,7 +525,7 @@ export default function ProductsCatalog({
                         item === "ellipsis" ? (
                           <span
                             key={`ellipsis-${idx}`}
-                            className="px-1.5 text-sm text-zinc-500 select-none"
+                            className="px-1.5 text-sm text-stone-500 select-none"
                             aria-hidden
                           >
                             ...
@@ -556,10 +540,10 @@ export default function ProductsCatalog({
                               item === currentPage ? "page" : undefined
                             }
                             className={[
-                              "min-w-10 rounded-lg px-2 py-2 text-sm transition",
+                              "min-w-10 rounded-xl px-2 py-2 text-sm transition",
                               item === currentPage
-                                ? "font-bold text-zinc-50"
-                                : "text-zinc-500 hover:text-zinc-300",
+                                ? "font-semibold text-amber-100"
+                                : "text-stone-500 hover:text-stone-200",
                             ].join(" ")}
                           >
                             {item}
@@ -572,7 +556,7 @@ export default function ProductsCatalog({
                       onClick={() => goToPage(currentPage + 1)}
                       disabled={currentPage >= totalPages}
                       aria-label="Next page"
-                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-stone-700/70 bg-stone-950/50 text-stone-200 transition hover:border-stone-600 hover:bg-stone-900/60 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <ChevronRight className="size-5" aria-hidden />
                     </button>
@@ -581,7 +565,7 @@ export default function ProductsCatalog({
               ) : null}
             </>
           ) : (
-            <div className="surface-panel rounded-3xl p-8 text-center text-zinc-400">
+            <div className="rounded-3xl border border-stone-800/80 bg-stone-950/40 p-10 text-center text-stone-400 ring-1 ring-white/[0.04]">
               {products.length === 0
                 ? "No products available yet. Please check back soon."
                 : "No products match your search. Try a different keyword or category."}

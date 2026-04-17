@@ -1,15 +1,15 @@
-/** Bottom “FixPro Standard” strip on `/services`. */
+/** Bottom standards strip on `/services`. */
 
 export const SERVICES_STANDARD_BANNER_DEFAULTS = {
-  headline: "The FixPro Standard.",
-  bullet1: "Certified OEM Parts Only",
-  bullet2: "Real-Time Telemetry Diagnostics",
-  bullet3: "24-Month Integrity Warranty",
-  primaryCtaLabel: "Speak with a Specialist",
+  headline: "The Studio Salon standard.",
+  bullet1: "Consultation-first appointments",
+  bullet2: "Clean tools & honest timing",
+  bullet3: "Care plans you can maintain at home",
+  primaryCtaLabel: "Ask a question",
   primaryCtaHref: "/contact",
-  secondaryCtaLabel: "View Performance Log",
-  secondaryCtaHref: "/services",
-  watermark: "FIXPRO",
+  secondaryCtaLabel: "Book a visit",
+  secondaryCtaHref: "/book-a-service",
+  watermark: "STUDIO",
 };
 
 /**

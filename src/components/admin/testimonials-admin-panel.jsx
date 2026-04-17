@@ -31,7 +31,7 @@ function OrderStarsPicker({ value, onChange, disabled }) {
             <Star
               className={`size-6 sm:size-7 ${
                 active
-                  ? "fill-orange-400 text-orange-400"
+                  ? "fill-rose-400 text-rose-400"
                   : "text-zinc-600"
               }`}
             />
@@ -50,7 +50,7 @@ function OrderStarsRead({ order }) {
         <Star
           key={n}
           className={`size-3.5 shrink-0 ${
-            n <= v ? "fill-orange-400 text-orange-400" : "text-zinc-700"
+            n <= v ? "fill-rose-400 text-rose-400" : "text-zinc-700"
           }`}
         />
       ))}
@@ -238,7 +238,7 @@ export default function TestimonialsAdminPanel() {
   }
 
   const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30";
+    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30";
   const labelClass =
     "mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-zinc-500";
 
@@ -269,7 +269,7 @@ export default function TestimonialsAdminPanel() {
             type="button"
             onClick={saveHeadline}
             disabled={savingHeadline}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-orange-500/40 bg-orange-500/15 px-4 py-2 text-xs font-black uppercase tracking-widest text-orange-100 transition hover:bg-orange-500/25 disabled:opacity-50"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/15 px-4 py-2 text-xs font-black uppercase tracking-widest text-rose-100 transition hover:bg-rose-500/25 disabled:opacity-50"
           >
             {savingHeadline ? (
               <Loader2 className="size-4 animate-spin" />
@@ -314,7 +314,7 @@ export default function TestimonialsAdminPanel() {
 
           <div className="sm:col-span-2 flex flex-col gap-4 sm:flex-row sm:items-end">
             <div
-              className="flex size-16 shrink-0 items-center justify-center rounded-full border border-orange-500/35 bg-gradient-to-br from-orange-500/30 to-zinc-900 font-heading text-lg font-bold tracking-tight text-orange-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/10"
+              className="flex size-16 shrink-0 items-center justify-center rounded-full border border-rose-500/35 bg-gradient-to-br from-rose-500/30 to-zinc-900 font-heading text-lg font-bold tracking-tight text-rose-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/10"
               aria-hidden
             >
               {initialsFromName(formName)}
@@ -349,7 +349,7 @@ export default function TestimonialsAdminPanel() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-xl border border-orange-500/40 bg-orange-500/20 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-orange-100 transition hover:bg-orange-500/30 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/20 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-rose-100 transition hover:bg-rose-500/30 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="size-4 animate-spin" />
@@ -384,7 +384,7 @@ export default function TestimonialsAdminPanel() {
                   key={t.id}
                   className={`rounded-2xl border p-4 ${
                     isRowEditing
-                      ? "border-orange-500/30 bg-orange-500/10"
+                      ? "border-rose-500/30 bg-rose-500/10"
                       : "border-white/10 bg-white/[0.03]"
                   }`}
                 >
@@ -396,7 +396,7 @@ export default function TestimonialsAdminPanel() {
                       </p>
                       <div className="mt-3 flex items-center gap-2">
                         <div
-                          className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-gradient-to-br from-orange-500/25 to-zinc-900 text-[11px] font-bold text-orange-200"
+                          className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-gradient-to-br from-rose-500/25 to-zinc-900 text-[11px] font-bold text-rose-200"
                           aria-hidden
                         >
                           {initialsFromName(t.name)}
@@ -482,7 +482,7 @@ export default function TestimonialsAdminPanel() {
                     <tr
                       key={t.id}
                       className={`border-b border-white/5 last:border-0 ${
-                        isRowEditing ? "bg-orange-500/10" : ""
+                        isRowEditing ? "bg-rose-500/10" : ""
                       }`}
                     >
                       <td className="px-3 py-3 align-middle">
@@ -494,7 +494,7 @@ export default function TestimonialsAdminPanel() {
                       <td className="px-3 py-3 align-middle">
                         <div className="flex items-center gap-3">
                           <div
-                            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-gradient-to-br from-orange-500/25 to-zinc-900 text-[11px] font-bold text-orange-200"
+                            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/15 bg-gradient-to-br from-rose-500/25 to-zinc-900 text-[11px] font-bold text-rose-200"
                             aria-hidden
                           >
                             {initialsFromName(t.name)}

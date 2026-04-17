@@ -150,7 +150,15 @@ export function computeAdminSearchSuggestions(
     }
     case "emails": {
       for (const e of emails) {
-        const hay = [e?.name, e?.email, e?.company, e?.message, String(e?._id || "")]
+        const hay = [
+          e?.name,
+          e?.email,
+          e?.company,
+          e?.phone,
+          e?.topic,
+          e?.message,
+          String(e?._id || ""),
+        ]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();

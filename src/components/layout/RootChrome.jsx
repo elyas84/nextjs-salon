@@ -20,8 +20,8 @@ export default function RootChrome({ children }) {
   return (
     <>
       <SiteHeader />
-      <main className="min-h-[calc(100vh-160px)] bg-zinc-950 pt-20">
-        {children}
+      <main className="public-page min-h-[calc(100vh-160px)] pb-3 pt-20">
+        <div className="relative z-[1]">{children}</div>
       </main>
       <SiteFooter />
     </>

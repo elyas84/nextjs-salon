@@ -17,7 +17,7 @@ export default function SiteHeroSection({ settings, variant = "home" }) {
   const showImage = isUsableImageUrl(hero.imageUrl);
 
   return (
-    <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-zinc-950">
+    <section className="relative flex min-h-[100svh] items-center overflow-hidden border-b border-white/[0.04] bg-zinc-950">
       <div className="absolute inset-0">
         {showImage ? (
           <>
@@ -32,21 +32,21 @@ export default function SiteHeroSection({ settings, variant = "home" }) {
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/92 via-zinc-950/65 to-zinc-950/25" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(249,115,22,0.14),transparent_55%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(244,114,182,0.14),transparent_55%)]" />
           </>
         ) : (
           <>
             <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent" />
-            <div className="h-full w-full bg-[radial-gradient(circle_at_70%_30%,rgba(249,115,22,0.18),transparent_55%)]" />
+            <div className="h-full w-full bg-[radial-gradient(circle_at_70%_30%,rgba(244,114,182,0.18),transparent_55%)]" />
           </>
         )}
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-screen-2xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-orange-500" />
-            <span className="text-xs font-extrabold uppercase tracking-[0.25em] text-orange-200">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 py-1">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" />
+            <span className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-200">
               {hero.badgeText}
             </span>
           </div>
@@ -63,7 +63,7 @@ export default function SiteHeroSection({ settings, variant = "home" }) {
           <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
             <HeroCtaLink
               href={hero.primaryCtaHref}
-              className="kinetic-gradient inline-flex items-center justify-center rounded-md px-7 py-4 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition active:scale-[0.99] hover:shadow-[0_0_24px_rgba(249,115,22,0.35)]"
+              className="kinetic-gradient inline-flex items-center justify-center rounded-md px-7 py-4 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition active:scale-[0.99] hover:shadow-[0_0_24px_rgba(244,114,182,0.35)]"
             >
               {hero.primaryCtaLabel}
             </HeroCtaLink>
@@ -82,7 +82,7 @@ export default function SiteHeroSection({ settings, variant = "home" }) {
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
             Explore
           </span>
-          <div className="h-12 w-px bg-gradient-to-b from-orange-400 to-transparent" />
+          <div className="h-12 w-px bg-gradient-to-b from-rose-400 to-transparent" />
         </div>
       </div>
     </section>

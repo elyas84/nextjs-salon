@@ -13,7 +13,7 @@ export default function CartPageClient() {
     return (
       <section className="mx-auto flex min-h-[60vh] w-full max-w-screen-2xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 lg:px-8">
         <div className="surface-panel w-full rounded-3xl p-8">
-          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-orange-300">
+          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-300">
             Cart
           </p>
           <h1 className="mt-3 text-2xl font-extrabold text-zinc-50 sm:text-3xl">
@@ -24,7 +24,7 @@ export default function CartPageClient() {
           </p>
           <Link
             href="/products"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-orange-500 hover:text-white"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-rose-500 hover:text-white"
           >
             Browse products <ArrowRight className="size-4" />
           </Link>
@@ -36,7 +36,7 @@ export default function CartPageClient() {
   return (
     <section className="mx-auto w-full max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+        <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
           Cart
         </p>
         <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tighter text-zinc-50 sm:text-4xl">

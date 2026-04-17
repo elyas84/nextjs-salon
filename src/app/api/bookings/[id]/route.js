@@ -16,7 +16,7 @@ import {
 } from "@/lib/booking-confirmation-email";
 import { connectDB } from "@/lib/db";
 import Booking from "@/lib/models/Booking";
-import { formatVehicleRegistration } from "@/lib/vehicle-registration";
+import { normalizeBookingReference } from "@/lib/booking-reference";
 
 export const dynamic = "force-dynamic";
 
@@ -84,9 +84,9 @@ export async function PATCH(req, { params }) {
       patch.email = String(body.email || "").trim().toLowerCase();
     if (typeof body.phone !== "undefined") patch.phone = String(body.phone || "").trim();
     if (typeof body.registrationNumber !== "undefined")
-      patch.registrationNumber = formatVehicleRegistration(
-        String(body.registrationNumber || ""),
-      ).trim();
+      patch.registrationNumber = normalizeBookingReference(
+        body.registrationNumber,
+      );
     if (typeof body.serviceType !== "undefined")
       patch.serviceType = String(body.serviceType || "").trim();
     if (typeof body.preferredDate !== "undefined")

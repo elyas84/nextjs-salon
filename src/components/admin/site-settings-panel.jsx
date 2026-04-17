@@ -73,7 +73,7 @@ function SettingsTextField({
   wide,
 }) {
   const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30";
+    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30";
   const v = draft[fieldKey] || "";
   const on = (x) =>
     setDraft((d) => (d ? { ...d, [fieldKey]: x } : d));
@@ -178,7 +178,7 @@ function ImageFieldGroup({
         <input
           value={rawUrl}
           onChange={(e) => setUrl(e.target.value)}
-          className={`w-full rounded-xl border bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30 ${
+          className={`w-full rounded-xl border bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30 ${
             showGalleryWarning
               ? "border-amber-500/50"
               : "border-white/10"
@@ -205,7 +205,7 @@ function ImageFieldGroup({
         <input
           value={draft?.[altKey] || ""}
           onChange={(e) => setAlt(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+          className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
         />
       </label>
       <div className="mt-3">
@@ -359,7 +359,7 @@ export default function SiteSettingsPanel({ active }) {
               Save stays here while you scroll.
             </span>{" "}
             Upload or paste direct image URLs.{" "}
-            <span className="text-orange-200/90">
+            <span className="text-rose-200/90">
               Nothing is live until you save.
             </span>
           </p>
@@ -382,8 +382,8 @@ export default function SiteSettingsPanel({ active }) {
                 onClick={() => goToSettingsSection(s.id)}
                 className={`rounded-lg border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide transition ${
                   isActive
-                    ? "border-orange-500/70 bg-orange-500/15 text-orange-100 shadow-[0_0_0_1px_rgba(249,115,22,0.25)]"
-                    : "border-white/10 bg-white/[0.04] text-zinc-300 hover:border-orange-500/40 hover:bg-orange-500/10 hover:text-orange-200"
+                    ? "border-rose-500/70 bg-rose-500/15 text-rose-100 shadow-[0_0_0_1px_rgba(244,114,182,0.25)]"
+                    : "border-white/10 bg-white/[0.04] text-zinc-300 hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-200"
                 }`}
               >
                 {s.label}
@@ -397,7 +397,7 @@ export default function SiteSettingsPanel({ active }) {
         id="site-settings-home"
         className="scroll-mt-36"
       >
-        <h3 className="text-xs font-black uppercase tracking-widest text-orange-300/90">
+        <h3 className="text-xs font-black uppercase tracking-widest text-rose-300/90">
           Home page
         </h3>
         <p className="mt-2 text-xs text-zinc-500">
@@ -526,7 +526,7 @@ export default function SiteSettingsPanel({ active }) {
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 1 — wide (e.g. Engine Diagnostics)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -575,7 +575,7 @@ export default function SiteSettingsPanel({ active }) {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 2 — narrow (e.g. fluid exchange + price)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -632,7 +632,7 @@ export default function SiteSettingsPanel({ active }) {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 3 — narrow (e.g. braking)
               </p>
               <p className="mt-2 text-xs text-zinc-500">
@@ -685,7 +685,7 @@ export default function SiteSettingsPanel({ active }) {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 4 — wide (copy + side image)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -740,7 +740,7 @@ export default function SiteSettingsPanel({ active }) {
         id="site-settings-services"
         className="scroll-mt-36"
       >
-        <h3 className="text-xs font-black uppercase tracking-widest text-orange-300/90">
+        <h3 className="text-xs font-black uppercase tracking-widest text-rose-300/90">
           Services page
         </h3>
         <p className="mt-2 text-xs text-zinc-500">
@@ -870,7 +870,7 @@ export default function SiteSettingsPanel({ active }) {
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 1 — wide (e.g. Engine Diagnostics)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -919,7 +919,7 @@ export default function SiteSettingsPanel({ active }) {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 2 — narrow (e.g. fluid exchange + price)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -976,7 +976,7 @@ export default function SiteSettingsPanel({ active }) {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 3 — narrow (e.g. braking)
               </p>
               <p className="mt-2 text-xs text-zinc-500">
@@ -1029,7 +1029,7 @@ export default function SiteSettingsPanel({ active }) {
             />
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-orange-300/80">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
                 Card 4 — wide (copy + side image)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -1170,7 +1170,7 @@ export default function SiteSettingsPanel({ active }) {
         id="site-settings-about"
         className="scroll-mt-36"
       >
-        <h3 className="text-xs font-black uppercase tracking-widest text-orange-300/90">
+        <h3 className="text-xs font-black uppercase tracking-widest text-rose-300/90">
           About page
         </h3>
         <p className="mt-2 text-xs text-zinc-500">

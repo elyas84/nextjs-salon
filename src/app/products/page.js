@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import ProductsShopHeader from "@/components/store/products-shop-header";
 import ProductsCatalog from "@/components/store/products-catalog";
 import {
   getStoreCategoriesFromList,
@@ -9,8 +10,11 @@ export const dynamic = "force-dynamic";
 
 function ProductsLoading() {
   return (
-    <div className="mx-auto min-h-[50vh] max-w-screen-2xl px-4 py-24 text-center text-sm text-zinc-500">
-      Loading products…
+    <div className="min-h-[50vh] bg-[#0a0908]">
+      <ProductsShopHeader />
+      <div className="mx-auto max-w-screen-2xl px-4 py-24 text-center text-sm text-stone-500">
+        Loading products…
+      </div>
     </div>
   );
 }
@@ -47,19 +51,22 @@ export default async function ProductsPage({ searchParams }) {
     : params.badge || "";
 
   return (
-    <Suspense fallback={<ProductsLoading />}>
-      <ProductsCatalog
-        products={products}
-        categories={categories}
-        initialCategory={initialCategory}
-        initialQuery={initialQuery}
-        initialBadge={initialBadge}
-        initialMinPrice={initialMinPrice}
-        initialMaxPrice={initialMaxPrice}
-        initialMinRating={initialMinRating}
-        initialSort={initialSort}
-        initialInStockOnly={initialInStockOnly}
-      />
-    </Suspense>
+    <div className="bg-[#0a0908]">
+      <Suspense fallback={<ProductsLoading />}>
+        <ProductsShopHeader />
+        <ProductsCatalog
+          products={products}
+          categories={categories}
+          initialCategory={initialCategory}
+          initialQuery={initialQuery}
+          initialBadge={initialBadge}
+          initialMinPrice={initialMinPrice}
+          initialMaxPrice={initialMaxPrice}
+          initialMinRating={initialMinRating}
+          initialSort={initialSort}
+          initialInStockOnly={initialInStockOnly}
+        />
+      </Suspense>
+    </div>
   );
 }

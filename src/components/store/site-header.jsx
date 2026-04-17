@@ -131,13 +131,17 @@ export default function SiteHeader() {
     return () => window.removeEventListener("pointerdown", onPointerDown);
   }, [searchChannel, headerPanelOpenBase]);
 
+  const clearHeaderSearchUi = useCallback(() => {
+    setSearch("");
+    setHeaderSearchHighlight(-1);
+    setSearchChannel(null);
+  }, []);
+
   const goToHeaderSuggestion = (index) => {
     const item = headerSuggestions[index];
     const slug = item && String(item.slug || "");
     if (!slug) return;
-    setSearchChannel(null);
-    setHeaderSearchHighlight(-1);
-    setSearch("");
+    clearHeaderSearchUi();
     router.push(`/products/${slug}`);
   };
 
@@ -339,6 +343,7 @@ export default function SiteHeader() {
                 suggestions={headerSuggestions}
                 highlightedIndex={headerSearchHighlight}
                 onHighlight={setHeaderSearchHighlight}
+                onNavigate={clearHeaderSearchUi}
                 loading={headerSearchLoading}
                 showEmpty={
                   !headerSearchLoading &&
@@ -439,6 +444,7 @@ export default function SiteHeader() {
             suggestions={headerSuggestions}
             highlightedIndex={headerSearchHighlight}
             onHighlight={setHeaderSearchHighlight}
+            onNavigate={clearHeaderSearchUi}
             loading={headerSearchLoading}
             showEmpty={
               !headerSearchLoading &&

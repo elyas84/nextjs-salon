@@ -1,5 +1,5 @@
 /**
- * Transactional HTML for password reset (FixPro / zinc + orange).
+ * Transactional HTML for password reset (Studio Salon / zinc + rose).
  * Inline styles only — email-client safe.
  */
 function escapeHtmlAttr(value) {
@@ -34,21 +34,21 @@ export function buildResetPasswordEmailHtml({ resetUrl, userEmail }) {
         <td align="center">
           <table width="560" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;width:100%;background:#18181b;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;">
             <tr>
-              <td style="height:3px;background:linear-gradient(90deg,transparent,rgba(234,88,12,0.9),transparent);"></td>
+              <td style="height:3px;background:linear-gradient(90deg,transparent,rgba(219,39,119,0.85),transparent);"></td>
             </tr>
             <tr>
               <td style="padding:28px 32px 20px;border-bottom:1px solid rgba(255,255,255,0.06);">
                 <p style="margin:0;font-size:20px;font-weight:800;letter-spacing:-0.03em;color:#fafafa;">
-                  Fix<span style="color:#fb923c;">Pro</span>
+                  Studio <span style="color:#f472b6;">Salon</span>
                 </p>
                 <p style="margin:8px 0 0;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#a1a1aa;">
-                  Automotive parts &amp; service
+                  Hair &amp; beauty
                 </p>
               </td>
             </tr>
             <tr>
               <td style="padding:24px 32px 0;">
-                <span style="display:inline-block;border:1px solid rgba(251,146,60,0.35);background:rgba(251,146,60,0.1);color:#fdba74;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:6px 12px;border-radius:6px;">
+                <span style="display:inline-block;border:1px solid rgba(244,114,182,0.35);background:rgba(244,114,182,0.1);color:#fbcfe8;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:6px 12px;border-radius:6px;">
                   Security notice
                 </span>
               </td>
@@ -71,7 +71,7 @@ export function buildResetPasswordEmailHtml({ resetUrl, userEmail }) {
             </tr>
             <tr>
               <td style="padding:0 32px 28px;">
-                <a href="${hrefUrl}" style="display:inline-block;background:linear-gradient(90deg,#ea580c,#f97316);color:#18181b;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;padding:14px 28px;border-radius:10px;">
+                <a href="${hrefUrl}" style="display:inline-block;background:linear-gradient(90deg,#db2777,#f472b6);color:#18181b;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;padding:14px 28px;border-radius:10px;">
                   Reset password →
                 </a>
               </td>
@@ -82,7 +82,7 @@ export function buildResetPasswordEmailHtml({ resetUrl, userEmail }) {
                   If the button does not work, copy and paste this URL into your browser:
                 </p>
                 <p style="margin:10px 0 0;font-size:11px;line-height:1.5;word-break:break-all;">
-                  <a href="${hrefUrl}" style="color:#fb923c;text-decoration:underline;">${textUrl}</a>
+                  <a href="${hrefUrl}" style="color:#f472b6;text-decoration:underline;">${textUrl}</a>
                 </p>
               </td>
             </tr>
@@ -101,7 +101,7 @@ export function buildResetPasswordEmailHtml({ resetUrl, userEmail }) {
             <tr>
               <td style="padding:18px 32px;border-top:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.2);">
                 <p style="margin:0;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#52525b;">
-                  © ${new Date().getFullYear()} FixPro — Secure account access
+                  © ${new Date().getFullYear()} Studio Salon — Secure account access
                 </p>
               </td>
             </tr>

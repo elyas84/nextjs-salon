@@ -8,26 +8,26 @@ export const metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   ),
   title: {
-    default: "FixPro | Auto Care & Service",
-    template: "%s | FixPro",
+    default: "Studio Salon | Hair & Beauty",
+    template: "%s | Studio Salon",
   },
   description:
-    "High-performance auto care, diagnostics, maintenance, and precision services — engineered for drivers who demand more.",
-  authors: [{ name: "FixPro" }],
-  creator: "FixPro",
+    "Book appointments, shop curated care products, and visit a calm studio for cuts, color, and treatments.",
+  authors: [{ name: "Studio Salon" }],
+  creator: "Studio Salon",
   openGraph: {
-    title: "FixPro | Auto Care & Service",
+    title: "Studio Salon | Hair & Beauty",
     description:
-      "Book services, explore performance parts, and learn about our precision-first approach to auto care.",
+      "Book appointments, browse retail, and learn about our approach to hair and beauty.",
     type: "website",
     locale: "en_US",
-    siteName: "FixPro",
+    siteName: "Studio Salon",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FixPro | Auto Care & Service",
+    title: "Studio Salon | Hair & Beauty",
     description:
-      "Precision-engineered services and performance parts.",
+      "Hair, beauty, and curated retail in a calm studio setting.",
   },
   robots: {
     index: true,

@@ -14,7 +14,7 @@ import {
 } from "@/lib/booking-confirmation-email";
 import { connectDB } from "@/lib/db";
 import Booking from "@/lib/models/Booking";
-import { formatVehicleRegistration } from "@/lib/vehicle-registration";
+import { normalizeBookingReference } from "@/lib/booking-reference";
 
 export const dynamic = "force-dynamic";
 
@@ -42,9 +42,9 @@ export async function POST(req) {
     const fullName = String(body.fullName || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
     const phone = String(body.phone || "").trim();
-    const registrationNumber = formatVehicleRegistration(
-      String(body.registrationNumber || ""),
-    ).trim();
+    const registrationNumber = normalizeBookingReference(
+      body.registrationNumber,
+    );
     const serviceType = String(body.serviceType || "").trim();
     const preferredDate = String(body.preferredDate || "").trim();
     const preferredTime = String(body.preferredTime || "").trim();

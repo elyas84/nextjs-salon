@@ -173,7 +173,7 @@ export default function TeamAdminPanel() {
   };
 
   const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30";
+    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30";
   const labelClass =
     "mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-zinc-500";
 
@@ -282,7 +282,7 @@ export default function TeamAdminPanel() {
             disabled={
               saving || uploading || (!editingId && team.length >= 12)
             }
-            className="inline-flex items-center gap-2 rounded-xl border border-orange-500/40 bg-orange-500/20 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-orange-100 transition hover:bg-orange-500/30 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/20 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-rose-100 transition hover:bg-rose-500/30 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="size-4 animate-spin" />
@@ -317,7 +317,7 @@ export default function TeamAdminPanel() {
                   key={m.id}
                   className={`rounded-2xl border p-4 ${
                     isRowEditing
-                      ? "border-orange-500/30 bg-orange-500/10"
+                      ? "border-rose-500/30 bg-rose-500/10"
                       : "border-white/10 bg-white/[0.03]"
                   }`}
                 >
@@ -401,7 +401,7 @@ export default function TeamAdminPanel() {
                     <tr
                       key={m.id}
                       className={`border-b border-white/5 last:border-0 ${
-                        isRowEditing ? "bg-orange-500/10" : ""
+                        isRowEditing ? "bg-rose-500/10" : ""
                       }`}
                     >
                       <td className="max-w-xs px-3 py-3 align-top text-xs leading-relaxed text-zinc-300">

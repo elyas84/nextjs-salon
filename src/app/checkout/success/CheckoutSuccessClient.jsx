@@ -143,7 +143,7 @@ export default function CheckoutSuccessClient() {
             <XCircle className="size-7" />
           )}
         </div>
-        <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+        <p className="mt-6 text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
           Checkout
         </p>
         <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tighter text-zinc-50">

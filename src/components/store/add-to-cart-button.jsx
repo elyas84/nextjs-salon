@@ -8,6 +8,7 @@ export default function AddToCartButton({
   product,
   children = "Add to cart",
   className = "",
+  iconClassName = "size-4",
   quantity = 1,
 }) {
   const { addItem } = useCart();
@@ -26,9 +27,9 @@ export default function AddToCartButton({
     <button
       type="button"
       onClick={handleAdd}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-800 ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-800 ${className}`}
     >
-      <ShoppingCart className="size-4" />
+      <ShoppingCart className={iconClassName} aria-hidden />
       {children}
     </button>
   );

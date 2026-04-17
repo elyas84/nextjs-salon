@@ -16,7 +16,7 @@ export default function ResetPasswordClient() {
   const [showPassword, setShowPassword] = useState(false);
 
   const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-3.5 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20";
+    "w-full rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-3.5 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/20";
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -59,11 +59,11 @@ export default function ResetPasswordClient() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-15%,rgba(234,88,12,0.14),transparent_55%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-15%,rgba(244,114,182,0.12),transparent_55%)]"
           aria-hidden
         />
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_100%_100%,rgba(234,88,12,0.06),transparent_50%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_100%_100%,rgba(244,114,182,0.06),transparent_50%)]"
           aria-hidden
         />
         <div
@@ -76,7 +76,7 @@ export default function ResetPasswordClient() {
           aria-hidden
         />
         <div
-          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/25 to-transparent"
+          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/25 to-transparent"
           aria-hidden
         />
       </div>
@@ -85,11 +85,11 @@ export default function ResetPasswordClient() {
         <header className="flex shrink-0 items-center justify-between gap-4">
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 transition hover:text-orange-300"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 transition hover:text-rose-300"
           >
             <ArrowRight className="size-4 rotate-180 transition group-hover:-translate-x-0.5" />
-            <span className="font-heading text-xs font-black uppercase tracking-[0.2em] text-zinc-200 group-hover:text-orange-200">
-              Fix<span className="text-orange-400">Pro</span>
+            <span className="font-heading text-xs font-black uppercase tracking-[0.2em] text-zinc-200 group-hover:text-rose-200">
+              Studio <span className="text-rose-400">Salon</span>
             </span>
           </Link>
         </header>
@@ -98,10 +98,10 @@ export default function ResetPasswordClient() {
           <div className="w-full max-w-md">
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl sm:p-10">
               <div className="mb-6 flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-                <KeyRound className="size-6 text-orange-300" />
+                <KeyRound className="size-6 text-rose-300" />
               </div>
 
-              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-orange-300/90">
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-rose-300/90">
                 Password reset
               </p>
               <h1 className="mt-2 font-heading text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
@@ -119,7 +119,7 @@ export default function ResetPasswordClient() {
                   </p>
                   <Link
                     href="/forgot-password"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-orange-300 transition hover:text-orange-200"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-rose-300 transition hover:text-rose-200"
                   >
                     Request new link <ArrowRight className="size-4" />
                   </Link>
@@ -214,7 +214,7 @@ export default function ResetPasswordClient() {
 
       <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-white/5 bg-zinc-950/80 px-4 py-4 backdrop-blur-md sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-zinc-600 sm:flex-row">
-          <span>© FixPro</span>
+          <span>© Studio Salon</span>
           <div className="flex gap-6">
             <Link href="/" className="transition hover:text-zinc-400">
               Home

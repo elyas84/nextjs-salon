@@ -18,6 +18,7 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: [true, "Category is required"],
       trim: true,
+      maxlength: [96, "Category must be 96 characters or less"],
     },
     price: {
       type: Number,

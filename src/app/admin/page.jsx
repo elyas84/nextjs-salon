@@ -24,6 +24,7 @@ import {
   ExternalLink,
   FileText,
   Mail,
+  MailOpen,
   Package,
   EyeOff,
   LayoutDashboard,
@@ -46,7 +47,7 @@ import {
   Trash2,
   PencilLine,
   Download,
-  Car,
+  Tag,
   Star,
   UserCircle,
   Users2,
@@ -76,7 +77,11 @@ import SiteSettingsPanel from "@/components/admin/site-settings-panel";
 import TeamAdminPanel from "@/components/admin/team-admin-panel";
 import TestimonialsAdminPanel from "@/components/admin/testimonials-admin-panel";
 import { formatCurrency } from "@/lib/store/cart";
-import { formatVehicleRegistration } from "@/lib/vehicle-registration";
+import {
+  BOOKING_REFERENCE_MAX_LEN,
+  normalizeBookingReference,
+} from "@/lib/booking-reference";
+import { PRODUCT_CATEGORY_OPTIONS } from "@/lib/product-categories";
 
 const SECTIONS = [
   "dashboard",
@@ -94,15 +99,32 @@ const SECTIONS = [
 ];
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-const CATEGORY_OPTIONS = [
-  "Spare Parts",
-  "Car Accessories",
-  "Oil and Fluids",
-  "Tools",
-  "Car Care",
-  "Tyres and Rims",
-];
+const CATEGORY_OPTIONS = PRODUCT_CATEGORY_OPTIONS;
 const BADGE_OPTIONS = ["New", "Sale"];
+
+/** Single source for admin nav — desktop sidebar + mobile drawer. */
+const ADMIN_NAV_ITEMS = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { key: "inventory", label: "Inventory Management", icon: Boxes },
+  { key: "bookings", label: "Service Bookings", icon: CalendarDays },
+  { key: "orders", label: "Customer Orders", icon: ShoppingCart },
+  { key: "reviews", label: "Product Reviews", icon: MessageSquare },
+  { key: "testimonials", label: "Testimonials", icon: Quote },
+  { key: "team", label: "Team", icon: Users2 },
+  { key: "analytics", label: "Analytics", icon: BarChart3 },
+  { key: "users", label: "Users", icon: Users },
+  { key: "emails", label: "Emails", icon: Mail },
+  { key: "settings", label: "Settings", icon: Settings },
+  { key: "profile", label: "Profile", icon: UserCircle },
+];
+
+function adminSectionLabel(key) {
+  const found = ADMIN_NAV_ITEMS.find((x) => x.key === key);
+  if (found) return found.label;
+  return String(key || "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 const USERS_PER_PAGE = 8;
 const BOOKINGS_PER_PAGE = 4;
@@ -217,6 +239,7 @@ export default function AdminPage() {
   });
   const [emailPendingDelete, setEmailPendingDelete] = useState(null);
   const [emailDeleteLoading, setEmailDeleteLoading] = useState(false);
+  const [emailMarkingReadId, setEmailMarkingReadId] = useState(null);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [lastSeenOrdersAt, setLastSeenOrdersAt] = useState(0);
@@ -584,6 +607,8 @@ export default function AdminPage() {
         e?.name,
         e?.email,
         e?.company,
+        e?.phone,
+        e?.topic,
         e?.message,
         String(e?._id || ""),
       ]
@@ -856,7 +881,7 @@ export default function AdminPage() {
         note: `${analyticsScoped.paidOrdersCount} paid orders`,
         delta: revenueDelta,
         icon: TrendingUp,
-        accent: "border-orange-500",
+        accent: "border-rose-500",
         tone: "text-sky-300",
       },
       {
@@ -959,7 +984,7 @@ export default function AdminPage() {
         value: formatCurrency(analytics.revenue),
         note: `${analytics.paidOrdersCount} paid orders`,
         icon: TrendingUp,
-        accent: "border-orange-500",
+        accent: "border-rose-500",
         tone: "text-sky-300",
       },
       {
@@ -1079,9 +1104,8 @@ export default function AdminPage() {
     setProductForm({
       name: String(p?.name || ""),
       slug: String(p?.slug || ""),
-      category: CATEGORY_OPTIONS.includes(String(p?.category || ""))
-        ? String(p?.category || "")
-        : CATEGORY_OPTIONS[0],
+      category:
+        String(p?.category || "").trim() || CATEGORY_OPTIONS[0],
       price: String(p?.price ?? ""),
       compareAtPrice:
         p?.compareAtPrice != null && Number(p.compareAtPrice) > 0
@@ -1234,7 +1258,7 @@ export default function AdminPage() {
     email: "",
     phone: "",
     registrationNumber: "",
-    serviceType: "Routine Maintenance",
+    serviceType: "Haircut & finish",
     preferredDate: "",
     preferredTime: "",
     notes: "",
@@ -1247,10 +1271,8 @@ export default function AdminPage() {
     fullName: String(b.fullName || ""),
     email: String(b.email || ""),
     phone: String(b.phone || ""),
-    registrationNumber: formatVehicleRegistration(
-      String(b.registrationNumber || ""),
-    ),
-    serviceType: String(b.serviceType || "Routine Maintenance"),
+    registrationNumber: String(b.registrationNumber || "").trim(),
+    serviceType: String(b.serviceType || "Haircut & finish"),
     preferredDate: String(b.preferredDate || ""),
     preferredTime: String(b.preferredTime || ""),
     notes: String(b.notes || ""),
@@ -1291,7 +1313,9 @@ export default function AdminPage() {
       !draft.preferredDate.trim() ||
       !draft.preferredTime.trim()
     ) {
-      toast.error("Fill in name, email, registration, service, date, and time.");
+      toast.error(
+        "Fill in name, email, booking reference, service, date, and time.",
+      );
       return;
     }
     const opts = slotsForIsoDateLocal(draft.preferredDate);
@@ -1300,11 +1324,11 @@ export default function AdminPage() {
       return;
     }
 
-    const registrationNumber = formatVehicleRegistration(
+    const registrationNumber = normalizeBookingReference(
       draft.registrationNumber,
-    ).trim();
+    );
     if (!registrationNumber) {
-      toast.error("Enter a valid registration or plate.");
+      toast.error("Enter a booking reference.");
       return;
     }
 
@@ -1551,6 +1575,42 @@ export default function AdminPage() {
     }
   };
 
+  const markEmailAsRead = async (em) => {
+    if (!em?._id || em.isRead) return;
+    const id = String(em._id);
+    setEmailMarkingReadId(id);
+    try {
+      const res = await fetch(`/api/emails/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ isRead: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error || "Could not mark as read.");
+        return;
+      }
+      const updated = data.email;
+      setEmails((prev) =>
+        prev.map((e) =>
+          String(e?._id) === id
+            ? {
+                ...e,
+                isRead: true,
+                readAt: updated?.readAt ?? e.readAt,
+              }
+            : e,
+        ),
+      );
+      toast.success("Marked as read.");
+    } catch {
+      toast.error("Could not mark as read.");
+    } finally {
+      setEmailMarkingReadId(null);
+    }
+  };
+
   const confirmDeleteEmail = async () => {
     if (!emailPendingDelete?._id) return;
     setEmailDeleteLoading(true);
@@ -1628,143 +1688,172 @@ export default function AdminPage() {
 
   return (
     <>
-    <div className="mx-auto grid w-full max-w-screen-2xl gap-6 bg-zinc-950 px-4 py-6 text-zinc-100 sm:px-6 md:grid-cols-[18rem_minmax(0,1fr)] md:items-start md:gap-8">
-      <aside className="surface-panel hidden h-fit w-full flex-col rounded-4xl border border-white/10 p-5 shadow-sm sm:p-6 md:flex md:max-h-[calc(100dvh-7rem)] md:overflow-y-auto md:sticky md:top-24">
-        <div className="mb-6 shrink-0">
-          <h1 className="font-heading text-2xl font-black tracking-tighter text-orange-500">
-            FixPro
-          </h1>
-          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
-            Management Suite
-          </p>
-          <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4">
-            <div className="flex items-center gap-3">
+    <div className="mx-auto grid w-full max-w-screen-2xl gap-6 bg-zinc-950 px-4 py-6 text-zinc-100 sm:px-6 md:grid-cols-[19rem_minmax(0,1fr)] md:items-start md:gap-8">
+      {/* self-start: default grid stretch matched aside height to main column, pushing View site / Log out below the fold */}
+      <aside className="relative hidden h-fit w-full flex-col md:flex md:self-start md:sticky md:top-24">
+        <div
+          className="pointer-events-none absolute left-0 top-8 bottom-8 w-px bg-gradient-to-b from-rose-500/55 via-rose-400/12 to-transparent"
+          aria-hidden
+        />
+        <div className="surface-panel relative flex min-h-0 max-h-[calc(100dvh-7rem)] flex-col overflow-hidden rounded-[1.75rem] border border-white/[0.07] bg-gradient-to-b from-zinc-900/95 via-zinc-950 to-zinc-950 p-5 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.75)] ring-1 ring-white/[0.04] sm:p-6">
+          <div className="mb-6 shrink-0">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h1 className="font-heading text-2xl font-black tracking-tighter text-rose-400">
+                  Studio Salon
+                </h1>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                  Management Suite
+                </p>
+              </div>
               <div
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xs font-black text-zinc-100"
+                className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-rose-500/25 bg-rose-500/10 text-[11px] font-black tracking-tight text-rose-200 shadow-inner"
                 aria-hidden
               >
-                {adminInitials}
+                SS
               </div>
-              <div className="min-w-0 flex-1 flex flex-col justify-center gap-0.5">
-                <p
-                  className="truncate text-sm font-semibold text-zinc-100"
-                  title={adminUser?.name || undefined}
+            </div>
+            <div className="mt-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-3.5 sm:p-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] text-xs font-black text-zinc-100 shadow-sm"
+                  aria-hidden
                 >
-                  {adminUser?.name || "Admin"}
-                </p>
-                <p
-                  className="truncate text-xs text-zinc-500"
-                  title={adminUser?.email || undefined}
-                >
-                  {adminUser?.email || "—"}
-                </p>
+                  {adminInitials}
+                </div>
+                <div className="min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                  <p
+                    className="truncate text-sm font-semibold text-zinc-100"
+                    title={adminUser?.name || undefined}
+                  >
+                    {adminUser?.name || "Admin"}
+                  </p>
+                  <p
+                    className="truncate text-xs text-zinc-500"
+                    title={adminUser?.email || undefined}
+                  >
+                    {adminUser?.email || "—"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <nav className="mt-1 space-y-1">
-          {[
-            { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-            { key: "inventory", label: "Inventory Management", icon: Boxes },
-            { key: "bookings", label: "Service Bookings", icon: CalendarDays },
-            { key: "orders", label: "Customer Orders", icon: ShoppingCart },
-            { key: "reviews", label: "Product Reviews", icon: MessageSquare },
-            { key: "testimonials", label: "Testimonials", icon: Quote },
-            { key: "team", label: "Team", icon: Users2 },
-            { key: "analytics", label: "Analytics", icon: BarChart3 },
-            { key: "users", label: "Users", icon: Users },
-            { key: "emails", label: "Emails", icon: Mail },
-            { key: "settings", label: "Settings", icon: Settings },
-            { key: "profile", label: "Profile", icon: UserCircle },
-          ].map((item) => {
-            const Icon = item.icon;
-            const active = activeSection === item.key;
-            const badgeCount =
-              item.key === "orders"
-                ? adminOrderUpdatesCount
-                : item.key === "reviews"
-                  ? adminReviewActivityCount
-                  : item.key === "bookings"
-                    ? adminBookingNewCount
-                    : item.key === "emails"
-                      ? adminEmailUnreadCount
-                      : 0;
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => {
-                  setActiveSection(item.key);
-                  setQuery("");
-                }}
-                className={cx(
-                  "flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition-all duration-300",
-                  active
-                    ? "border-r-2 border-orange-500 bg-zinc-900 font-bold text-orange-400"
-                    : "text-zinc-300 hover:bg-zinc-900 hover:text-orange-300",
-                )}
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <Icon className="size-4 shrink-0" />
-                  <span className="truncate text-sm font-heading tracking-tight">
-                    {item.label}
+          <nav className="mt-0 min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-y-contain pr-0.5 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]">
+            {ADMIN_NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const active = activeSection === item.key;
+              const badgeCount =
+                item.key === "orders"
+                  ? adminOrderUpdatesCount
+                  : item.key === "reviews"
+                    ? adminReviewActivityCount
+                    : item.key === "bookings"
+                      ? adminBookingNewCount
+                      : item.key === "emails"
+                        ? adminEmailUnreadCount
+                        : 0;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => {
+                    setActiveSection(item.key);
+                    setQuery("");
+                  }}
+                  className={cx(
+                    "group flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2.5 text-left transition-all duration-200",
+                    active
+                      ? "bg-gradient-to-r from-rose-500/18 via-rose-500/8 to-transparent font-bold text-rose-100 shadow-[inset_3px_0_0_0_rgb(244,63,94)]"
+                      : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100",
+                  )}
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span
+                      className={cx(
+                        "inline-flex size-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                        active
+                          ? "border-rose-500/35 bg-rose-500/15 text-rose-200"
+                          : "border-white/[0.06] bg-white/[0.03] text-zinc-500 group-hover:border-white/10 group-hover:bg-white/[0.06] group-hover:text-zinc-300",
+                      )}
+                      aria-hidden
+                    >
+                      <Icon className="size-4 shrink-0" />
+                    </span>
+                    <span className="truncate text-sm font-heading tracking-tight">
+                      {item.label}
+                    </span>
                   </span>
-                </span>
-                {active ? (
-                  <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-orange-400/80">
-                    Active
-                  </span>
-                ) : badgeCount > 0 ? (
-                  <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
-                    {badgeCount > 9 ? "9+" : badgeCount}
-                  </span>
-                ) : null}
-              </button>
-            );
-          })}
-        </nav>
+                  {active ? (
+                    <span
+                      className="inline-flex size-6 shrink-0 items-center justify-center"
+                      aria-hidden
+                    >
+                      <span className="size-2 rounded-full bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.55)] ring-2 ring-rose-500/40" />
+                    </span>
+                  ) : badgeCount > 0 ? (
+                    <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                      {badgeCount > 9 ? "9+" : badgeCount}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </nav>
 
-        <div className="mt-4 shrink-0 space-y-3 border-t border-white/10 pt-4">
-          <Link
-            href="/"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 py-2.5 text-sm font-semibold text-zinc-200 transition hover:bg-zinc-800 hover:text-orange-300"
-          >
-            <ExternalLink className="size-4 shrink-0" />
-            View site
-          </Link>
-          <button
-            type="button"
-            onClick={() => setLogoutConfirmOpen(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 py-2.5 text-sm font-semibold text-orange-400 transition hover:bg-zinc-800"
-          >
-            <LogOut className="size-4 shrink-0" />
-            Log out
-          </button>
+          <div className="mt-5 shrink-0 space-y-2.5 border-t border-white/[0.07] pt-5">
+            <Link
+              href="/"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.08] py-2.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:border-white/25 hover:bg-white/[0.12] hover:text-white"
+            >
+              <ExternalLink className="size-4 shrink-0 text-zinc-300" />
+              View site
+            </Link>
+            <button
+              type="button"
+              onClick={() => setLogoutConfirmOpen(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-400/35 bg-rose-500/15 py-2.5 text-sm font-semibold text-rose-100 shadow-sm transition hover:bg-rose-500/25"
+            >
+              <LogOut className="size-4 shrink-0" />
+              Log out
+            </button>
+          </div>
         </div>
       </aside>
 
       <main className="min-w-0">
-        <header className="sticky top-0 z-40 flex h-16 items-center border-b border-white/10 bg-zinc-950/60 px-4 backdrop-blur-md sm:px-6 lg:px-8">
-          <div className="mr-2 flex shrink-0 items-center gap-2 md:hidden">
-            <button
-              type="button"
-              onClick={openMobileNav}
-              className="inline-flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-100 transition hover:bg-white/10 active:scale-[0.97]"
-              aria-label="Open admin navigation"
-            >
-              <PanelLeft className="size-5" strokeWidth={1.75} />
-            </button>
-            <span className="hidden sm:inline text-xs font-semibold text-zinc-300">
-              {String(activeSection || "")
-                .replace(/-/g, " ")
-                .replace(/\b\w/g, (c) => c.toUpperCase())}
-            </span>
+        <header className="sticky top-0 z-40 flex w-full min-w-0 items-center gap-3 border-b border-white/[0.08] bg-zinc-950/75 px-4 backdrop-blur-md sm:gap-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 shrink-0 items-center gap-3 sm:gap-4">
+            <div className="flex shrink-0 items-center gap-2 md:hidden">
+              <button
+                type="button"
+                onClick={openMobileNav}
+                className="inline-flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-100 transition hover:bg-white/10 active:scale-[0.97]"
+                aria-label="Open admin navigation"
+              >
+                <PanelLeft className="size-5" strokeWidth={1.75} />
+              </button>
+              <span className="hidden min-w-0 truncate sm:inline text-xs font-semibold text-zinc-300">
+                {adminSectionLabel(activeSection)}
+              </span>
+            </div>
+            <div className="hidden min-w-0 md:flex md:max-w-[14rem] md:flex-col md:justify-center md:pr-2 lg:max-w-xs">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-400/90">
+                Admin
+              </span>
+              <span className="truncate font-heading text-lg font-bold tracking-tight text-zinc-50">
+                {adminSectionLabel(activeSection)}
+              </span>
+            </div>
           </div>
           {activeSection !== "settings" &&
           activeSection !== "testimonials" &&
           activeSection !== "team" ? (
-            <div ref={adminSearchWrapRef} className="relative w-full max-w-md">
+            <div
+              ref={adminSearchWrapRef}
+              className="relative w-full min-w-0 max-w-md flex-1 md:max-w-lg"
+            >
               <Search className="pointer-events-none absolute left-3 top-1/2 z-10 size-4 -translate-y-1/2 text-zinc-400" />
               <input
                 ref={adminSearchInputRef}
@@ -1815,7 +1904,7 @@ export default function AdminPage() {
                     setAdminSuggestSuppressed(true);
                   }
                 }}
-                className="w-full rounded-md bg-zinc-900 px-10 py-2 text-sm text-zinc-100 outline-none ring-1 ring-white/10 placeholder:text-zinc-500 focus:ring-2 focus:ring-orange-500/30"
+                className="w-full rounded-md bg-zinc-900 px-10 py-2 text-sm text-zinc-100 outline-none ring-1 ring-white/10 placeholder:text-zinc-500 focus:ring-2 focus:ring-rose-500/30"
                 placeholder={
                   activeSection === "inventory"
                     ? "Search products by name, slug, category..."
@@ -1828,7 +1917,7 @@ export default function AdminPage() {
                           : activeSection === "emails"
                             ? "Search messages by name, email, content..."
                             : activeSection === "bookings"
-                              ? "Search bookings by name, email, plate, service..."
+                              ? "Search bookings by name, email, reference, service..."
                               : "Search…"
                 }
                 type="search"
@@ -1919,20 +2008,20 @@ export default function AdminPage() {
             />
             <div
               className={cx(
-                "absolute left-0 top-0 h-full w-[min(22rem,92vw)] overflow-y-auto border-r border-white/10 bg-zinc-950 px-5 py-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-2xl shadow-black/60 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 sm:py-8",
+                "absolute left-0 top-0 h-full w-[min(22rem,92vw)] overflow-y-auto border-r border-white/[0.08] bg-gradient-to-b from-zinc-950 via-zinc-950 to-zinc-950 px-5 py-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[16px_0_48px_-12px_rgba(0,0,0,0.65)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 sm:py-8",
                 mobileNavOpen ? "translate-x-0" : "-translate-x-full",
               )}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex min-w-0 items-center gap-3.5">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-orange-200 shadow-sm">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-rose-200 shadow-sm">
                     <span className="text-sm font-black" aria-hidden>
-                      FP
+                      SS
                     </span>
                   </div>
                   <div className="min-w-0 py-0.5">
                     <p className="truncate font-heading text-lg font-extrabold tracking-tight text-zinc-50">
-                      FixPro
+                      Studio Salon
                     </p>
                     <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">
                       MANAGEMENT SUITE
@@ -1969,20 +2058,7 @@ export default function AdminPage() {
               </div>
 
               <nav className="mt-7 space-y-2.5">
-                {[
-                  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-                  { key: "inventory", label: "Inventory Management", icon: Boxes },
-                  { key: "bookings", label: "Service Bookings", icon: CalendarDays },
-                  { key: "orders", label: "Customer Orders", icon: ShoppingCart },
-                  { key: "reviews", label: "Product Reviews", icon: MessageSquare },
-                  { key: "testimonials", label: "Testimonials", icon: Quote },
-                  { key: "team", label: "Team", icon: Users2 },
-                  { key: "analytics", label: "Analytics", icon: BarChart3 },
-                  { key: "users", label: "Users", icon: Users },
-                  { key: "emails", label: "Emails", icon: Mail },
-                  { key: "settings", label: "Settings", icon: Settings },
-                  { key: "profile", label: "Profile", icon: UserCircle },
-                ].map((item) => {
+                {ADMIN_NAV_ITEMS.map((item) => {
                   const Icon = item.icon;
                   const active = activeSection === item.key;
                   const badgeCount =
@@ -1999,6 +2075,7 @@ export default function AdminPage() {
                     <button
                       key={item.key}
                       type="button"
+                      aria-current={active ? "page" : undefined}
                       onClick={() => {
                         setActiveSection(item.key);
                         setQuery("");
@@ -2007,7 +2084,7 @@ export default function AdminPage() {
                       className={cx(
                         "group relative flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition duration-200",
                         active
-                          ? "border-orange-500/35 bg-gradient-to-r from-orange-500/15 via-orange-500/10 to-white/[0.02] text-orange-50"
+                          ? "border-rose-500/35 bg-gradient-to-r from-rose-500/15 via-rose-500/10 to-white/[0.02] text-rose-50"
                           : "border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/5",
                       )}
                     >
@@ -2016,7 +2093,7 @@ export default function AdminPage() {
                           className={cx(
                             "inline-flex size-9 shrink-0 items-center justify-center rounded-xl border",
                             active
-                              ? "border-orange-500/35 bg-orange-500/15 text-orange-200"
+                              ? "border-rose-500/35 bg-rose-500/15 text-rose-200"
                               : "border-white/10 bg-white/5 text-zinc-300 group-hover:bg-white/10",
                           )}
                           aria-hidden
@@ -2029,13 +2106,13 @@ export default function AdminPage() {
                       </span>
                       <span className="flex shrink-0 items-center gap-2">
                         {badgeCount > 0 ? (
-                          <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                          <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
                             {badgeCount > 9 ? "9+" : badgeCount}
                           </span>
                         ) : null}
                         {active ? (
                           <span
-                            className="size-2 shrink-0 rounded-full bg-orange-500"
+                            className="size-2 shrink-0 rounded-full bg-rose-500"
                             aria-hidden
                           />
                         ) : null}
@@ -2045,12 +2122,13 @@ export default function AdminPage() {
                 })}
               </nav>
 
-              <div className="mt-8 border-t border-white/10 pt-6">
+              <div className="mt-8 shrink-0 border-t border-white/10 pt-6">
                 <Link
                   href="/"
                   onClick={closeMobileNav}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-semibold text-zinc-200 shadow-sm transition duration-200 hover:bg-white/10 active:scale-[0.99]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.08] px-4 py-3.5 text-sm font-semibold text-zinc-50 shadow-sm transition duration-200 hover:border-white/25 hover:bg-white/[0.12] active:scale-[0.99]"
                 >
+                  <ExternalLink className="size-4 shrink-0 text-zinc-300" />
                   View site
                 </Link>
                 <button
@@ -2059,9 +2137,9 @@ export default function AdminPage() {
                     closeMobileNav();
                     setLogoutConfirmOpen(true);
                   }}
-                  className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-semibold text-zinc-200 shadow-sm transition duration-200 hover:bg-white/10 active:scale-[0.99]"
+                  className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-400/35 bg-rose-500/15 px-4 py-3.5 text-sm font-semibold text-rose-100 shadow-sm transition duration-200 hover:bg-rose-500/25 active:scale-[0.99]"
                 >
-                  <LogOut className="size-4 shrink-0 text-zinc-300" />
+                  <LogOut className="size-4 shrink-0" />
                   Log out
                 </button>
               </div>
@@ -2085,7 +2163,7 @@ export default function AdminPage() {
                       Platform Overview
                     </h2>
                     <p className="mt-1 text-sm text-zinc-300">
-                      Real-time performance tracking for FixPro.
+                      Bookings, store, and salon content at a glance.
                     </p>
                   </div>
                   <span className="inline-flex w-fit items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-zinc-200">
@@ -2103,7 +2181,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     type="button"
-                    className="rounded-md bg-orange-500 px-4 py-2 text-sm font-black text-zinc-950 shadow-lg shadow-orange-500/15 transition active:scale-95"
+                    className="rounded-md bg-rose-500 px-4 py-2 text-sm font-black text-zinc-950 shadow-lg shadow-rose-500/15 transition active:scale-95"
                     onClick={handleDownloadAnalyticsPdf}
                   >
                     Download Analytics (PDF)
@@ -2177,7 +2255,7 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setActiveSection("orders")}
-                    className="inline-flex items-center gap-1 text-xs font-black text-orange-300 hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-black text-rose-300 hover:underline"
                   >
                     VIEW ALL <ChevronRight className="size-4" />
                   </button>
@@ -2341,7 +2419,7 @@ export default function AdminPage() {
                       className={cx(
                         "rounded border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide transition",
                         reviewStatusFilter === tab.key
-                          ? "border-orange-500 bg-orange-500/15 text-orange-200"
+                          ? "border-rose-500 bg-rose-500/15 text-rose-200"
                           : "border-white/10 bg-zinc-900 text-zinc-300 hover:border-white/20",
                       )}
                     >
@@ -2426,7 +2504,7 @@ export default function AdminPage() {
                       draft: emptyBookingDraft(),
                     })
                   }
-                  className="inline-flex items-center gap-2 rounded-xl border border-orange-500/35 bg-orange-500/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-orange-200 transition hover:bg-orange-500/20"
+                  className="inline-flex items-center gap-2 rounded-xl border border-rose-500/35 bg-rose-500/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-rose-200 transition hover:bg-rose-500/20"
                 >
                   <PlusCircle className="size-4" />
                   Add booking
@@ -2555,12 +2633,12 @@ export default function AdminPage() {
                               </div>
                               <div className="flex items-center gap-3">
                                 <span className={rowIcon}>
-                                  <Car className="size-4" />
+                                  <Tag className="size-4" />
                                 </span>
                                 <span className="text-sm text-zinc-300">
                                   {b.registrationNumber
-                                    ? `Vehicle ${formatVehicleRegistration(b.registrationNumber)}`
-                                    : "Vehicle —"}
+                                    ? `Ref ${String(b.registrationNumber).trim()}`
+                                    : "Reference —"}
                                 </span>
                               </div>
                             </div>
@@ -2597,8 +2675,8 @@ export default function AdminPage() {
                               </p>
                             ) : null}
                             {b.adminNotes ? (
-                              <p className="mt-3 whitespace-pre-wrap border-t border-white/10 pt-3 text-xs text-orange-200/90">
-                                <span className="font-bold text-orange-300/90">
+                              <p className="mt-3 whitespace-pre-wrap border-t border-white/10 pt-3 text-xs text-rose-200/90">
+                                <span className="font-bold text-rose-300/90">
                                   Admin:{" "}
                                 </span>
                                 {b.adminNotes}
@@ -2688,7 +2766,7 @@ export default function AdminPage() {
                   No bookings yet.{" "}
                   <Link
                     href="/book-a-service"
-                    className="font-semibold text-orange-400 underline-offset-2 hover:underline"
+                    className="font-semibold text-rose-400 underline-offset-2 hover:underline"
                   >
                     Open the booking page
                   </Link>
@@ -2891,7 +2969,7 @@ export default function AdminPage() {
           {activeSection === "emails" ? (
             <SectionShell
               title="Emails"
-              subtitle="Messages sent through the contact form."
+              subtitle="Messages from the contact form. Use Mark as read to clear unread badges in the sidebar."
               icon={Mail}
             >
               <div className="space-y-3">
@@ -2903,20 +2981,28 @@ export default function AdminPage() {
                         "rounded-2xl border p-4 sm:p-5",
                         em.isRead
                           ? "border-white/10 bg-white/[0.03]"
-                          : "border-orange-500/25 bg-orange-500/5",
+                          : "border-rose-500/25 bg-rose-500/5",
                       )}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0">
                           <p className="font-bold text-zinc-50">{em.name || "—"}</p>
                           <p className="text-sm text-zinc-400">{em.email || "—"}</p>
+                          {em.phone ? (
+                            <p className="mt-1 text-xs text-zinc-500">{em.phone}</p>
+                          ) : null}
+                          {em.topic ? (
+                            <p className="mt-1 text-xs font-semibold text-rose-200/90">
+                              {em.topic}
+                            </p>
+                          ) : null}
                           {em.company ? (
                             <p className="mt-1 text-xs text-zinc-500">{em.company}</p>
                           ) : null}
                         </div>
                         <div className="flex shrink-0 flex-wrap items-center gap-2">
                           {!em.isRead ? (
-                            <span className="rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-orange-200">
+                            <span className="rounded-full border border-rose-500/40 bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-rose-200">
                               Unread
                             </span>
                           ) : null}
@@ -2928,6 +3014,21 @@ export default function AdminPage() {
                                 })
                               : ""}
                           </span>
+                          {!em.isRead ? (
+                            <button
+                              type="button"
+                              onClick={() => markEmailAsRead(em)}
+                              disabled={emailMarkingReadId === String(em._id)}
+                              className="inline-flex items-center gap-1 rounded border border-emerald-500/35 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-100 transition hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {emailMarkingReadId === String(em._id) ? (
+                                <Loader2 className="size-3 animate-spin" />
+                              ) : (
+                                <MailOpen className="size-3" />
+                              )}
+                              Mark read
+                            </button>
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => setEmailPendingDelete(em)}
@@ -2980,7 +3081,7 @@ export default function AdminPage() {
                     <input
                       value={profileName}
                       onChange={(e) => setProfileName(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
                     />
                   </label>
                   <label className="block">
@@ -2991,7 +3092,7 @@ export default function AdminPage() {
                       type="email"
                       value={profileEmail}
                       onChange={(e) => setProfileEmail(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
                     />
                   </label>
 
@@ -3008,7 +3109,7 @@ export default function AdminPage() {
                           value={currentPassword}
                           onChange={(e) => setCurrentPassword(e.target.value)}
                           autoComplete="current-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-orange-500/30"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
                         />
                         <button
                           type="button"
@@ -3043,7 +3144,7 @@ export default function AdminPage() {
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           autoComplete="new-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-orange-500/30"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
                         />
                         <button
                           type="button"
@@ -3080,7 +3181,7 @@ export default function AdminPage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         autoComplete="new-password"
-                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-orange-500/30"
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
                       />
                       <button
                         type="button"
@@ -3152,7 +3253,7 @@ export default function AdminPage() {
                         className={cx(
                           "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition",
                           active
-                            ? "bg-orange-500 text-zinc-950"
+                            ? "bg-rose-500 text-zinc-950"
                             : "text-zinc-300 hover:bg-white/10",
                         )}
                       >
@@ -3229,7 +3330,7 @@ export default function AdminPage() {
               <div className="rounded-md border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                 <div className="mb-2 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <BarChart3 className="size-5 text-orange-300" />
+                    <BarChart3 className="size-5 text-rose-300" />
                     <h4 className="font-heading font-bold text-zinc-50">
                       Revenue bars (paid orders)
                     </h4>
@@ -3244,7 +3345,7 @@ export default function AdminPage() {
               <div className="rounded-md border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="size-5 text-orange-300" />
+                    <DollarSign className="size-5 text-rose-300" />
                     <h4 className="font-heading font-bold text-zinc-50">
                       Paid orders by provider
                     </h4>
@@ -3271,7 +3372,7 @@ export default function AdminPage() {
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
                   Session
                 </p>
                 <h2
@@ -3309,7 +3410,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={handleLogout}
                 disabled={logoutLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {logoutLoading ? (
                   <>
@@ -3342,7 +3443,7 @@ export default function AdminPage() {
           <div className="surface-panel max-h-[min(90vh,40rem)] w-full max-w-lg overflow-y-auto rounded-3xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-orange-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-200">
                   {bookingModal.mode === "create" ? "New booking" : "Edit booking"}
                 </p>
                 <h2 className="mt-2 text-xl font-extrabold text-zinc-50">
@@ -3372,7 +3473,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("fullName", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3385,7 +3486,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("email", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3397,24 +3498,24 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("phone", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
                 <span className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400">
-                  <Car className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
-                  Registration / plate
+                  <Tag className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
+                  Booking reference
                 </span>
                 <input
                   value={bookingModal.draft.registrationNumber}
                   onChange={(e) =>
                     updateBookingDraft(
                       "registrationNumber",
-                      formatVehicleRegistration(e.target.value),
+                      e.target.value.slice(0, BOOKING_REFERENCE_MAX_LEN),
                     )
                   }
-                  placeholder="e.g. ABC 223"
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  placeholder="e.g. Your name, a nickname, or your pet’s name"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3426,11 +3527,13 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("serviceType", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 >
-                  <option>Routine Maintenance</option>
-                  <option>Tire Storage</option>
-                  <option>Spot check</option>
+                  <option>Haircut & finish</option>
+                  <option>Color / gloss</option>
+                  <option>Treatment & repair</option>
+                  <option>Bridal or event styling</option>
+                  <option>Consultation</option>
                 </select>
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -3448,7 +3551,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       updateBookingDraft("preferredDate", e.target.value)
                     }
-                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                   />
                 </label>
                 <label className="grid gap-1.5 text-sm">
@@ -3465,7 +3568,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       updateBookingDraft("preferredTime", e.target.value)
                     }
-                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30 disabled:opacity-50"
+                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30 disabled:opacity-50"
                   >
                     {!slotsForIsoDateLocal(bookingModal.draft.preferredDate)
                       .length ? (
@@ -3491,7 +3594,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("status", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 >
                   <option value="pending">Pending</option>
                   <option value="confirmed">Confirmed</option>
@@ -3510,7 +3613,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("notes", e.target.value)
                   }
-                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3523,7 +3626,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("adminNotes", e.target.value)
                   }
-                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30"
+                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
                 />
               </label>
             </div>
@@ -3541,7 +3644,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={saveBookingModal}
                 disabled={bookingModalSaving}
-                className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-orange-400 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-rose-400 disabled:opacity-60"
               >
                 {bookingModalSaving ? (
                   <>
@@ -4173,7 +4276,7 @@ function SectionShell({ title, subtitle, icon: Icon, headerActions, children }) 
           <div className="flex items-center gap-3">
             {Icon ? (
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                <Icon className="size-5 text-orange-300" />
+                <Icon className="size-5 text-rose-300" />
               </span>
             ) : null}
             <h2 className="font-heading text-2xl font-extrabold tracking-tighter text-zinc-50 sm:text-3xl">
@@ -4348,6 +4451,14 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
   const [uploading, setUploading] = useState(false);
   const canUpload = !readOnly && !saving && !uploading;
 
+  const categorySelectOptions = useMemo(() => {
+    const c = String(form?.category || "").trim();
+    if (c && !CATEGORY_OPTIONS.includes(c)) {
+      return [c, ...CATEGORY_OPTIONS];
+    }
+    return CATEGORY_OPTIONS;
+  }, [form?.category]);
+
   const uploadImages = async (fileList) => {
     const files = Array.from(fileList || []).filter(Boolean);
     if (!files.length) return;
@@ -4435,21 +4546,21 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
               })
             }
             readOnly={readOnly}
-            placeholder="Performance Brake Kit"
+            placeholder="e.g. Hydrating shampoo 300ml"
           />
           <Field
             label="Slug"
             value={form.slug}
             onChange={() => {}}
             readOnly
-            placeholder="performance-brake-kit"
+            placeholder="hydrating-shampoo-300ml"
           />
           <SelectField
             label="Category"
             value={form.category}
             onChange={(v) => setForm((p) => ({ ...p, category: v }))}
             disabled={readOnly}
-            options={CATEGORY_OPTIONS}
+            options={categorySelectOptions}
           />
           <SelectField
             label="Badge"
@@ -4562,7 +4673,7 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
                 readOnly={readOnly}
                 rows={5}
                 placeholder="Full product description for the product page and search."
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
               />
             </label>
           </div>
@@ -4574,7 +4685,7 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
                 checked={Boolean(form.inStock)}
                 onChange={(e) => setForm((p) => ({ ...p, inStock: e.target.checked }))}
                 disabled={readOnly}
-                className="size-4 accent-orange-500"
+                className="size-4 accent-rose-500"
               />
             </label>
           </div>
@@ -4617,7 +4728,7 @@ function Field({ label, value, onChange, readOnly = false, placeholder = "" }) {
         onChange={(e) => onChange?.(e.target.value)}
         readOnly={readOnly}
         placeholder={placeholder}
-        className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30 read-only:opacity-70"
+        className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30 read-only:opacity-70"
       />
     </label>
   );
@@ -4640,7 +4751,7 @@ function SelectField({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}
-        className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+        className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {options.map((opt) => (
           <option key={opt || "__empty__"} value={opt}>
@@ -4863,7 +4974,7 @@ function OrdersTable({
                       </button>
                     ) : (
                       <select
-                        className="h-8 min-w-0 w-full rounded-lg border border-white/10 bg-zinc-950 px-1 text-[10px] font-black uppercase tracking-wider text-zinc-100 outline-none focus:ring-1 focus:ring-orange-500/40"
+                        className="h-8 min-w-0 w-full rounded-lg border border-white/10 bg-zinc-950 px-1 text-[10px] font-black uppercase tracking-wider text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500/40"
                         value={String(o?.status || "pending")}
                         onChange={(e) => onUpdate?.(o?._id, { status: e.target.value })}
                       >
@@ -4940,7 +5051,7 @@ function ReviewEditStars({ value, onChange, disabled }) {
           onMouseEnter={() => {
             if (!disabled) setHover(star);
           }}
-          className="rounded-lg p-0.5 outline-none transition-[transform,opacity] duration-200 hover:scale-110 focus-visible:ring-2 focus-visible:ring-orange-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          className="rounded-lg p-0.5 outline-none transition-[transform,opacity] duration-200 hover:scale-110 focus-visible:ring-2 focus-visible:ring-rose-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
         >
           <Star
             size={22}
@@ -5073,7 +5184,7 @@ function ReviewsTable({
               className={cx(
                 "rounded-4xl border p-4 shadow-sm transition-[box-shadow,background-color,border-color] duration-300 ease-out sm:p-5",
                 isEditing
-                  ? "border-white/20 bg-white/[0.05] ring-2 ring-orange-500/10 shadow-md"
+                  ? "border-white/20 bg-white/[0.05] ring-2 ring-rose-500/10 shadow-md"
                   : "border-white/10 bg-white/[0.03] hover:bg-white/[0.04]",
               )}
             >
@@ -5148,7 +5259,7 @@ function ReviewsTable({
                       value={editComment}
                       onChange={(e) => setEditComment(e.target.value)}
                       disabled={savingId === id}
-                      className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30 disabled:cursor-not-allowed disabled:opacity-70"
                       placeholder="Your feedback..."
                     />
 
@@ -5203,7 +5314,7 @@ function ReviewsTable({
                   {slug ? (
                     <Link
                       href={`/products/${slug}`}
-                      className="inline-flex min-w-0 items-center gap-2 font-bold normal-case tracking-normal text-zinc-200 hover:text-orange-200"
+                      className="inline-flex min-w-0 items-center gap-2 font-bold normal-case tracking-normal text-zinc-200 hover:text-rose-200"
                     >
                       {productThumb}
                       <span className="line-clamp-1">{productName}</span>
@@ -5269,8 +5380,8 @@ function RevenueBars({ orders }) {
             <div
               key={idx}
               className={cx(
-                "flex-1 rounded-t bg-orange-500/20 transition-all hover:bg-orange-500/35",
-                idx === 0 ? "bg-orange-500" : null,
+                "flex-1 rounded-t bg-rose-500/20 transition-all hover:bg-rose-500/35",
+                idx === 0 ? "bg-rose-500" : null,
               )}
               style={{ height: `${Math.round((t / bars.max) * 100)}%` }}
               title={formatCurrency(t)}
@@ -5284,7 +5395,7 @@ function RevenueBars({ orders }) {
       </div>
       <div className="mt-4 flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400">
         <span>RECENT</span>
-        <span className="text-orange-300">PAID</span>
+        <span className="text-rose-300">PAID</span>
       </div>
     </>
   );

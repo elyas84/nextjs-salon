@@ -385,7 +385,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
     return (
       <section className="mx-auto flex min-h-[60vh] w-full max-w-4xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 lg:px-8">
         <div className="surface-panel rounded-3xl p-8">
-          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-orange-300">
+          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-300">
             Checkout
           </p>
           <h1 className="mt-3 text-2xl font-extrabold text-zinc-50 sm:text-3xl">
@@ -397,7 +397,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
           <button
             type="button"
             onClick={() => router.push("/products")}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-orange-500 hover:text-white"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-rose-500 hover:text-white"
           >
             Shop products <ArrowRight className="size-4" />
           </button>
@@ -409,7 +409,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+        <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
           Checkout
         </p>
         <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tighter text-zinc-50 sm:text-4xl">
@@ -436,7 +436,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                   onClick={() => setStep(index)}
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                     active
-                      ? "bg-orange-500 text-zinc-950"
+                      ? "bg-rose-500 text-zinc-950"
                       : complete
                         ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-200"
                         : "border border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
@@ -475,7 +475,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                       name={field.name}
                       value={formData[field.name]}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
                     />
                   </label>
                 ))}
@@ -500,7 +500,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                     key={option.id}
                     className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors ${
                       formData.delivery === option.id
-                        ? "border-orange-500/40 bg-orange-500/10"
+                        ? "border-rose-500/40 bg-rose-500/10"
                         : "border-white/10 bg-white/5 hover:bg-white/10"
                     }`}
                   >
@@ -559,7 +559,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                           className={[
                             "group relative cursor-pointer overflow-hidden rounded-2xl border p-4 transition",
                             active
-                              ? "border-orange-500/50 bg-orange-500/10"
+                              ? "border-rose-500/50 bg-rose-500/10"
                               : "border-white/10 bg-black/20 hover:bg-white/5",
                           ].join(" ")}
                         >
@@ -594,7 +594,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                             </div>
                           </div>
                           {active ? (
-                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-400/80 via-orange-500/60 to-transparent" />
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-rose-400/80 via-rose-500/60 to-transparent" />
                           ) : null}
                         </label>
                       );

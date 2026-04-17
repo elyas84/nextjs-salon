@@ -101,7 +101,7 @@ export default function PlaceOrderClient() {
               : "surface-panel rounded-3xl p-8"
           }
         >
-          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-orange-300">
+          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-300">
             Receipt
           </p>
           <p className="mt-3 text-sm font-semibold text-zinc-50">Loading order…</p>
@@ -129,7 +129,7 @@ export default function PlaceOrderClient() {
               : "surface-panel rounded-3xl p-8"
           }
         >
-          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-orange-300">
+          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-300">
             Receipt
           </p>
           <p className="mt-3 text-sm font-semibold text-zinc-50">No order found</p>
@@ -141,7 +141,7 @@ export default function PlaceOrderClient() {
           </p>
           <Link
             href="/products"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-orange-500 hover:text-white"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-rose-500 hover:text-white"
           >
             Browse parts <ArrowRight className="size-4" />
           </Link>
@@ -185,7 +185,7 @@ export default function PlaceOrderClient() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+              <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                 Order placed
               </p>
               <h1 className="mt-3 font-heading text-2xl font-extrabold tracking-tighter text-zinc-50 sm:mt-4 sm:text-3xl">

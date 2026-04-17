@@ -1,4 +1,5 @@
 import { sendEmail } from "@/lib/mailer";
+import { SALON } from "@/lib/email-templates/salon-email-brand";
 import { bookingRefCode } from "@/lib/booking-ref";
 import { renderBookingConfirmationPdfBuffer } from "@/lib/booking-confirmation-pdf";
 import { formatSlotLabel } from "@/lib/booking-slots";
@@ -43,7 +44,7 @@ const EMAIL_ICONS = {
 function emailDetailRow(iconKey, label, valueHtml, { first = false } = {}) {
   const icon = EMAIL_ICONS[iconKey] || "";
   const mt = first ? "0" : "8";
-  return `<div style="margin-top:${mt}px;display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#334155;line-height:1.65;">
+  return `<div style="margin-top:${mt}px;display:flex;align-items:flex-start;gap:10px;font-size:14px;color:${SALON.text};line-height:1.65;">
     <span style="flex-shrink:0;width:22px;display:flex;align-items:center;justify-content:center;padding-top:1px;">${icon}</span>
     <span><strong>${escapeHtml(label)}:</strong> ${valueHtml}</span>
   </div>`;
@@ -54,7 +55,7 @@ function iconForNotifyFieldKey(key) {
     fullName: "user",
     email: "mail",
     phone: "phone",
-    registrationNumber: "car",
+    registrationNumber: "fileText",
     serviceType: "clipboard",
     preferredDate: "calendar",
     preferredTime: "clock",
@@ -87,31 +88,41 @@ export async function sendBookingConfirmationEmail(booking) {
   const filename = `booking-${ref}.pdf`;
 
   const html = `
-  <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;overflow:hidden;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;">
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#ea580c;">Booking confirmed</p>
-                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:#0f172a;">Hi ${name}</h1>
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.accentBright};">Studio Salon · Appointment</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">Hi ${name}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:22px 24px;">
-                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#334155;">
-                  Your service appointment is <strong>confirmed</strong>. Your reference is
-                  <strong style="color:#0f172a;">#${escapeHtml(ref)}</strong>.
+                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${SALON.textBody};">
+                  Your visit is <strong>confirmed</strong>. Your booking reference is
+                  <strong style="color:${SALON.text};">#${escapeHtml(ref)}</strong>.
                 </p>
-                <div style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;color:#334155;line-height:1.6;">
+                <div style="padding:14px 16px;background:${SALON.panelBg};border:${SALON.panelBorder};border-radius:${SALON.radiusSm};font-size:14px;color:${SALON.text};line-height:1.6;">
                   ${emailDetailRow("calendar", "Date", formatLongDate(booking?.preferredDate), { first: true })}
                   ${emailDetailRow("clock", "Time", timeStr)}
                   ${emailDetailRow("clipboard", "Service", escapeHtml(booking?.serviceType || "—"))}
-                  ${emailDetailRow("car", "Vehicle", escapeHtml(booking?.registrationNumber || "—"))}
+                  ${emailDetailRow("fileText", "Booking reference", escapeHtml(booking?.registrationNumber || "—"))}
                 </div>
-                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-                  A PDF confirmation is attached to this email. Please bring it or your reference number when you arrive.
+                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+                  A PDF summary is attached. Bring it or show your reference when you check in at the salon.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.65;color:${SALON.textMuted};">
+                  <strong style="color:${SALON.accent};">Studio Salon</strong> · Questions? Reply to this email.
                 </p>
               </td>
             </tr>
@@ -123,7 +134,7 @@ export async function sendBookingConfirmationEmail(booking) {
 
   await sendEmail({
     to: email,
-    subject: `Booking confirmed — #${ref}`,
+    subject: `Studio Salon · Booking confirmed (#${ref})`,
     html,
     attachments: [
       {
@@ -157,32 +168,42 @@ export async function sendBookingCompletedEmail(booking) {
   const filename = `booking-${ref}.pdf`;
 
   const html = `
-  <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;overflow:hidden;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;">
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#0284c7;">Booking completed</p>
-                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:#0f172a;">Hi ${name}</h1>
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#0284c7;">Visit completed</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">Hi ${name}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:22px 24px;">
-                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#334155;">
-                  Your workshop visit is marked <strong>completed</strong>. Reference
-                  <strong style="color:#0f172a;">#${escapeHtml(ref)}</strong>.
+                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${SALON.textBody};">
+                  Your appointment is marked <strong>completed</strong>. Reference
+                  <strong style="color:${SALON.text};">#${escapeHtml(ref)}</strong>.
                 </p>
-                <div style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;color:#334155;line-height:1.6;">
+                <div style="padding:14px 16px;background:${SALON.panelBg};border:${SALON.panelBorder};border-radius:${SALON.radiusSm};font-size:14px;color:${SALON.text};line-height:1.6;">
                   ${emailDetailRow("activity", "Status", "Completed", { first: true })}
                   ${emailDetailRow("calendar", "Date", formatLongDate(booking?.preferredDate))}
                   ${emailDetailRow("clock", "Time", timeStr)}
                   ${emailDetailRow("clipboard", "Service", escapeHtml(booking?.serviceType || "—"))}
-                  ${emailDetailRow("car", "Vehicle", escapeHtml(booking?.registrationNumber || "—"))}
+                  ${emailDetailRow("fileText", "Booking reference", escapeHtml(booking?.registrationNumber || "—"))}
                 </div>
-                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-                  An updated PDF summary is attached for your records. Thank you for choosing us.
+                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+                  A PDF summary is attached for your records. Thank you for visiting Studio Salon.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.65;color:${SALON.textMuted};">
+                  <strong style="color:${SALON.accent};">Studio Salon</strong>
                 </p>
               </td>
             </tr>
@@ -194,7 +215,7 @@ export async function sendBookingCompletedEmail(booking) {
 
   await sendEmail({
     to: email,
-    subject: `Booking completed — #${ref}`,
+    subject: `Studio Salon · Visit completed (#${ref})`,
     html,
     attachments: [
       {
@@ -228,32 +249,42 @@ export async function sendBookingCancelledEmail(booking) {
   const filename = `booking-${ref}.pdf`;
 
   const html = `
-  <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;overflow:hidden;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;">
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#e11d48;">Booking cancelled</p>
-                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:#0f172a;">Hi ${name}</h1>
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#e11d48;">Appointment cancelled</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">Hi ${name}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:22px 24px;">
-                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#334155;">
-                  Your service appointment has been <strong>cancelled</strong>. Reference
-                  <strong style="color:#0f172a;">#${escapeHtml(ref)}</strong>.
+                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${SALON.textBody};">
+                  Your appointment has been <strong>cancelled</strong>. Reference
+                  <strong style="color:${SALON.text};">#${escapeHtml(ref)}</strong>.
                 </p>
-                <div style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;color:#334155;line-height:1.6;">
+                <div style="padding:14px 16px;background:${SALON.panelBg};border:${SALON.panelBorder};border-radius:${SALON.radiusSm};font-size:14px;color:${SALON.text};line-height:1.6;">
                   ${emailDetailRow("activity", "Status", "Cancelled", { first: true })}
                   ${emailDetailRow("calendar", "Was scheduled", formatLongDate(booking?.preferredDate))}
                   ${emailDetailRow("clock", "Time", timeStr)}
                   ${emailDetailRow("clipboard", "Service", escapeHtml(booking?.serviceType || "—"))}
-                  ${emailDetailRow("car", "Vehicle", escapeHtml(booking?.registrationNumber || "—"))}
+                  ${emailDetailRow("fileText", "Booking reference", escapeHtml(booking?.registrationNumber || "—"))}
                 </div>
-                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-                  An updated PDF is attached. To book again, visit our website or contact the workshop.
+                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+                  A PDF is attached. To book a new time, use our website or call Studio Salon.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.65;color:${SALON.textMuted};">
+                  <strong style="color:${SALON.accent};">Studio Salon</strong>
                 </p>
               </td>
             </tr>
@@ -265,7 +296,7 @@ export async function sendBookingCancelledEmail(booking) {
 
   await sendEmail({
     to: email,
-    subject: `Booking cancelled — #${ref}`,
+    subject: `Studio Salon · Appointment cancelled (#${ref})`,
     html,
     attachments: [
       {
@@ -281,7 +312,7 @@ const CUSTOMER_BOOKING_NOTIFY_FIELDS = {
   fullName: "Name",
   email: "Email",
   phone: "Phone",
-  registrationNumber: "Vehicle registration",
+  registrationNumber: "Booking reference",
   serviceType: "Service",
   preferredDate: "Preferred date",
   preferredTime: "Preferred time",
@@ -347,45 +378,55 @@ export async function sendBookingUpdatedEmail({ previous, booking, changedKeys }
       const toVal = formatFieldForEmailHtml(key, booking);
       const ic = iconForNotifyFieldKey(key);
       return `<tr>
-        <td style="padding:10px 12px;border:1px solid #e2e8f0;font-size:13px;color:#334155;font-weight:700;vertical-align:middle;">
+        <td style="padding:10px 12px;border:${SALON.panelBorder};font-size:13px;color:${SALON.text};font-weight:700;vertical-align:middle;">
           <span style="display:inline-flex;align-items:center;gap:8px;">
             <span style="line-height:0;flex-shrink:0;">${ic}</span>
             <span>${label}</span>
           </span>
         </td>
-        <td style="padding:10px 12px;border:1px solid #e2e8f0;font-size:13px;color:#94a3b8;text-decoration:line-through;">${fromVal}</td>
-        <td style="padding:10px 12px;border:1px solid #e2e8f0;font-size:13px;color:#0f172a;font-weight:600;">${toVal}</td>
+        <td style="padding:10px 12px;border:${SALON.panelBorder};font-size:13px;color:#94a3b8;text-decoration:line-through;">${fromVal}</td>
+        <td style="padding:10px 12px;border:${SALON.panelBorder};font-size:13px;color:${SALON.text};font-weight:600;">${toVal}</td>
       </tr>`;
     })
     .join("");
 
   const html = `
-  <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;overflow:hidden;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;border-collapse:separate;border-spacing:0;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;">
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#ea580c;">Booking updated</p>
-                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:#0f172a;">Hi ${name}</h1>
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.accentBright};">Studio Salon · Appointment updated</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">Hi ${name}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:22px 24px;">
-                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#334155;">
-                  Your service appointment <strong>#${escapeHtml(ref)}</strong> was updated. Summary of changes:
+                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${SALON.textBody};">
+                  Your booking <strong>#${escapeHtml(ref)}</strong> was updated. Summary of changes:
                 </p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border-radius:12px;overflow:hidden;">
-                  <tr style="background:#f8fafc;">
-                    <th align="left" style="padding:10px 12px;border:1px solid #e2e8f0;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Field</th>
-                    <th align="left" style="padding:10px 12px;border:1px solid #e2e8f0;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Before</th>
-                    <th align="left" style="padding:10px 12px;border:1px solid #e2e8f0;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">After</th>
+                  <tr style="background:${SALON.panelBg};">
+                    <th align="left" style="padding:10px 12px;border:${SALON.panelBorder};font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${SALON.textMuted};">Field</th>
+                    <th align="left" style="padding:10px 12px;border:${SALON.panelBorder};font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${SALON.textMuted};">Before</th>
+                    <th align="left" style="padding:10px 12px;border:${SALON.panelBorder};font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${SALON.textMuted};">After</th>
                   </tr>
                   ${rows}
                 </table>
-                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-                  An updated PDF is attached reflecting your booking as it stands now. If anything looks wrong, reply to this email or contact the workshop.
+                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+                  An updated PDF is attached. If something looks wrong, reply to this email or call the salon.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.65;color:${SALON.textMuted};">
+                  <strong style="color:${SALON.accent};">Studio Salon</strong>
                 </p>
               </td>
             </tr>
@@ -397,7 +438,7 @@ export async function sendBookingUpdatedEmail({ previous, booking, changedKeys }
 
   await sendEmail({
     to: email,
-    subject: `Booking updated — #${ref}`,
+    subject: `Studio Salon · Booking updated (#${ref})`,
     html,
     attachments: [
       {
@@ -417,19 +458,20 @@ export async function sendBookingUpdatedEmail({ previous, booking, changedKeys }
     prevEmail !== email
   ) {
     const noticeHtml = `
-    <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+    <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
         <tr>
           <td align="center">
-            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;padding:22px 24px;">
-              <tr><td>
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#64748b;">Booking email changed</p>
-                <p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:#334155;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
+              <tr><td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td></tr>
+              <tr><td style="padding:22px 24px;">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.textMuted};">Studio Salon · Booking email updated</p>
+                <p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:${SALON.textBody};">
                   The contact email for booking <strong>#${escapeHtml(ref)}</strong> was changed from this address to
                   <strong>${escapeHtml(email)}</strong>. Future updates will go to the new address.
                 </p>
-                <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-                  If you did not request this, please contact the workshop immediately.
+                <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+                  If you did not request this, contact Studio Salon right away.
                 </p>
               </td></tr>
             </table>
@@ -439,7 +481,7 @@ export async function sendBookingUpdatedEmail({ previous, booking, changedKeys }
     </div>`;
     void sendEmail({
       to: prevEmail,
-      subject: `Booking #${ref} — email address updated`,
+      subject: `Studio Salon · Booking #${ref} — email updated`,
       html: noticeHtml,
     }).catch((err) =>
       console.error("Booking previous-email notice failed:", err),
@@ -469,29 +511,39 @@ export async function sendBookingDeletedEmail(booking) {
   const filename = `booking-${ref}.pdf`;
 
   const html = `
-  <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;overflow:hidden;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;">
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#64748b;">Booking removed</p>
-                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:#0f172a;">Hi ${name}</h1>
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.textMuted};">Booking removed</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">Hi ${name}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:22px 24px;">
-                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#334155;">
-                  Your service booking <strong>#${escapeHtml(ref)}</strong> has been removed from our active schedule and is no longer on file in our system.
+                <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:${SALON.textBody};">
+                  Your booking <strong>#${escapeHtml(ref)}</strong> has been removed from our schedule and is no longer on file.
                 </p>
-                <div style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;color:#334155;line-height:1.6;">
+                <div style="padding:14px 16px;background:${SALON.panelBg};border:${SALON.panelBorder};border-radius:${SALON.radiusSm};font-size:14px;color:${SALON.text};line-height:1.6;">
                   ${emailDetailRow("calendar", "Was scheduled", formatLongDate(booking?.preferredDate), { first: true })}
                   ${emailDetailRow("clock", "Time", timeStr)}
                   ${emailDetailRow("clipboard", "Service", escapeHtml(booking?.serviceType || "—"))}
                 </div>
-                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-                  A PDF snapshot is attached for your records. To book again, visit our website or contact the workshop.
+                <p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+                  A PDF snapshot is attached. To book again, use our website or call Studio Salon.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.65;color:${SALON.textMuted};">
+                  <strong style="color:${SALON.accent};">Studio Salon</strong>
                 </p>
               </td>
             </tr>
@@ -503,7 +555,7 @@ export async function sendBookingDeletedEmail(booking) {
 
   await sendEmail({
     to: email,
-    subject: `Booking removed — #${ref}`,
+    subject: `Studio Salon · Booking removed (#${ref})`,
     html,
     attachments: [
       {
@@ -538,7 +590,7 @@ function bookingAdminPanelUrl() {
 }
 
 /**
- * Notifies workshop admin(s) when a booking is confirmed.
+ * Notifies salon admin(s) when a booking is confirmed.
  * Set BOOKING_ADMIN_EMAIL (comma-separated for multiple inboxes).
  */
 export async function sendBookingAdminNotificationEmail(booking) {
@@ -559,42 +611,52 @@ export async function sendBookingAdminNotificationEmail(booking) {
     : "—";
   const adminUrl = bookingAdminPanelUrl();
   const linkBlock = adminUrl
-    ? `<p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:#64748b;">
-        <a href="${escapeHtml(adminUrl)}" style="color:#ea580c;font-weight:600;">Open admin</a>
+    ? `<p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${SALON.textMuted};">
+        <a href="${escapeHtml(adminUrl)}" style="color:${SALON.accentBright};font-weight:600;">Open salon admin</a>
       </p>`
     : "";
 
   const html = `
-  <div style="margin:0;padding:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:28px 16px;">
+  <div style="margin:0;padding:0;background:${SALON.outerBg};font-family:${SALON.fontStack};">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:${SALON.innerPad};">
       <tr>
         <td align="center">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:1px solid #e2e8f0;border-radius:16px;background:#ffffff;overflow:hidden;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;border-collapse:separate;border-spacing:0;border:${SALON.cardBorder};border-radius:16px;background:${SALON.cardBg};overflow:hidden;box-shadow:${SALON.cardShadow};">
             <tr>
-              <td style="padding:22px 24px;border-bottom:1px solid #e2e8f0;">
-                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:#0f172a;">Admin · New confirmed booking</p>
-                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:#0f172a;">#${escapeHtml(ref)}</h1>
+              <td style="height:4px;background:${SALON.barGradient};line-height:0;font-size:0;">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="padding:22px 24px;border-bottom:${SALON.headBorderBottom};">
+                <p style="margin:0;font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${SALON.accent};">Studio Salon · Admin</p>
+                <h1 style="margin:10px 0 0;font-size:22px;line-height:1.25;color:${SALON.text};">Confirmed booking · #${escapeHtml(ref)}</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:22px 24px;">
-                <div style="padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;color:#334155;line-height:1.65;">
-                  ${emailDetailRow("user", "Customer", escapeHtml(booking?.fullName || "—"), { first: true })}
+                <div style="padding:14px 16px;background:${SALON.panelBg};border:${SALON.panelBorder};border-radius:${SALON.radiusSm};font-size:14px;color:${SALON.text};line-height:1.65;">
+                  ${emailDetailRow("user", "Guest", escapeHtml(booking?.fullName || "—"), { first: true })}
                   ${emailDetailRow("mail", "Email", escapeHtml(booking?.email || "—"))}
                   ${emailDetailRow("phone", "Phone", escapeHtml(booking?.phone || "—"))}
-                  <div style="margin-top:10px;padding-top:12px;border-top:1px solid #e2e8f0;">
+                  <div style="margin-top:10px;padding-top:12px;border-top:${SALON.panelBorder};">
                     ${emailDetailRow("calendar", "Date", formatLongDate(booking?.preferredDate), { first: true })}
                     ${emailDetailRow("clock", "Time", timeStr)}
                     ${emailDetailRow("clipboard", "Service", escapeHtml(booking?.serviceType || "—"))}
-                    ${emailDetailRow("car", "Registration", escapeHtml(booking?.registrationNumber || "—"))}
+                    ${emailDetailRow("fileText", "Booking reference", escapeHtml(booking?.registrationNumber || "—"))}
                   </div>
                   ${
                     booking?.notes
-                      ? `<div style="margin-top:10px;padding-top:12px;border-top:1px solid #e2e8f0;">${emailDetailRow("fileText", "Customer notes", escapeHtml(booking.notes).replace(/\r?\n/g, "<br/>"), { first: true })}</div>`
+                      ? `<div style="margin-top:10px;padding-top:12px;border-top:${SALON.panelBorder};">${emailDetailRow("fileText", "Guest notes", escapeHtml(booking.notes).replace(/\r?\n/g, "<br/>"), { first: true })}</div>`
                       : ""
                   }
                 </div>
                 ${linkBlock}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;border-top:${SALON.footBorderTop};background:${SALON.footBg};">
+                <p style="margin:0;font-size:12px;line-height:1.65;color:${SALON.textMuted};">
+                  Salon booking notification · not a retail order confirmation
+                </p>
               </td>
             </tr>
           </table>
@@ -606,7 +668,7 @@ export async function sendBookingAdminNotificationEmail(booking) {
   const subjectName = String(booking?.fullName || "Customer").trim().slice(0, 80);
   await sendEmail({
     to: recipients.join(", "),
-    subject: `[Admin] Booking confirmed — #${ref} · ${subjectName}`,
+    subject: `[Studio Salon] Confirmed · #${ref} · ${subjectName}`,
     html,
   });
 }

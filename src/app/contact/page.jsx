@@ -3,7 +3,7 @@ import ContactClient from "./ContactClient";
 export const metadata = {
   title: "Contact",
   description:
-    "Reach FixPro: ask about services, orders, or anything else—we reply by email.",
+    "Message Studio Salon about appointments, retail, services, or feedback — we reply by email.",
 };
 
 export default function ContactPage() {

@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Space Grotesk", sans-serif;
-  --font-body: "Inter", sans-serif;
+  --font-heading: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
 }
 
 /* Base styles to apply the fonts automatically */
@@ -66,7 +66,7 @@
   }
 
   ::selection {
-    background: rgba(249, 115, 22, 0.25); /* orange-500 */
+    background: rgba(244, 114, 182, 0.28); /* pink-400 */
     color: #fafafa;
   }
 }
@@ -78,11 +78,11 @@
 }
 
 .kinetic-gradient {
-  background: linear-gradient(135deg, #ffb693 0%, #ff6b00 100%);
+  background: linear-gradient(135deg, #fce7f3 0%, #f472b6 42%, #be185d 100%);
 }
 
 .kinetic-gradient-text {
-  background: linear-gradient(135deg, #ffb693 0%, #ff6b00 100%);
+  background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 45%, #db2777 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -95,6 +95,17 @@
     0 1px 2px rgba(0, 0, 0, 0.25),
     0 20px 60px rgba(0, 0, 0, 0.25);
   backdrop-filter: saturate(140%) blur(10px);
+}
+
+/* Marketing shell: soft depth without hard banding (RootChrome <main> on public routes) */
+.public-page {
+  position: relative;
+  isolation: isolate;
+  background-color: #09090b;
+  background-image:
+    radial-gradient(ellipse 125% 70% at 50% -18%, rgba(190, 24, 93, 0.1), transparent 52%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(244, 114, 182, 0.06), transparent 50%),
+    radial-gradient(ellipse 60% 45% at 0% 30%, rgba(244, 114, 182, 0.04), transparent 48%);
 }
 
 .price-slider {
@@ -115,9 +126,9 @@
   height: 1rem;
   margin-top: -0.325rem;
   border-radius: 9999px;
-  background: #22d3ee;
-  border: 2px solid #0f172a;
-  box-shadow: 0 0 0 6px rgba(34, 211, 238, 0.12);
+  background: #f59e0b;
+  border: 2px solid #1c1917;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.2);
   cursor: pointer;
 }
 
@@ -130,9 +141,9 @@
   width: 1rem;
   height: 1rem;
   border-radius: 9999px;
-  background: #22d3ee;
-  border: 2px solid #0f172a;
-  box-shadow: 0 0 0 6px rgba(34, 211, 238, 0.12);
+  background: #f59e0b;
+  border: 2px solid #1c1917;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.2);
   cursor: pointer;
 }
 

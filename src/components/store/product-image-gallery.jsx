@@ -12,7 +12,7 @@ export default function ProductImageGallery({ images = [], alt = "Product image"
 
   if (!images.length) {
     return (
-      <div className="flex aspect-square max-h-[min(24rem,65vh)] items-center justify-center gap-2 text-xs text-zinc-500">
+      <div className="flex aspect-square max-h-[min(24rem,65vh)] items-center justify-center gap-2 text-xs text-stone-500">
         <ImageOff className="size-4" />
         No product image
       </div>
@@ -40,10 +40,10 @@ export default function ProductImageGallery({ images = [], alt = "Product image"
                 aria-selected={active}
                 onClick={() => setSelectedImage(src)}
                 className={[
-                  "relative aspect-square w-[5.25rem] shrink-0 overflow-hidden rounded-xl border-2 bg-zinc-950/60 transition sm:w-28 lg:w-full",
+                  "relative aspect-square w-[5.25rem] shrink-0 overflow-hidden rounded-xl border-2 bg-[#0c0b09]/90 transition sm:w-28 lg:w-full",
                   active
-                    ? "border-orange-500 shadow-[0_0_0_1px_rgba(249,115,22,0.25)]"
-                    : "border-white/20 hover:border-white/40",
+                    ? "border-amber-500 shadow-[0_0_0_1px_rgba(245,158,11,0.28)]"
+                    : "border-stone-700 hover:border-stone-500",
                 ].join(" ")}
                 aria-label={`Image ${index + 1}`}
               >

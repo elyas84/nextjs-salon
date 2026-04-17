@@ -22,24 +22,24 @@ const footerColumns = [
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-white/10 bg-zinc-950">
+    <footer className="border-t border-white/[0.06] bg-[#070708]/90 backdrop-blur-sm">
       <div className="mx-auto w-full max-w-screen-2xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <span className="inline-flex items-center font-heading text-xl font-extrabold tracking-tight text-zinc-100 sm:text-2xl">
               <span className="tracking-tight leading-none">
-                Fix<span className="text-orange-400">Pro</span>
+                Studio <span className="text-rose-400">Salon</span>
               </span>
             </span>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-zinc-500">
-              Engineering excellence for the modern enthusiast. Premium
-              maintenance, track preparation, and luxury restoration.
+              A calm space for hair, color, and care. Book online, visit the
+              studio, and take home products we trust.
             </p>
           </div>
 
           {footerColumns.map((col) => (
             <div key={col.title}>
-              <h4 className="text-xs font-extrabold uppercase tracking-widest text-orange-500">
+              <h4 className="text-xs font-extrabold uppercase tracking-widest text-rose-500">
                 {col.title}
               </h4>
               <ul className="mt-6 space-y-4">
@@ -58,7 +58,7 @@ export default function SiteFooter() {
           ))}
 
           <div>
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-orange-500">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-rose-500">
               Connect
             </h4>
             <div className="mt-6 flex gap-3">
@@ -66,7 +66,7 @@ export default function SiteFooter() {
                 <button
                   key={label}
                   type="button"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-300 transition-colors hover:bg-orange-500 hover:text-white"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-300 transition-colors hover:bg-rose-500 hover:text-white"
                   aria-label={label}
                 >
                   <span className="text-sm font-black">{label.slice(0, 1)}</span>
@@ -74,11 +74,11 @@ export default function SiteFooter() {
               ))}
             </div>
             <div className="mt-6 flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded border border-orange-500/30 bg-orange-500/10 text-[10px] font-black text-orange-300">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded border border-rose-500/30 bg-rose-500/10 text-[10px] font-black text-rose-300">
                 ⌁
               </span>
               <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-                STUTTGART // TOKYO // LOS ANGELES
+                OPEN TUE–SAT · BY APPOINTMENT
               </span>
             </div>
           </div>
@@ -86,14 +86,14 @@ export default function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 md:flex-row">
           <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            © {new Date().getFullYear()} FixPro. ENGINEERED FOR PERFORMANCE.
+            © {new Date().getFullYear()} Studio Salon. CRAFTED WITH CARE.
           </span>
           <div className="flex gap-6">
             <span className="text-xs font-semibold uppercase tracking-widest text-zinc-700">
-              ISO 9001 CERTIFIED
+              LICENSED STYLISTS
             </span>
             <span className="text-xs font-semibold uppercase tracking-widest text-zinc-700">
-              VERSION 4.2.0
+              BOOK ONLINE 24/7
             </span>
           </div>
         </div>

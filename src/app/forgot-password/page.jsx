@@ -55,9 +55,9 @@ export default function ForgotPasswordPage() {
           <div className="mb-10">
             <Link
               href="/"
-              className="font-heading text-2xl font-black italic tracking-tighter text-orange-500"
+              className="font-heading text-2xl font-black italic tracking-tighter text-rose-500"
             >
-              FixPro
+              Studio Salon
             </Link>
             <div className="mt-8 flex flex-col gap-2">
               <h1 className="font-heading text-4xl font-extrabold uppercase leading-none tracking-tight text-white md:text-5xl">
@@ -74,7 +74,7 @@ export default function ForgotPasswordPage() {
             <div className="group space-y-2">
               <label
                 htmlFor="email"
-                className="block text-xs font-extrabold uppercase tracking-wider text-zinc-300 transition-colors group-focus-within:text-orange-300"
+                className="block text-xs font-extrabold uppercase tracking-wider text-zinc-300 transition-colors group-focus-within:text-rose-300"
               >
                 Registered Email
               </label>
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@precision.com"
-                className="w-full rounded-md border-b-2 border-transparent bg-zinc-800 px-4 py-3.5 text-sm text-zinc-50 placeholder:text-zinc-500 outline-none transition-all focus:border-orange-500 focus:ring-0"
+                className="w-full rounded-md border-b-2 border-transparent bg-zinc-800 px-4 py-3.5 text-sm text-zinc-50 placeholder:text-zinc-500 outline-none transition-all focus:border-rose-500 focus:ring-0"
               />
             </div>
 
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="kinetic-gradient group inline-flex w-full items-center justify-center gap-2 rounded-xl py-4 font-heading text-sm font-bold uppercase tracking-tight text-zinc-950 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,107,0,0.4)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="kinetic-gradient group inline-flex w-full items-center justify-center gap-2 rounded-xl py-4 font-heading text-sm font-bold uppercase tracking-tight text-zinc-950 transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,114,182,0.35)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Initializing..." : "Initialize recovery"}
                 {!loading ? (
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
               <div className="flex items-center justify-center">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-300 transition-colors duration-300 hover:text-orange-300"
+                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-300 transition-colors duration-300 hover:text-rose-300"
                 >
                   <span aria-hidden>←</span>
                   Back to login

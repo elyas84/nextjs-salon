@@ -13,11 +13,11 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
   const showCard3Cta = Boolean(ks.card3.ctaLabel && ks.card3.ctaHref);
 
   return (
-    <section className="bg-black py-20 sm:py-24 lg:py-32">
+    <section className="border-y border-white/[0.04] bg-zinc-950/25 py-20 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 flex flex-col gap-6 sm:mb-16 md:flex-row md:items-end md:justify-between">
           <div>
-            <span className="block text-xs font-extrabold uppercase tracking-[0.25em] text-orange-200/90">
+            <span className="block text-xs font-extrabold uppercase tracking-[0.25em] text-rose-200/90">
               {ks.eyebrow}
             </span>
             <h2 className="mt-4 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
@@ -43,11 +43,11 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
             {ks.card1.showImage ? (
               <>
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/95 via-zinc-950/65 to-zinc-950/30" />
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(249,115,22,0.2),transparent_55%)] opacity-80" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(244,114,182,0.2),transparent_55%)] opacity-80" />
               </>
             ) : (
               <>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(249,115,22,0.18),transparent_55%)] opacity-80" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(244,114,182,0.18),transparent_55%)] opacity-80" />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 to-transparent" />
               </>
             )}
@@ -60,7 +60,7 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
               </p>
               <HeroCtaLink
                 href={ks.card1.ctaHref}
-                className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold uppercase tracking-wide text-orange-300 transition group-hover:gap-4"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold uppercase tracking-wide text-rose-300 transition group-hover:gap-4"
               >
                 {ks.card1.ctaLabel} <span aria-hidden>→</span>
               </HeroCtaLink>
@@ -80,12 +80,12 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
             {ks.card2.showImage ? (
               <>
                 <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/45 via-zinc-950/80 to-zinc-950" />
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,115,22,0.12),transparent_50%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,114,182,0.12),transparent_50%)]" />
               </>
             ) : null}
             <div className="relative z-10 flex h-full flex-col justify-between p-6 sm:p-10">
               <div>
-                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-orange-500/20 bg-orange-500/10 text-xs font-black text-orange-200">
+                <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-500/10 text-xs font-black text-rose-200">
                   {ks.card2.iconLabel}
                 </div>
                 <h3 className="font-heading text-xl font-extrabold text-zinc-50 sm:text-2xl">
@@ -125,10 +125,10 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
             {ks.card3.showImage ? (
               <>
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/95 via-zinc-950/70 to-zinc-950/35" />
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_25%,rgba(249,115,22,0.16),transparent_55%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_25%,rgba(244,114,182,0.16),transparent_55%)]" />
               </>
             ) : (
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(249,115,22,0.12),transparent_55%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(244,114,182,0.12),transparent_55%)]" />
             )}
             <div className="relative z-10 flex h-full flex-col justify-between p-6 sm:p-10">
               <div>
@@ -142,13 +142,13 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
               {showCard3Cta ? (
                 <HeroCtaLink
                   href={ks.card3.ctaHref}
-                  className="mt-8 inline-flex items-center gap-2 text-sm font-extrabold text-orange-300 transition hover:gap-3"
+                  className="mt-8 inline-flex items-center gap-2 text-sm font-extrabold text-rose-300 transition hover:gap-3"
                 >
                   {ks.card3.ctaLabel} <span aria-hidden>→</span>
                 </HeroCtaLink>
               ) : (
                 <div
-                  className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-lg border-2 border-orange-500 text-lg font-light text-orange-300"
+                  className="mt-8 inline-flex h-12 w-12 items-center justify-center rounded-lg border-2 border-rose-500 text-lg font-light text-rose-300"
                   aria-hidden
                 >
                   +
@@ -169,7 +169,7 @@ export default function SiteKeyServicesSection({ settings, variant = "home" }) {
                 </p>
                 <HeroCtaLink
                   href={ks.card4.ctaHref}
-                  className="mt-8 inline-flex items-center justify-center rounded-md bg-white px-6 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 transition hover:bg-orange-500 hover:text-white"
+                  className="mt-8 inline-flex items-center justify-center rounded-md bg-white px-6 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 transition hover:bg-rose-500 hover:text-white"
                 >
                   {ks.card4.ctaLabel}
                 </HeroCtaLink>

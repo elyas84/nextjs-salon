@@ -4,25 +4,25 @@
  */
 
 export const SITE_HERO_DEFAULTS = {
-  badgeText: "Performance Engineered",
-  titleLine1: "VELOCITY",
-  titleLine2: "DEFINED.",
+  badgeText: "Now booking",
+  titleLine1: "YOUR LOOK,",
+  titleLine2: "REFINED.",
   description:
-    "Beyond standard maintenance. Precision diagnostics, performance-first service, and track-ready upgrades for drivers who won't settle.",
-  primaryCtaLabel: "Book a service",
+    "Cuts, color, and treatments in a calm studio. Book online, shop curated care, and leave feeling like yourself—only fresher.",
+  primaryCtaLabel: "Book appointment",
   primaryCtaHref: "/book-a-service",
-  secondaryCtaLabel: "Shop parts",
+  secondaryCtaLabel: "Shop retail",
   secondaryCtaHref: "/products",
 };
 
 /** Defaults when `aboutHero*` fields are empty (`/about`). */
 export const ABOUT_HERO_DEFAULTS = {
-  badgeText: "Engineered for Performance",
-  titleLine1: "THE PURSUIT OF",
-  titleLine2: "PERFECTION",
+  badgeText: "Our studio",
+  titleLine1: "CRAFT,",
+  titleLine2: "CARE, CALM",
   description:
-    "At Kinetic Precision, we don't just repair vehicles. We restore the soul of high-performance machinery through technical mastery and uncompromising standards.",
-  primaryCtaLabel: "Booking",
+    "At Studio Salon we listen first—then cut, color, and finish with intention. Expect thoughtful consultation, honest timing, and a space that feels as good as your hair looks.",
+  primaryCtaLabel: "Book now",
   primaryCtaHref: "/book-a-service",
   secondaryCtaLabel: "Services",
   secondaryCtaHref: "/services",

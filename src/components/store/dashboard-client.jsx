@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import {
   ArrowRight,
   CalendarDays,
-  Car,
+  Tag,
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
@@ -37,7 +37,6 @@ import { bookingRefCode } from "@/lib/booking-ref";
 import { formatSlotLabel } from "@/lib/booking-slots";
 import { formatLastLogin } from "@/lib/format-last-login";
 import { formatCurrency } from "@/lib/store/cart";
-import { formatVehicleRegistration } from "@/lib/vehicle-registration";
 import Image from "next/image";
 
 function cx(...parts) {
@@ -850,8 +849,8 @@ export default function DashboardClient() {
                   className={cx(
                     "flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm transition-all duration-300",
                     active
-                      ? "border-r-2 border-orange-500 bg-zinc-900 font-bold text-orange-400"
-                      : "text-zinc-300 hover:bg-zinc-900 hover:text-orange-300",
+                      ? "border-r-2 border-rose-500 bg-zinc-900 font-bold text-rose-400"
+                      : "text-zinc-300 hover:bg-zinc-900 hover:text-rose-300",
                   )}
                 >
                   <span className="flex min-w-0 items-center gap-3">
@@ -861,11 +860,11 @@ export default function DashboardClient() {
                     </span>
                   </span>
                   {active ? (
-                    <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-orange-400/80">
+                    <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-rose-400/80">
                       Active
                     </span>
                   ) : badgeCount > 0 ? (
-                    <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                    <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
                       {badgeCount > 9 ? "9+" : badgeCount}
                     </span>
                   ) : null}
@@ -931,14 +930,14 @@ export default function DashboardClient() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-3.5">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-orange-200 shadow-sm">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-rose-200 shadow-sm">
                       <span className="text-sm font-black" aria-hidden>
-                        FP
+                        SS
                       </span>
                     </div>
                     <div className="min-w-0 py-0.5">
                       <p className="truncate font-heading text-lg font-extrabold tracking-tight text-zinc-50">
-                        FixPro
+                        Studio Salon
                       </p>
                       <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">
                         Client dashboard
@@ -997,7 +996,7 @@ export default function DashboardClient() {
                         className={cx(
                           "group relative flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition duration-200",
                           active
-                            ? "border-orange-500/35 bg-gradient-to-r from-orange-500/15 via-orange-500/10 to-white/[0.02] text-orange-50"
+                            ? "border-rose-500/35 bg-gradient-to-r from-rose-500/15 via-rose-500/10 to-white/[0.02] text-rose-50"
                             : "border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/5",
                         )}
                       >
@@ -1006,7 +1005,7 @@ export default function DashboardClient() {
                             className={cx(
                               "inline-flex size-9 shrink-0 items-center justify-center rounded-xl border",
                               active
-                                ? "border-orange-500/35 bg-orange-500/15 text-orange-200"
+                                ? "border-rose-500/35 bg-rose-500/15 text-rose-200"
                                 : "border-white/10 bg-white/5 text-zinc-300 group-hover:bg-white/10",
                             )}
                             aria-hidden
@@ -1019,13 +1018,13 @@ export default function DashboardClient() {
                         </span>
                         <span className="flex shrink-0 items-center gap-2">
                           {badgeCount > 0 ? (
-                            <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                            <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
                               {badgeCount > 9 ? "9+" : badgeCount}
                             </span>
                           ) : null}
                           {active ? (
                             <span
-                              className="size-2 shrink-0 rounded-full bg-orange-500"
+                              className="size-2 shrink-0 rounded-full bg-rose-500"
                               aria-hidden
                             />
                           ) : null}
@@ -1065,12 +1064,12 @@ export default function DashboardClient() {
             <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               {/* 1. Hero Welcome Section */}
               <div className="surface-panel relative overflow-hidden rounded-[2.5rem] p-8 lg:p-12">
-                <div className="absolute -right-20 -top-20 size-80 rounded-full bg-orange-500/10 blur-[100px]" />
+                <div className="absolute -right-20 -top-20 size-80 rounded-full bg-rose-500/10 blur-[100px]" />
 
                 <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-2xl">
                     <div className="flex flex-wrap items-center gap-3">
-                      <span className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                      <span className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                         Client account
                       </span>
                       <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold text-zinc-200 shadow-sm">
@@ -1197,7 +1196,7 @@ export default function DashboardClient() {
               {/* Header Section */}
               <div className="surface-panel flex flex-col gap-2 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                     Order History
                   </p>
                   <h2 className="text-xl font-extrabold text-zinc-50">
@@ -1341,7 +1340,7 @@ export default function DashboardClient() {
                               <div className="relative pt-2">
                                 <div className="absolute top-1.25 left-0 h-0.5 w-full bg-white/10" />
                                 <div
-                                  className="absolute top-1.25 left-0 h-0.5 bg-orange-500 transition-all duration-1000"
+                                  className="absolute top-1.25 left-0 h-0.5 bg-rose-500 transition-all duration-1000"
                                   style={{
                                     width: `${(currentTrackingIndex / (TRACKING_STEPS.length - 1)) * 100}%`,
                                   }}
@@ -1358,7 +1357,7 @@ export default function DashboardClient() {
                                         className="flex flex-col items-center"
                                       >
                                         <div
-                                          className={`z-10 size-2.5 rounded-full border-2 transition-all duration-500 ${isDone ? "border-orange-500 bg-zinc-950 scale-110" : "border-white/20 bg-zinc-950"} ${isCurrent ? "ring-4 ring-orange-500/15" : ""}`}
+                                          className={`z-10 size-2.5 rounded-full border-2 transition-all duration-500 ${isDone ? "border-rose-500 bg-zinc-950 scale-110" : "border-white/20 bg-zinc-950"} ${isCurrent ? "ring-4 ring-rose-500/15" : ""}`}
                                         />
                                         <span
                                           className={`mt-3 text-[10px] font-semibold uppercase tracking-tight ${isDone ? "text-zinc-50" : "text-zinc-500"}`}
@@ -1377,7 +1376,7 @@ export default function DashboardClient() {
                         {/* 3. Footer Summary */}
                         <div className="flex flex-col gap-4 rounded-b-4xl border-t border-white/10 bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                           <div className="flex items-center gap-2">
-                            <div className="size-1.5 rounded-full bg-orange-500/70" />
+                            <div className="size-1.5 rounded-full bg-rose-500/70" />
                             <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">
                               {order.delivery === "express"
                                 ? "Express Delivery"
@@ -1412,7 +1411,7 @@ export default function DashboardClient() {
             <section className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-6">
               <div className="surface-panel flex flex-col gap-2 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                     Workshop
                   </p>
                   <h2 className="text-xl font-extrabold text-zinc-50">
@@ -1469,8 +1468,8 @@ export default function DashboardClient() {
                             </span>
                             {b.registrationNumber ? (
                               <span className="inline-flex items-center gap-1.5 font-medium text-zinc-300">
-                                <Car className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
-                                {formatVehicleRegistration(b.registrationNumber)}
+                                <Tag className="size-3.5 shrink-0 text-zinc-500" aria-hidden />
+                                {String(b.registrationNumber).trim()}
                               </span>
                             ) : null}
                           </p>
@@ -1581,7 +1580,7 @@ export default function DashboardClient() {
                     </p>
                     <Link
                       href="/book-a-service"
-                      className="mt-6 text-sm font-semibold text-orange-400 underline-offset-2 hover:underline"
+                      className="mt-6 text-sm font-semibold text-rose-400 underline-offset-2 hover:underline"
                     >
                       Schedule a service
                     </Link>
@@ -1596,7 +1595,7 @@ export default function DashboardClient() {
               {/* Header */}
               <div className="surface-panel flex flex-col gap-3 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                     Feedback
                   </p>
                   <h2 className="text-xl font-extrabold text-zinc-50">
@@ -1619,7 +1618,7 @@ export default function DashboardClient() {
                         ref={isEditing ? editingReviewCardRef : undefined}
                         className={`group rounded-4xl border shadow-sm transition-[box-shadow,background-color,border-color] duration-300 ease-out ${
                           isEditing
-                            ? "border-white/20 bg-white/7 ring-2 ring-orange-500/10 shadow-md"
+                            ? "border-white/20 bg-white/7 ring-2 ring-rose-500/10 shadow-md"
                             : "border-white/10 bg-white/5 hover:bg-white/7"
                         }`}
                       >
@@ -1699,7 +1698,7 @@ export default function DashboardClient() {
                                 value={editComment}
                                 onChange={(e) => setEditComment(e.target.value)}
                                 disabled={savingReviewId === review._id}
-                                className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30 disabled:cursor-not-allowed disabled:opacity-70"
+                                className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30 disabled:cursor-not-allowed disabled:opacity-70"
                                 placeholder="Your feedback..."
                               />
 
@@ -1761,7 +1760,7 @@ export default function DashboardClient() {
                 onSubmit={updateProfile}
                 className="surface-panel rounded-4xl p-6 sm:p-8"
               >
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                   Profile
                 </p>
                 <h2 className="mt-2 font-heading text-2xl font-extrabold tracking-tighter text-zinc-50">
@@ -1776,7 +1775,7 @@ export default function DashboardClient() {
                     <input
                       value={profileName}
                       onChange={(event) => setProfileName(event.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
                     />
                   </label>
 
@@ -1788,7 +1787,7 @@ export default function DashboardClient() {
                       type="email"
                       value={profileEmail}
                       onChange={(event) => setProfileEmail(event.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-orange-500/30"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
                     />
                   </label>
 
@@ -1807,7 +1806,7 @@ export default function DashboardClient() {
                             setCurrentPassword(event.target.value)
                           }
                           autoComplete="current-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-orange-500/30"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
                         />
                         <button
                           type="button"
@@ -1842,7 +1841,7 @@ export default function DashboardClient() {
                           value={newPassword}
                           onChange={(event) => setNewPassword(event.target.value)}
                           autoComplete="new-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-orange-500/30"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
                         />
                         <button
                           type="button"
@@ -1883,7 +1882,7 @@ export default function DashboardClient() {
                           setConfirmPassword(event.target.value)
                         }
                         autoComplete="new-password"
-                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-orange-500/30"
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
                       />
                       <button
                         type="button"
@@ -1931,7 +1930,7 @@ export default function DashboardClient() {
 
               <aside className="space-y-6">
                 <section className="surface-panel rounded-4xl p-5">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                     Account notes
                   </p>
                   <p className="mt-3 text-sm leading-6 text-zinc-300">
@@ -2092,7 +2091,7 @@ export default function DashboardClient() {
                 <X className="size-4" />
               </div>
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-orange-300">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
                   Confirm logout
                 </p>
                 <h3 className="mt-2 text-xl font-extrabold text-zinc-50">
