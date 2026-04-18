@@ -4575,7 +4575,10 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
     mode === "create" ? "Create product" : mode === "edit" ? "Edit product" : "Product details";
   const gallery = Array.isArray(form.gallery) ? form.gallery : [];
   const [uploading, setUploading] = useState(false);
+  const [galleryUrlDraft, setGalleryUrlDraft] = useState("");
   const canUpload = !readOnly && !saving && !uploading;
+  const canAddUrl =
+    canUpload && String(galleryUrlDraft || "").trim().length > 0;
 
   const categorySelectOptions = useMemo(() => {
     const c = String(form?.category || "").trim();
@@ -4623,6 +4626,38 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
     }
   };
 
+  const addGalleryImageByUrl = () => {
+    const raw = String(galleryUrlDraft || "").trim();
+    if (!raw) {
+      toast.error("Enter an image URL.");
+      return;
+    }
+    let normalized;
+    try {
+      const withProto = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+      const u = new URL(withProto);
+      if (u.protocol !== "http:" && u.protocol !== "https:") {
+        toast.error("URL must use http:// or https://");
+        return;
+      }
+      normalized = u.href;
+    } catch {
+      toast.error("That doesn’t look like a valid URL.");
+      return;
+    }
+    const existing = Array.isArray(form.gallery) ? form.gallery : [];
+    if (existing.some((u) => String(u).trim() === normalized)) {
+      toast.error("That image is already in the gallery.");
+      return;
+    }
+    setForm((p) => ({
+      ...p,
+      gallery: [...(Array.isArray(p.gallery) ? p.gallery : []), normalized],
+    }));
+    setGalleryUrlDraft("");
+    toast.success("Image URL added.");
+  };
+
   const removeGalleryUrl = async (urlToRemove) => {
     const url = String(urlToRemove || "").trim();
     if (!url) return;
@@ -4630,6 +4665,9 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
       ...p,
       gallery: (Array.isArray(p.gallery) ? p.gallery : []).filter((u) => u !== url),
     }));
+    if (!/cloudinary\.com\//i.test(url)) {
+      return;
+    }
     try {
       await fetch("/api/uploads", {
         method: "DELETE",
@@ -4722,31 +4760,61 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
             automatically.
           </p>
           <div className="sm:col-span-2">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
+              <span className="w-full shrink-0 text-[10px] font-bold uppercase leading-none tracking-[0.18em] text-stone-500 sm:w-auto sm:min-w-[11rem]">
                 Gallery images (multiple)
-              </div>
+              </span>
               {readOnly ? null : (
-                <label
-                  className={cx(
-                    "inline-flex cursor-pointer items-center gap-2 rounded-full border border-stone-800/60 bg-white/[0.03] px-3 py-2 text-[10px] font-black uppercase tracking-widest text-stone-100 transition hover:border-stone-700/70 hover:bg-white/[0.06] active:scale-95",
-                    !canUpload ? "cursor-not-allowed opacity-60" : "",
-                  )}
-                >
-                  <PlusCircle className="size-4" />
-                  {uploading ? "Uploading..." : "Upload images"}
+                <>
+                  <label
+                    className={cx(
+                      "inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-stone-800/60 bg-white/[0.03] px-4 text-[10px] font-black uppercase tracking-widest text-stone-100 transition hover:border-stone-700/70 hover:bg-white/[0.06] active:scale-95",
+                      !canUpload ? "cursor-not-allowed opacity-60" : "",
+                    )}
+                  >
+                    <PlusCircle className="size-4 shrink-0" />
+                    {uploading ? "Uploading..." : "Upload images"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      disabled={!canUpload}
+                      className="hidden"
+                      onChange={(e) => {
+                        uploadImages(e.target.files);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
                   <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    disabled={!canUpload}
-                    className="hidden"
-                    onChange={(e) => {
-                      uploadImages(e.target.files);
-                      e.target.value = "";
+                    type="url"
+                    inputMode="url"
+                    autoComplete="off"
+                    placeholder="https://… or paste image URL"
+                    value={galleryUrlDraft}
+                    onChange={(e) => setGalleryUrlDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addGalleryImageByUrl();
+                      }
                     }}
+                    disabled={!canUpload}
+                    className={cx(
+                      "h-10 min-w-0 flex-1 rounded-full border border-stone-700/50 bg-white/[0.04] px-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-600 focus:border-amber-500/35 focus:ring-2 focus:ring-amber-500/20 sm:min-w-[12rem] sm:max-w-md",
+                      !canUpload ? "opacity-60" : "",
+                    )}
                   />
-                </label>
+                  <button
+                    type="button"
+                    onClick={addGalleryImageByUrl}
+                    disabled={!canAddUrl}
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/10 px-4 text-[10px] font-black uppercase tracking-widest text-amber-100 transition hover:border-amber-400/45 hover:bg-amber-500/15 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ExternalLink className="size-4 shrink-0" />
+                    Add URL
+                  </button>
+                </>
               )}
             </div>
 
@@ -4787,7 +4855,7 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
                 </div>
               )}
               <p className="text-xs text-stone-500">
-                Upload 1+ images. The first image can be treated as the primary image on the product page.
+                Upload files or paste a direct image URL (https). The first image can be treated as the primary image on the product page.
               </p>
             </div>
           </div>
@@ -4857,6 +4925,13 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
   );
 }
 
+/** Shared with Field / SelectField — avoids focus ring + border “double outline” and text clipping from h-11 + py-0 */
+const adminModalControlClass =
+  "w-full rounded-xl border border-stone-700/50 bg-white/[0.04] px-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-600 " +
+  "min-h-[2.75rem] py-2.5 leading-snug read-only:opacity-70 " +
+  "focus:border-stone-600/60 focus:outline-none focus:ring-0 " +
+  "focus-visible:border-amber-500/40 focus-visible:ring-2 focus-visible:ring-amber-500/20";
+
 function Field({ label, value, onChange, readOnly = false, placeholder = "" }) {
   return (
     <label className="grid gap-2">
@@ -4868,10 +4943,7 @@ function Field({ label, value, onChange, readOnly = false, placeholder = "" }) {
         onChange={(e) => onChange?.(e.target.value)}
         readOnly={readOnly}
         placeholder={placeholder}
-        className={cx(
-          authInputClass,
-          "h-11 py-0 leading-none read-only:opacity-70",
-        )}
+        className={adminModalControlClass}
       />
     </label>
   );
@@ -4895,8 +4967,8 @@ function SelectField({
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}
         className={cx(
-          authInputClass,
-          "h-11 cursor-pointer py-0 pr-8 disabled:cursor-not-allowed disabled:opacity-60",
+          adminModalControlClass,
+          "cursor-pointer pr-9 disabled:cursor-not-allowed disabled:opacity-60",
         )}
       >
         {options.map((opt) => (
