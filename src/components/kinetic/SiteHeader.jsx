@@ -81,19 +81,40 @@ function SiteHeaderInner() {
 
   const [menuMotionEnter, setMenuMotionEnter] = useState(false);
   const mobileMenuPanelRef = useRef(null);
+  /** Opening uses 2× rAF to enter; must be cancelled on close or stale rAF can flip enter back on and break the exit transition. */
+  const menuEnterRafRef = useRef({ outer: 0, inner: 0 });
+  const mobileMenuCloseFallbackRef = useRef(null);
+
+  const clearMobileMenuCloseFallback = useCallback(() => {
+    if (mobileMenuCloseFallbackRef.current != null) {
+      clearTimeout(mobileMenuCloseFallbackRef.current);
+      mobileMenuCloseFallbackRef.current = null;
+    }
+  }, []);
 
   const closeMobileMenuAnimated = useCallback(() => {
     if (
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
+      clearMobileMenuCloseFallback();
       setOpen(false);
       setSearchChannel(null);
       setHeaderSearchHighlight(-1);
       return;
     }
+    cancelAnimationFrame(menuEnterRafRef.current.outer);
+    cancelAnimationFrame(menuEnterRafRef.current.inner);
+    menuEnterRafRef.current = { outer: 0, inner: 0 };
     setMenuMotionEnter(false);
-  }, []);
+    clearMobileMenuCloseFallback();
+    mobileMenuCloseFallbackRef.current = window.setTimeout(() => {
+      mobileMenuCloseFallbackRef.current = null;
+      setOpen(false);
+      setSearchChannel(null);
+      setHeaderSearchHighlight(-1);
+    }, 520);
+  }, [clearMobileMenuCloseFallback]);
 
   const onMobileMenuTransitionEnd = useCallback(
     (event) => {
@@ -101,11 +122,12 @@ function SiteHeaderInner() {
       if (!["opacity", "transform"].includes(event.propertyName)) return;
       if (menuMotionEnter) return;
       if (!open) return;
+      clearMobileMenuCloseFallback();
       setOpen(false);
       setSearchChannel(null);
       setHeaderSearchHighlight(-1);
     },
-    [menuMotionEnter, open],
+    [menuMotionEnter, open, clearMobileMenuCloseFallback],
   );
 
   useLayoutEffect(() => {
@@ -122,13 +144,14 @@ function SiteHeaderInner() {
       return;
     }
     setMenuMotionEnter(false);
-    let inner = 0;
-    const outer = requestAnimationFrame(() => {
-      inner = requestAnimationFrame(() => setMenuMotionEnter(true));
+    menuEnterRafRef.current.outer = requestAnimationFrame(() => {
+      menuEnterRafRef.current.inner = requestAnimationFrame(() => {
+        setMenuMotionEnter(true);
+      });
     });
     return () => {
-      cancelAnimationFrame(outer);
-      cancelAnimationFrame(inner);
+      cancelAnimationFrame(menuEnterRafRef.current.outer);
+      cancelAnimationFrame(menuEnterRafRef.current.inner);
     };
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [open]);
@@ -144,6 +167,11 @@ function SiteHeaderInner() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closeMobileMenuAnimated]);
+
+  useEffect(
+    () => () => clearMobileMenuCloseFallback(),
+    [clearMobileMenuCloseFallback],
+  );
 
   useEffect(() => {
     if (!open) return undefined;
