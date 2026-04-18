@@ -2,10 +2,10 @@ import { isUsableImageUrl } from "@/lib/site-hero";
 
 /** Defaults for the Precision Tuning grid (home vs services use different DB prefixes). */
 export const SITE_KEY_SERVICES_DEFAULTS = {
-  eyebrow: "Signature menu",
-  headline: "CUTS, COLOR & CARE",
+  eyebrow: "The menu",
+  headline: "Shape, color, and care—on your terms",
   intro:
-    "From lived-in color to sharp cuts and restorative treatments—we plan each visit around your hair goals and your calendar.",
+    "From precision cuts to lived-in color and repair-focused treatments, we map each visit to your hair goals, your budget, and the time you actually have.",
   card1: {
     title: "Cut & finish",
     body: "Precision shaping, texture, and styling that fits your everyday routine.",
