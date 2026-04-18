@@ -85,6 +85,7 @@ export default function DatePicker({
   const buttonRef = useRef(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- keep calendar month in sync with value
     if (selected) setMonth(startOfMonth(selected));
   }, [selected]);
 

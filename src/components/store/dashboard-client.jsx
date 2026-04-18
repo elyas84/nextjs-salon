@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Clock3,
   Download,
+  ExternalLink,
   Eye,
   EyeOff,
   FileText,
@@ -37,10 +38,23 @@ import { bookingRefCode } from "@/lib/booking-ref";
 import { formatSlotLabel } from "@/lib/booking-slots";
 import { formatLastLogin } from "@/lib/format-last-login";
 import { formatCurrency } from "@/lib/store/cart";
+import { isUsableImageUrl } from "@/lib/site-hero";
+import NoImage from "@/components/ui/NoImage";
 import Image from "next/image";
 
 function cx(...parts) {
   return parts.filter(Boolean).join(" ");
+}
+
+function dashboardTabTitle(tabKey) {
+  const labels = {
+    overview: "Overview",
+    orders: "Orders",
+    bookings: "Service bookings",
+    reviews: "Reviews",
+    profile: "Profile",
+  };
+  return labels[tabKey] || "Dashboard";
 }
 
 function DashboardListPagination({
@@ -792,123 +806,184 @@ export default function DashboardClient() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center px-6 py-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Spinner />
-          <p className="text-sm font-medium text-zinc-400">Loading your dashboard…</p>
-        </div>
-      </main>
+      <div className="relative min-h-[calc(100svh-160px)] bg-[#0a0908] text-stone-100">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(245,158,11,0.07),transparent_50%)]" />
+        <main className="relative z-10 flex min-h-[calc(100svh-160px)] items-center justify-center px-6">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <Spinner />
+            <div className="rounded-2xl border border-stone-800/60 bg-[#0c0b09]/90 px-6 py-4 text-sm font-semibold text-stone-200 ring-1 ring-white/[0.04] backdrop-blur-xl">
+              Loading your dashboard…
+            </div>
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto grid w-full max-w-screen-2xl gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="surface-panel hidden h-fit rounded-4xl p-5 sm:p-6 lg:sticky lg:top-6 lg:block">
-          <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-zinc-50 shadow-sm">
-              <LayoutDashboard className="size-5" />
-            </div>
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-widest text-zinc-400">
-                Client dashboard
-              </p>
-              <h2 className="mt-1 text-lg font-extrabold text-zinc-50">
-                {user?.name || "Dashboard"}
-              </h2>
-            </div>
-          </div>
+    <>
+      <div className="relative min-h-[calc(100svh-160px)] bg-[#0a0908] text-stone-100">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(245,158,11,0.07),transparent_50%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_100%_25%,rgba(120,113,108,0.09),transparent_55%)]" />
+        <div className="relative z-10 mx-auto grid w-full max-w-screen-2xl gap-6 px-4 py-6 sm:px-6 md:grid-cols-[19rem_minmax(0,1fr)] md:items-start md:gap-8">
+          <aside className="relative hidden h-fit w-full flex-col md:flex md:self-start md:sticky md:top-24">
+            <div
+              className="pointer-events-none absolute left-0 top-8 bottom-8 w-px bg-gradient-to-b from-amber-500/55 via-amber-400/12 to-transparent"
+              aria-hidden
+            />
+            <div className="surface-panel relative flex min-h-0 max-h-[calc(100dvh-7rem)] flex-col overflow-hidden rounded-[1.75rem] border border-stone-800/60 bg-gradient-to-b from-[#0c0b09]/98 via-[#0a0908] to-[#0a0908] p-5 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.75)] ring-1 ring-white/[0.04] sm:p-6">
+              <div className="mb-6 shrink-0">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h1 className="font-heading text-2xl font-black tracking-tighter text-amber-400">
+                      Studio Salon
+                    </h1>
+                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                      Your account
+                    </p>
+                  </div>
+                  <div
+                    className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-amber-500/25 bg-amber-500/10 text-[11px] font-black tracking-tight text-amber-200 shadow-inner"
+                    aria-hidden
+                  >
+                    SS
+                  </div>
+                </div>
+                <div className="mt-4 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-3.5 sm:p-4">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] text-xs font-black text-zinc-100 shadow-sm"
+                      aria-hidden
+                    >
+                      {userInitials}
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
+                      <p
+                        className="truncate text-sm font-semibold text-zinc-100"
+                        title={user?.name || undefined}
+                      >
+                        {user?.name || "Customer"}
+                      </p>
+                      <p
+                        className="truncate text-xs text-zinc-500"
+                        title={user?.email || undefined}
+                      >
+                        {user?.email || "—"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div className="mt-5 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-sm">
-            <p className="text-xs font-semibold text-zinc-400">
-              Signed in as
-            </p>
-            <p className="mt-2 text-base font-semibold text-zinc-50">
-              {user?.email || "customer@example.com"}
-            </p>
-          </div>
+              <nav className="mt-0 min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-y-contain pr-0.5 [-webkit-overflow-scrolling:touch] [scrollbar-gutter:stable]">
+                {sidebarTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const active = activeTab === tab.key;
+                  const badgeCount =
+                    tab.key === "orders"
+                      ? orderUpdatesCount
+                      : tab.key === "reviews"
+                        ? reviewDecisionCount
+                        : tab.key === "bookings"
+                          ? bookingUpdatesCount
+                          : 0;
 
-          <nav className="mt-5 space-y-1">
-            {sidebarTabs.map((tab) => {
-              const Icon = tab.icon;
-              const active = activeTab === tab.key;
-              const badgeCount =
-                tab.key === "orders"
-                  ? orderUpdatesCount
-                  : tab.key === "reviews"
-                    ? reviewDecisionCount
-                    : tab.key === "bookings"
-                      ? bookingUpdatesCount
-                      : 0;
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={cx(
+                        "group flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2.5 text-left transition-all duration-200",
+                        active
+                          ? "bg-gradient-to-r from-amber-500/18 via-amber-500/8 to-transparent font-bold text-amber-100 shadow-[inset_3px_0_0_0_rgb(245,158,11)]"
+                          : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100",
+                      )}
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span
+                          className={cx(
+                            "inline-flex size-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                            active
+                              ? "border-amber-500/35 bg-amber-500/15 text-amber-200"
+                              : "border-white/[0.06] bg-white/[0.03] text-zinc-500 group-hover:border-white/10 group-hover:bg-white/[0.06] group-hover:text-zinc-300",
+                          )}
+                          aria-hidden
+                        >
+                          <Icon className="size-4 shrink-0" />
+                        </span>
+                        <span className="truncate text-sm font-heading tracking-tight">
+                          {tab.label}
+                        </span>
+                      </span>
+                      {active ? (
+                        <span
+                          className="inline-flex size-6 shrink-0 items-center justify-center"
+                          aria-hidden
+                        >
+                          <span className="size-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.55)] ring-2 ring-amber-500/40" />
+                        </span>
+                      ) : badgeCount > 0 ? (
+                        <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                          {badgeCount > 9 ? "9+" : badgeCount}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </nav>
 
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={cx(
-                    "flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm transition-all duration-300",
-                    active
-                      ? "border-r-2 border-rose-500 bg-zinc-900 font-bold text-rose-400"
-                      : "text-zinc-300 hover:bg-zinc-900 hover:text-rose-300",
-                  )}
+              <div className="mt-5 shrink-0 space-y-2.5 border-t border-white/[0.07] pt-5">
+                <Link
+                  href="/"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.08] py-2.5 text-sm font-semibold text-zinc-50 shadow-sm transition hover:border-white/25 hover:bg-white/[0.12] hover:text-white"
                 >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <Icon className="size-4 shrink-0" />
-                    <span className="truncate font-heading tracking-tight">
-                      {tab.label}
-                    </span>
-                  </span>
-                  {active ? (
-                    <span className="shrink-0 text-[10px] font-black uppercase tracking-widest text-rose-400/80">
-                      Active
-                    </span>
-                  ) : badgeCount > 0 ? (
-                    <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
-                      {badgeCount > 9 ? "9+" : badgeCount}
-                    </span>
-                  ) : null}
+                  <ExternalLink className="size-4 shrink-0 text-zinc-300" />
+                  View site
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setLogoutModalOpen(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/35 bg-amber-500/15 py-2.5 text-sm font-semibold text-amber-100 shadow-sm transition hover:bg-amber-500/25"
+                >
+                  <LogOut className="size-4 shrink-0" />
+                  Log out
                 </button>
-              );
-            })}
-          </nav>
+              </div>
+            </div>
+          </aside>
 
-          <div className="mt-6 flex flex-col gap-3">
-            <Link
-              href="/products"
-              className="kinetic-gradient inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110"
-            >
-              Shop parts <ArrowRight className="size-4" />
-            </Link>
-            <button
-              type="button"
-              onClick={() => setLogoutModalOpen(true)}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 shadow-sm transition-colors hover:bg-white/10"
-            >
-              Log out
-            </button>
-          </div>
-        </aside>
-
-        <div className="min-w-0">
-          <header className="sticky top-0 z-40 mb-4 flex h-14 items-center gap-3 border-b border-white/10 bg-zinc-950/80 px-1 backdrop-blur-md lg:hidden">
-            <button
-              type="button"
-              onClick={openMobileNav}
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-100 transition hover:bg-white/10 active:scale-[0.97]"
-              aria-label="Open dashboard navigation"
-            >
-              <PanelLeft className="size-5" strokeWidth={1.75} />
-            </button>
-            <span className="min-w-0 truncate text-sm font-semibold text-zinc-200">
-              {sidebarTabs.find((t) => t.key === activeTab)?.label ||
-                "Dashboard"}
-            </span>
-          </header>
+          <main className="min-w-0">
+            <header className="sticky top-0 z-40 flex w-full min-w-0 items-center gap-3 border-b border-stone-800/50 bg-[#0a0908]/90 px-4 backdrop-blur-md sm:gap-4 sm:px-6 lg:px-8">
+              <div className="flex min-w-0 shrink-0 items-center gap-3 sm:gap-4">
+                <div className="flex shrink-0 items-center gap-2 md:hidden">
+                  <button
+                    type="button"
+                    onClick={openMobileNav}
+                    className="inline-flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-100 transition hover:bg-white/10 active:scale-[0.97]"
+                    aria-label="Open dashboard navigation"
+                  >
+                    <PanelLeft className="size-5" strokeWidth={1.75} />
+                  </button>
+                  <span className="hidden min-w-0 truncate sm:inline text-xs font-semibold text-zinc-300">
+                    {dashboardTabTitle(activeTab)}
+                  </span>
+                </div>
+                <div className="hidden min-w-0 md:flex md:max-w-[14rem] md:flex-col md:justify-center md:pr-2 lg:max-w-xs">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400/90">
+                    Account
+                  </span>
+                  <span className="truncate font-heading text-lg font-bold tracking-tight text-zinc-50">
+                    {dashboardTabTitle(activeTab)}
+                  </span>
+                </div>
+              </div>
+            </header>
 
           {mobileNavMounted ? (
             <div
-              className="fixed inset-0 z-[90] lg:hidden"
+              className="fixed inset-0 z-[90] md:hidden"
               role="dialog"
               aria-modal="true"
               aria-label="Dashboard navigation"
@@ -924,13 +999,13 @@ export default function DashboardClient() {
               />
               <div
                 className={cx(
-                  "absolute left-0 top-0 h-full w-[min(22rem,92vw)] overflow-y-auto border-r border-white/10 bg-zinc-950 px-5 py-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-2xl shadow-black/60 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 sm:py-8",
+                  "absolute left-0 top-0 h-full w-[min(22rem,92vw)] overflow-y-auto border-r border-stone-800/50 bg-gradient-to-b from-[#0c0b09] via-[#0a0908] to-[#0a0908] px-5 py-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[16px_0_48px_-12px_rgba(0,0,0,0.65)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 sm:py-8",
                   mobileNavOpen ? "translate-x-0" : "-translate-x-full",
                 )}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-3.5">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-rose-200 shadow-sm">
+                    <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-amber-200 shadow-sm">
                       <span className="text-sm font-black" aria-hidden>
                         SS
                       </span>
@@ -940,7 +1015,7 @@ export default function DashboardClient() {
                         Studio Salon
                       </p>
                       <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">
-                        Client dashboard
+                        YOUR ACCOUNT
                       </p>
                     </div>
                   </div>
@@ -996,7 +1071,7 @@ export default function DashboardClient() {
                         className={cx(
                           "group relative flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition duration-200",
                           active
-                            ? "border-rose-500/35 bg-gradient-to-r from-rose-500/15 via-rose-500/10 to-white/[0.02] text-rose-50"
+                            ? "border-amber-500/35 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-white/[0.02] text-amber-50"
                             : "border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/5",
                         )}
                       >
@@ -1005,7 +1080,7 @@ export default function DashboardClient() {
                             className={cx(
                               "inline-flex size-9 shrink-0 items-center justify-center rounded-xl border",
                               active
-                                ? "border-rose-500/35 bg-rose-500/15 text-rose-200"
+                                ? "border-amber-500/35 bg-amber-500/15 text-amber-200"
                                 : "border-white/10 bg-white/5 text-zinc-300 group-hover:bg-white/10",
                             )}
                             aria-hidden
@@ -1018,13 +1093,13 @@ export default function DashboardClient() {
                         </span>
                         <span className="flex shrink-0 items-center gap-2">
                           {badgeCount > 0 ? (
-                            <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                            <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
                               {badgeCount > 9 ? "9+" : badgeCount}
                             </span>
                           ) : null}
                           {active ? (
                             <span
-                              className="size-2 shrink-0 rounded-full bg-rose-500"
+                              className="size-2 shrink-0 rounded-full bg-amber-500"
                               aria-hidden
                             />
                           ) : null}
@@ -1034,14 +1109,14 @@ export default function DashboardClient() {
                   })}
                 </nav>
 
-                <div className="mt-8 border-t border-white/10 pt-6">
+                <div className="mt-8 shrink-0 border-t border-white/10 pt-6">
                   <Link
-                    href="/products"
+                    href="/"
                     onClick={closeMobileNav}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-semibold text-zinc-200 shadow-sm transition duration-200 hover:bg-white/10 active:scale-[0.99]"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.08] px-4 py-3.5 text-sm font-semibold text-zinc-50 shadow-sm transition duration-200 hover:border-white/25 hover:bg-white/[0.12] active:scale-[0.99]"
                   >
-                    Shop parts
-                    <ArrowRight className="size-4" />
+                    <ExternalLink className="size-4 shrink-0 text-zinc-300" />
+                    View site
                   </Link>
                   <button
                     type="button"
@@ -1049,9 +1124,9 @@ export default function DashboardClient() {
                       closeMobileNav();
                       setLogoutModalOpen(true);
                     }}
-                    className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-semibold text-zinc-200 shadow-sm transition duration-200 hover:bg-white/10 active:scale-[0.99]"
+                    className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-400/35 bg-amber-500/15 px-4 py-3.5 text-sm font-semibold text-amber-100 shadow-sm transition duration-200 hover:bg-amber-500/25 active:scale-[0.99]"
                   >
-                    <LogOut className="size-4 shrink-0 text-zinc-300" />
+                    <LogOut className="size-4 shrink-0" />
                     Log out
                   </button>
                 </div>
@@ -1059,17 +1134,17 @@ export default function DashboardClient() {
             </div>
           ) : null}
 
-          <div className="space-y-6">
+          <div className="space-y-8 p-4 sm:p-6 lg:p-8">
           {activeTab === "overview" ? (
             <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               {/* 1. Hero Welcome Section */}
               <div className="surface-panel relative overflow-hidden rounded-[2.5rem] p-8 lg:p-12">
-                <div className="absolute -right-20 -top-20 size-80 rounded-full bg-rose-500/10 blur-[100px]" />
+                <div className="absolute -right-20 -top-20 size-80 rounded-full bg-amber-500/10 blur-[100px]" />
 
                 <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-2xl">
                     <div className="flex flex-wrap items-center gap-3">
-                      <span className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                      <span className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                         Client account
                       </span>
                       <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold text-zinc-200 shadow-sm">
@@ -1092,7 +1167,7 @@ export default function DashboardClient() {
 
                   <Link
                     href="/products"
-                    className="group kinetic-gradient inline-flex items-center gap-3 rounded-2xl px-6 py-4 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110 active:scale-95"
+                    className="group inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.08] px-6 py-4 text-sm font-black uppercase tracking-tight text-zinc-50 shadow-sm transition-colors hover:border-white/25 hover:bg-white/[0.12] active:scale-95"
                   >
                     Explore catalog
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -1113,7 +1188,7 @@ export default function DashboardClient() {
                     label: "Active",
                     value: stats.activeOrders,
                     icon: Clock3,
-                    color: "text-slate-900",
+                    color: "text-amber-300",
                   },
                   {
                     label: "Shipped",
@@ -1196,7 +1271,7 @@ export default function DashboardClient() {
               {/* Header Section */}
               <div className="surface-panel flex flex-col gap-2 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                     Order History
                   </p>
                   <h2 className="text-xl font-extrabold text-zinc-50">
@@ -1302,7 +1377,8 @@ export default function DashboardClient() {
                                   className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-3 transition-colors group-hover:bg-black/30"
                                 >
                                   <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-white/5">
-                                    {item.image ? (
+                                    {item.image &&
+                                    isUsableImageUrl(String(item.image).trim()) ? (
                                       <Image
                                         src={item.image}
                                         alt={item.name}
@@ -1311,9 +1387,11 @@ export default function DashboardClient() {
                                         className="object-cover"
                                       />
                                     ) : (
-                                      <div className="flex h-full w-full items-center justify-center text-zinc-500">
-                                        <Package size={16} />
-                                      </div>
+                                      <NoImage
+                                        thumbnail
+                                        tone="zinc"
+                                        className="rounded-xl border-white/10"
+                                      />
                                     )}
                                   </div>
                                   <div className="flex-1 min-w-0">
@@ -1333,14 +1411,14 @@ export default function DashboardClient() {
                           {/* Tracking Timeline */}
                           <div className="mt-8 px-2">
                             {isCancelled ? (
-                              <div className="rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3 text-center text-xs font-semibold text-rose-200">
+                              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-3 text-center text-xs font-semibold text-amber-200">
                                 Transaction Cancelled
                               </div>
                             ) : (
                               <div className="relative pt-2">
                                 <div className="absolute top-1.25 left-0 h-0.5 w-full bg-white/10" />
                                 <div
-                                  className="absolute top-1.25 left-0 h-0.5 bg-rose-500 transition-all duration-1000"
+                                  className="absolute top-1.25 left-0 h-0.5 bg-amber-500 transition-all duration-1000"
                                   style={{
                                     width: `${(currentTrackingIndex / (TRACKING_STEPS.length - 1)) * 100}%`,
                                   }}
@@ -1357,7 +1435,7 @@ export default function DashboardClient() {
                                         className="flex flex-col items-center"
                                       >
                                         <div
-                                          className={`z-10 size-2.5 rounded-full border-2 transition-all duration-500 ${isDone ? "border-rose-500 bg-zinc-950 scale-110" : "border-white/20 bg-zinc-950"} ${isCurrent ? "ring-4 ring-rose-500/15" : ""}`}
+                                          className={`z-10 size-2.5 rounded-full border-2 transition-all duration-500 ${isDone ? "border-amber-500 bg-zinc-950 scale-110" : "border-white/20 bg-zinc-950"} ${isCurrent ? "ring-4 ring-amber-500/15" : ""}`}
                                         />
                                         <span
                                           className={`mt-3 text-[10px] font-semibold uppercase tracking-tight ${isDone ? "text-zinc-50" : "text-zinc-500"}`}
@@ -1376,7 +1454,7 @@ export default function DashboardClient() {
                         {/* 3. Footer Summary */}
                         <div className="flex flex-col gap-4 rounded-b-4xl border-t border-white/10 bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                           <div className="flex items-center gap-2">
-                            <div className="size-1.5 rounded-full bg-rose-500/70" />
+                            <div className="size-1.5 rounded-full bg-amber-500/70" />
                             <span className="text-xs font-semibold text-zinc-300 uppercase tracking-widest">
                               {order.delivery === "express"
                                 ? "Express Delivery"
@@ -1411,7 +1489,7 @@ export default function DashboardClient() {
             <section className="animate-in fade-in slide-in-from-bottom-2 duration-500 space-y-6">
               <div className="surface-panel flex flex-col gap-2 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                     Workshop
                   </p>
                   <h2 className="text-xl font-extrabold text-zinc-50">
@@ -1420,7 +1498,7 @@ export default function DashboardClient() {
                 </div>
                 <Link
                   href="/book-a-service"
-                  className="kinetic-gradient inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-xs font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.08] px-5 py-3 text-xs font-black uppercase tracking-tight text-zinc-50 shadow-sm transition-colors hover:border-white/25 hover:bg-white/[0.12]"
                 >
                   New booking <ArrowRight className="size-4" />
                 </Link>
@@ -1580,7 +1658,7 @@ export default function DashboardClient() {
                     </p>
                     <Link
                       href="/book-a-service"
-                      className="mt-6 text-sm font-semibold text-rose-400 underline-offset-2 hover:underline"
+                      className="mt-6 text-sm font-semibold text-amber-400 underline-offset-2 hover:underline"
                     >
                       Schedule a service
                     </Link>
@@ -1595,7 +1673,7 @@ export default function DashboardClient() {
               {/* Header */}
               <div className="surface-panel flex flex-col gap-3 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                     Feedback
                   </p>
                   <h2 className="text-xl font-extrabold text-zinc-50">
@@ -1618,7 +1696,7 @@ export default function DashboardClient() {
                         ref={isEditing ? editingReviewCardRef : undefined}
                         className={`group rounded-4xl border shadow-sm transition-[box-shadow,background-color,border-color] duration-300 ease-out ${
                           isEditing
-                            ? "border-white/20 bg-white/7 ring-2 ring-rose-500/10 shadow-md"
+                            ? "border-white/20 bg-white/7 ring-2 ring-amber-500/10 shadow-md"
                             : "border-white/10 bg-white/5 hover:bg-white/7"
                         }`}
                       >
@@ -1653,7 +1731,9 @@ export default function DashboardClient() {
                                 />
                               </div>
                               <p className="text-sm leading-relaxed text-slate-600">
-                                "{review.comment}"
+                                <span aria-hidden>&ldquo;</span>
+                                {review.comment}
+                                <span aria-hidden>&rdquo;</span>
                               </p>
 
                               <div className="flex items-center gap-2 pt-1">
@@ -1668,7 +1748,7 @@ export default function DashboardClient() {
                                 <button
                                   type="button"
                                   onClick={() => setReviewPendingDelete(review)}
-                                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/25 bg-rose-500/10 text-rose-200 shadow-sm transition-all duration-200 hover:bg-rose-500/15 active:scale-[0.98]"
+                                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-amber-200 shadow-sm transition-all duration-200 hover:bg-amber-500/15 active:scale-[0.98]"
                                 >
                                   <Trash2 size={12} />
                                 </button>
@@ -1698,7 +1778,7 @@ export default function DashboardClient() {
                                 value={editComment}
                                 onChange={(e) => setEditComment(e.target.value)}
                                 disabled={savingReviewId === review._id}
-                                className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30 disabled:cursor-not-allowed disabled:opacity-70"
+                                className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-amber-500/30 disabled:cursor-not-allowed disabled:opacity-70"
                                 placeholder="Your feedback..."
                               />
 
@@ -1760,7 +1840,7 @@ export default function DashboardClient() {
                 onSubmit={updateProfile}
                 className="surface-panel rounded-4xl p-6 sm:p-8"
               >
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                   Profile
                 </p>
                 <h2 className="mt-2 font-heading text-2xl font-extrabold tracking-tighter text-zinc-50">
@@ -1775,7 +1855,7 @@ export default function DashboardClient() {
                     <input
                       value={profileName}
                       onChange={(event) => setProfileName(event.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-amber-500/30"
                     />
                   </label>
 
@@ -1787,7 +1867,7 @@ export default function DashboardClient() {
                       type="email"
                       value={profileEmail}
                       onChange={(event) => setProfileEmail(event.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-amber-500/30"
                     />
                   </label>
 
@@ -1806,7 +1886,7 @@ export default function DashboardClient() {
                             setCurrentPassword(event.target.value)
                           }
                           autoComplete="current-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-amber-500/30"
                         />
                         <button
                           type="button"
@@ -1841,7 +1921,7 @@ export default function DashboardClient() {
                           value={newPassword}
                           onChange={(event) => setNewPassword(event.target.value)}
                           autoComplete="new-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-amber-500/30"
                         />
                         <button
                           type="button"
@@ -1882,7 +1962,7 @@ export default function DashboardClient() {
                           setConfirmPassword(event.target.value)
                         }
                         autoComplete="new-password"
-                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-amber-500/30"
                       />
                       <button
                         type="button"
@@ -1909,20 +1989,20 @@ export default function DashboardClient() {
                   </label>
                 </div>
 
-                <div className="mt-6 flex flex-wrap gap-3">
+                <div className="mt-8 flex flex-col gap-3 border-t border-white/[0.07] pt-6 sm:flex-row sm:items-center sm:justify-between">
                   <button
                     type="submit"
                     disabled={savingProfile}
-                    className="kinetic-gradient inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.08] px-5 text-sm font-black uppercase tracking-tight text-zinc-50 shadow-sm transition-colors hover:border-white/25 hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {savingProfile ? "Saving..." : "Save changes"}
                   </button>
                   <button
                     type="button"
                     onClick={() => setDeleteAccountModalOpen(true)}
-                    className="inline-flex items-center gap-2 rounded-xl border border-rose-500/25 bg-rose-500/10 px-5 py-3 text-sm font-semibold text-rose-200 shadow-sm transition-colors hover:bg-rose-500/15"
+                    className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-5 text-sm font-semibold text-amber-200 shadow-sm transition-colors hover:bg-amber-500/15 sm:w-auto"
                   >
-                    <Trash2 className="size-4" />
+                    <Trash2 className="size-4 shrink-0" />
                     Delete account
                   </button>
                 </div>
@@ -1930,7 +2010,7 @@ export default function DashboardClient() {
 
               <aside className="space-y-6">
                 <section className="surface-panel rounded-4xl p-5">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                     Account notes
                   </p>
                   <p className="mt-3 text-sm leading-6 text-zinc-300">
@@ -1942,15 +2022,16 @@ export default function DashboardClient() {
             </section>
           ) : null}
         </div>
-        </div>
-      </div>
+      </main>
+    </div>
+  </div>
 
       {reviewPendingDelete ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete review
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -1987,7 +2068,7 @@ export default function DashboardClient() {
                 type="button"
                 onClick={confirmDeleteReview}
                 disabled={deleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {deleteLoading ? (
                   <>
@@ -2008,7 +2089,7 @@ export default function DashboardClient() {
 
       {deleteAccountModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm"
           onClick={() => {
             if (!deleteAccountLoading) {
               setDeleteAccountModalOpen(false);
@@ -2021,7 +2102,7 @@ export default function DashboardClient() {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete account
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -2056,7 +2137,7 @@ export default function DashboardClient() {
                 type="button"
                 onClick={deleteAccount}
                 disabled={deleteAccountLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {deleteAccountLoading ? (
                   <>
@@ -2077,7 +2158,7 @@ export default function DashboardClient() {
 
       {logoutModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/65 px-4 backdrop-blur-sm"
           onClick={() => {
             if (!logoutLoading) setLogoutModalOpen(false);
           }}
@@ -2087,11 +2168,11 @@ export default function DashboardClient() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start gap-4">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-rose-500/25 bg-rose-500/10 text-rose-200">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-amber-500/25 bg-amber-500/10 text-amber-200">
                 <X className="size-4" />
               </div>
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-300">
                   Confirm logout
                 </p>
                 <h3 className="mt-2 text-xl font-extrabold text-zinc-50">
@@ -2117,7 +2198,7 @@ export default function DashboardClient() {
                 type="button"
                 onClick={confirmLogout}
                 disabled={logoutLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {logoutLoading ? (
                   <>
@@ -2132,6 +2213,6 @@ export default function DashboardClient() {
           </div>
         </div>
       ) : null}
-    </main>
+    </>
   );
 }

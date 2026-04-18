@@ -8,7 +8,6 @@ import {
 export { SITE_SETTINGS_STRING_LIMITS } from "@/lib/site-settings-string-limits";
 
 const DEFAULT_KEY = "default";
-const MAX_TEAM = 12;
 
 /** e.g. `heroImageUrl` — old shared CMS; not `homeHero*`. */
 function isDeprecatedUnifiedHeroKey(k) {
@@ -99,26 +98,11 @@ async function ensureSiteSettingsRowMaterialized(doc) {
   return SiteSettings.findOne({ key: DEFAULT_KEY }).lean();
 }
 
-function normalizeTeamMember(entry) {
-  return {
-    name: trimStr(entry?.name, 200),
-    role: trimStr(entry?.role, 200),
-    imageUrl: trimStr(entry?.imageUrl),
-    imageAlt: trimStr(entry?.imageAlt, 500),
-    order: Number.isFinite(Number(entry?.order)) ? Number(entry.order) : 0,
-  };
-}
-
 export function normalizeSiteSettings(doc) {
   if (!doc) return null;
-  const team = Array.isArray(doc.teamMembers)
-    ? doc.teamMembers.map(normalizeTeamMember)
-    : [];
-  team.sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 
   const out = {
     key: String(doc.key || DEFAULT_KEY),
-    teamMembers: team,
     updatedAt: doc.updatedAt || null,
     createdAt: doc.createdAt || null,
   };
@@ -157,11 +141,6 @@ export function buildSiteSettingsPatch(body) {
     if (Object.prototype.hasOwnProperty.call(body, key)) {
       patch[key] = trimStr(body[key], max);
     }
-  }
-
-  if (Object.prototype.hasOwnProperty.call(body, "teamMembers")) {
-    const list = Array.isArray(body.teamMembers) ? body.teamMembers : [];
-    patch.teamMembers = list.slice(0, MAX_TEAM).map(normalizeTeamMember);
   }
 
   return patch;

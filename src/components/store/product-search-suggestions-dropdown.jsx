@@ -2,15 +2,20 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Package } from "lucide-react";
+import NoImage from "@/components/ui/NoImage";
+import { isUsableImageUrl } from "@/lib/site-hero";
 import { formatCurrency } from "@/lib/store/cart";
 
 function suggestionImageUrl(item) {
   const direct = String(item.image || "").trim();
-  if (direct) return direct;
+  const fromDirect = direct && isUsableImageUrl(direct) ? direct : "";
+  if (fromDirect) return fromDirect;
   const g = item.gallery;
-  if (Array.isArray(g) && g[0]) return String(g[0]).trim();
-  return "";
+  const fromGallery =
+    Array.isArray(g) && g[0] && isUsableImageUrl(String(g[0]).trim())
+      ? String(g[0]).trim()
+      : "";
+  return fromGallery || "";
 }
 
 /**
@@ -135,14 +140,11 @@ export default function ProductSearchSuggestionsDropdown({
                     sizes="40px"
                   />
                 ) : (
-                  <span className="flex size-10 items-center justify-center">
-                    <Package
-                      className={
-                        variant === "dark" ? "size-4 text-zinc-500" : "size-4 text-slate-400"
-                      }
-                      aria-hidden
-                    />
-                  </span>
+                  <NoImage
+                    thumbnail
+                    tone={variant === "dark" ? "zinc" : "slate"}
+                    className="size-10 rounded-lg"
+                  />
                 )}
               </span>
               <span className="min-w-0 flex-1">

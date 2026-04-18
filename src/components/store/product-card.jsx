@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ImageOff, Star, StarHalf, Tag } from "lucide-react";
+import { Star, StarHalf, Tag } from "lucide-react";
 import AddToCartButton from "@/components/store/add-to-cart-button";
+import NoImage from "@/components/ui/NoImage";
+import { isUsableImageUrl } from "@/lib/site-hero";
 import { formatCurrency } from "@/lib/store/cart";
 
 export default function ProductCard({ product, compact = false }) {
-  const primaryImage = Array.isArray(product.gallery) ? product.gallery[0] : "";
+  const rawGallery = Array.isArray(product.gallery) ? product.gallery[0] : "";
+  const primaryImage =
+    rawGallery && isUsableImageUrl(String(rawGallery).trim())
+      ? String(rawGallery).trim()
+      : "";
   const ratingValue = Math.max(0, Math.min(5, Number(product.rating) || 0));
   const displayRating = Math.round(ratingValue * 2) / 2;
   const stars = Array.from({ length: 5 }, (_, index) => {
@@ -81,10 +87,12 @@ export default function ProductCard({ product, compact = false }) {
                 className="object-contain object-center transition-transform duration-500 group-hover:scale-[1.03]"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500">
-                <ImageOff className="size-4" />
-                No image
-              </div>
+              <NoImage
+                fill
+                tone="store"
+                size="compact"
+                className="rounded-xl border-stone-800/60"
+              />
             )}
           </div>
         </div>

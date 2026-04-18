@@ -1,13 +1,15 @@
 import Link from "next/link";
+import { Calendar, Mail, ShoppingBag } from "lucide-react";
 
 const footerColumns = [
   {
-    title: "Navigation",
+    title: "Explore",
     links: [
       { label: "Services", href: "/services" },
+      { label: "Book", href: "/book-a-service" },
       { label: "Products", href: "/products" },
+      { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
-      { label: "Book Now", href: "/book-a-service" },
     ],
   },
   {
@@ -22,32 +24,41 @@ const footerColumns = [
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#070708]/90 backdrop-blur-sm">
-      <div className="mx-auto w-full max-w-screen-2xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div>
-            <span className="inline-flex items-center font-heading text-xl font-extrabold tracking-tight text-zinc-100 sm:text-2xl">
-              <span className="tracking-tight leading-none">
-                Studio <span className="text-rose-400">Salon</span>
+    <footer className="relative border-t border-stone-800/60 bg-[#0a0908]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_120%,rgba(244,114,182,0.06),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(253,230,138,0.03),transparent_45%)]" />
+
+      <div className="relative mx-auto w-full max-w-screen-2xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-4">
+            <Link
+              href="/"
+              className="group inline-flex font-heading text-xl font-semibold tracking-tight text-stone-100 transition sm:text-2xl"
+            >
+              <span className="leading-none tracking-tight group-hover:text-stone-50">
+                Studio{" "}
+                <span className="text-amber-200/95 group-hover:text-amber-100">
+                  Salon
+                </span>
               </span>
-            </span>
-            <p className="mt-4 max-w-xs text-xs leading-relaxed text-zinc-500">
+            </Link>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-stone-500">
               A calm space for hair, color, and care. Book online, visit the
               studio, and take home products we trust.
             </p>
           </div>
 
           {footerColumns.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-xs font-extrabold uppercase tracking-widest text-rose-500">
+            <div key={col.title} className="lg:col-span-3">
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/75">
                 {col.title}
               </h4>
-              <ul className="mt-6 space-y-4">
+              <ul className="mt-6 space-y-3.5">
                 {col.links.map((item) => (
                   <li key={`${col.title}-${item.label}`}>
                     <Link
                       href={item.href}
-                      className="text-xs font-semibold uppercase tracking-widest text-zinc-500 transition-colors hover:text-white"
+                      className="text-sm font-medium text-stone-400 transition-colors hover:text-amber-200/90"
                     >
                       {item.label}
                     </Link>
@@ -57,48 +68,71 @@ export default function SiteFooter() {
             </div>
           ))}
 
-          <div>
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-rose-500">
-              Connect
+          <div className="lg:col-span-2">
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/75">
+              Quick links
             </h4>
-            <div className="mt-6 flex gap-3">
-              {["Web", "Share", "Email"].map((label) => (
-                <button
-                  key={label}
-                  type="button"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-300 transition-colors hover:bg-rose-500 hover:text-white"
-                  aria-label={label}
+            <ul className="mt-6 flex flex-col gap-3">
+              <li>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2.5 text-sm font-medium text-stone-400 transition-colors hover:text-amber-200/90"
                 >
-                  <span className="text-sm font-black">{label.slice(0, 1)}</span>
-                </button>
-              ))}
-            </div>
-            <div className="mt-6 flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded border border-rose-500/30 bg-rose-500/10 text-[10px] font-black text-rose-300">
+                  <span className="flex size-9 items-center justify-center rounded-full border border-stone-700/60 bg-white/[0.04] text-amber-200/90 transition group-hover:border-stone-600">
+                    <Mail className="size-4" aria-hidden />
+                  </span>
+                  Message us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/book-a-service"
+                  className="inline-flex items-center gap-2.5 text-sm font-medium text-stone-400 transition-colors hover:text-amber-200/90"
+                >
+                  <span className="flex size-9 items-center justify-center rounded-full border border-stone-700/60 bg-white/[0.04] text-amber-200/90 transition group-hover:border-stone-600">
+                    <Calendar className="size-4" aria-hidden />
+                  </span>
+                  Book a visit
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/products"
+                  className="inline-flex items-center gap-2.5 text-sm font-medium text-stone-400 transition-colors hover:text-amber-200/90"
+                >
+                  <span className="flex size-9 items-center justify-center rounded-full border border-stone-700/60 bg-white/[0.04] text-amber-200/90 transition group-hover:border-stone-600">
+                    <ShoppingBag className="size-4" aria-hidden />
+                  </span>
+                  Shop retail
+                </Link>
+              </li>
+            </ul>
+
+            <div className="mt-8 inline-flex items-center gap-2.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-2">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-100/90"
+                aria-hidden
+              >
                 ⌁
               </span>
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-                OPEN TUE–SAT · BY APPOINTMENT
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-400">
+                Open Tue–Sat · by appointment
               </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-8 md:flex-row">
-          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            © {new Date().getFullYear()} Studio Salon. CRAFTED WITH CARE.
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-stone-800/70 pt-10 sm:flex-row sm:gap-6">
+          <span className="text-center text-[11px] font-medium uppercase tracking-[0.2em] text-stone-600 sm:text-left">
+            © {new Date().getFullYear()} Studio Salon. All rights reserved.
           </span>
-          <div className="flex gap-6">
-            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-700">
-              LICENSED STYLISTS
-            </span>
-            <span className="text-xs font-semibold uppercase tracking-widest text-zinc-700">
-              BOOK ONLINE 24/7
-            </span>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-[11px] font-medium uppercase tracking-[0.18em] text-stone-600">
+            <span>Licensed stylists</span>
+            <span className="hidden h-3 w-px bg-stone-700 sm:block" aria-hidden />
+            <span>Book online 24/7</span>
           </div>
         </div>
       </div>
     </footer>
   );
 }
-

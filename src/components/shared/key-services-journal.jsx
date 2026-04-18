@@ -1,5 +1,6 @@
 import Image from "next/image";
 import HeroCtaLink from "@/components/kinetic/hero-cta-link";
+import NoImage from "@/components/ui/NoImage";
 
 /** Editorial “chapters” grid — pass resolved key-services from home or services CMS. */
 export default function KeyServicesJournal({ ks }) {
@@ -73,13 +74,7 @@ export default function KeyServicesJournal({ ks }) {
                 >
                   {ch.n}
                 </span>
-                <div
-                  className={`relative -mt-8 overflow-hidden rounded-2xl ring-1 ring-white/[0.06] sm:-mt-12 ${
-                    ch.image.showImage
-                      ? "aspect-[16/11]"
-                      : "aspect-[16/10] bg-gradient-to-br from-stone-800/80 to-stone-950"
-                  }`}
-                >
+                <div className="relative -mt-8 aspect-[16/11] overflow-hidden rounded-2xl ring-1 ring-white/[0.06] sm:-mt-12">
                   {ch.image.showImage ? (
                     <>
                       <Image
@@ -91,7 +86,13 @@ export default function KeyServicesJournal({ ks }) {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0c0b09]/55 to-transparent" />
                     </>
-                  ) : null}
+                  ) : (
+                    <NoImage
+                      fill
+                      tone="stone"
+                      className="rounded-2xl border-stone-800/50"
+                    />
+                  )}
                 </div>
               </div>
 

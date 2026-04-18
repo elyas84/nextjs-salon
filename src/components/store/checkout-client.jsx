@@ -14,11 +14,32 @@ import {
   LAST_ORDER_KEY,
   PENDING_CHECKOUT_KEY,
 } from "@/lib/store/cart";
+import {
+  authInputClass,
+  authPrimaryButtonClass,
+  storePanelClass,
+  storeSecondaryButtonClass,
+} from "@/lib/auth-page-styles";
 
 const steps = [
   { id: "shipping", label: "Shipping" },
   { id: "delivery", label: "Delivery" },
   { id: "payment", label: "Payment" },
+];
+
+const STEP_HEADINGS = [
+  {
+    title: "Shipping address",
+    description: "Where should we send your order?",
+  },
+  {
+    title: "Delivery",
+    description: "Choose speed — pricing updates in your summary.",
+  },
+  {
+    title: "Payment",
+    description: "Card via Stripe or PayPal — demo checkout.",
+  },
 ];
 
 const DEMO_PAYMENT_DETAILS = {
@@ -117,8 +138,8 @@ function CopyRow({ label, value, icon = null, compact = false }) {
   };
 
   const wrapClassName = compact
-    ? "group flex w-full min-w-0 flex-col items-stretch gap-2 rounded-xl border border-white/10 bg-white/5 px-2.5 py-2 text-left transition hover:bg-white/10"
-    : "group flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-left transition hover:bg-white/10";
+    ? "group flex w-full min-w-0 flex-col items-stretch gap-2 rounded-xl border border-stone-700/50 bg-white/[0.04] px-2.5 py-2 text-left transition hover:bg-white/[0.06]"
+    : "group flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-stone-700/50 bg-white/[0.04] px-3 py-2 text-left transition hover:bg-white/[0.06]";
 
   return (
     <button
@@ -130,21 +151,21 @@ function CopyRow({ label, value, icon = null, compact = false }) {
     >
       <span className={compact ? "flex min-w-0 items-start gap-2" : "flex min-w-0 items-center gap-2"}>
         {icon ? (
-          <span className="inline-flex size-4 shrink-0 items-center justify-center text-zinc-300">
+          <span className="inline-flex size-4 shrink-0 items-center justify-center text-stone-400">
             {icon}
           </span>
         ) : compact ? null : (
           <span className="inline-flex size-4 shrink-0 items-center justify-center">
-            <span className="size-2 rounded-full bg-zinc-300" />
+            <span className="size-2 rounded-full bg-stone-500" />
           </span>
         )}
         <span className="min-w-0 flex-1">
-          <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <span className="block text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-500">
             {label}
           </span>
           <span
             className={[
-              "mt-0.5 block min-w-0 text-zinc-200",
+              "mt-0.5 block min-w-0 text-stone-200",
               compact
                 ? "text-sm font-semibold leading-tight whitespace-nowrap"
                 : "truncate text-xs",
@@ -155,11 +176,11 @@ function CopyRow({ label, value, icon = null, compact = false }) {
         </span>
       </span>
       {compact ? (
-        <span className="w-full rounded-lg border border-white/10 bg-black/20 px-2 py-1.5 text-center text-[9px] font-black uppercase tracking-widest text-zinc-300 transition group-hover:text-zinc-100">
+        <span className="w-full rounded-lg border border-stone-700/50 bg-stone-950/40 px-2 py-1.5 text-center text-[9px] font-semibold uppercase tracking-[0.18em] text-stone-400 transition group-hover:text-stone-200">
           Copy
         </span>
       ) : (
-        <span className="shrink-0 rounded-lg border border-white/10 bg-black/20 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-300 transition group-hover:text-zinc-100">
+        <span className="shrink-0 rounded-lg border border-stone-700/50 bg-stone-950/40 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400 transition group-hover:text-stone-200">
           Copy
         </span>
       )}
@@ -383,79 +404,115 @@ export default function CheckoutClient({ paypalClientId = "" }) {
 
   if (!orderReady) {
     return (
-      <section className="mx-auto flex min-h-[60vh] w-full max-w-4xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 lg:px-8">
-        <div className="surface-panel rounded-3xl p-8">
-          <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-300">
-            Checkout
-          </p>
-          <h1 className="mt-3 text-2xl font-extrabold text-zinc-50 sm:text-3xl">
-            Checkout starts with a cart
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            Add items before continuing to checkout.
-          </p>
-          <button
-            type="button"
-            onClick={() => router.push("/products")}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:bg-rose-500 hover:text-white"
-          >
-            Shop products <ArrowRight className="size-4" />
-          </button>
-        </div>
-      </section>
+      <div className="relative border-b border-stone-800/50 bg-[#0a0908]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_120%,rgba(244,114,182,0.06),transparent_55%)]" />
+        <section className="relative mx-auto flex min-h-[55vh] w-full max-w-4xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 lg:px-8">
+          <div className={`${storePanelClass} w-full max-w-lg p-8 sm:p-10`}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/80">
+              Checkout
+            </p>
+            <h1 className="mt-4 font-heading text-2xl font-semibold text-stone-100 sm:text-3xl">
+              Your cart is empty
+            </h1>
+            <p className="mt-3 text-sm leading-relaxed text-stone-500">
+              Add products before continuing to shipping, delivery, and payment.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push("/products")}
+              className={`${authPrimaryButtonClass} mt-8 w-full sm:w-auto`}
+            >
+              Shop products <ArrowRight className="size-4" />
+            </button>
+          </div>
+        </section>
+      </div>
     );
   }
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-300">
-          Checkout
-        </p>
-        <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tighter text-zinc-50 sm:text-4xl">
-          FINALIZE ORDER
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-zinc-400">
-          {isAuthenticated
-            ? "You are signed in, so your order can sync with your dashboard."
-            : "You can still place an order, but signing in keeps the history in your dashboard."}
-        </p>
-      </div>
+    <div className="relative border-b border-stone-800/50 bg-[#0a0908]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_15%_-10%,rgba(253,230,138,0.06),transparent_55%)]" />
+      <section className="relative mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+        <div className="mb-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/80">
+            Checkout
+          </p>
+          <h1 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-stone-100 sm:text-4xl">
+            Shipping, delivery & payment
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stone-500 sm:text-base">
+            {isAuthenticated
+              ? "You’re signed in — your order will appear on your dashboard."
+              : "Guest checkout works too; sign in later to see history in one place."}
+          </p>
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_0.95fr]">
-        <div className="surface-panel rounded-3xl p-6">
-          <div className="flex flex-wrap gap-3">
-            {steps.map((item, index) => {
-              const active = index === step;
-              const complete = index < step;
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_0.95fr]">
+          <div className={`${storePanelClass} p-5 sm:p-8`}>
+            <nav aria-label="Checkout steps" className="mb-8">
+              <ol className="flex flex-col gap-3 md:flex-row md:items-stretch md:gap-3">
+                {steps.map((item, index) => {
+                  const active = index === step;
+                  const complete = index < step;
 
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setStep(index)}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                    active
-                      ? "bg-rose-500 text-zinc-950"
-                      : complete
-                        ? "border border-emerald-500/20 bg-emerald-500/10 text-emerald-200"
-                        : "border border-white/10 bg-white/5 text-zinc-200 hover:bg-white/10"
-                  }`}
-                >
-                  {complete ? (
-                    <CheckCircle2 className="size-4" />
-                  ) : (
-                    <span className="inline-flex size-5 items-center justify-center rounded-full border border-current text-[11px]">
-                      {index + 1}
-                    </span>
-                  )}
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
+                  return (
+                    <li key={item.id} className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setStep(index)}
+                        className={`flex w-full min-w-0 items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                          active
+                            ? "border-amber-500/40 bg-amber-500/10 ring-1 ring-amber-500/20"
+                            : complete
+                              ? "border-emerald-500/30 bg-emerald-500/10"
+                              : "border-stone-800/60 bg-white/[0.02] hover:border-stone-600/80"
+                        }`}
+                      >
+                        {complete ? (
+                          <CheckCircle2 className="size-5 shrink-0 text-emerald-300/90" />
+                        ) : (
+                          <span
+                            className={`flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                              active
+                                ? "bg-amber-500/20 text-amber-100"
+                                : "border border-stone-600 text-stone-500"
+                            }`}
+                          >
+                            {index + 1}
+                          </span>
+                        )}
+                        <span className="min-w-0">
+                          <span className="block text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-500">
+                            Step {index + 1}
+                          </span>
+                          <span className="mt-0.5 block font-medium text-stone-100">
+                            {item.label}
+                          </span>
+                        </span>
+                      </button>
+                      {index < steps.length - 1 ? (
+                        <span
+                          className="mx-1 hidden h-8 w-px shrink-0 bg-stone-700/80 md:block"
+                          aria-hidden
+                        />
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
 
-          <div className="mt-8">
+            <div className="border-t border-stone-800/60 pt-8">
+              <div className="mb-6">
+                <h2 className="font-heading text-lg font-semibold text-stone-100 sm:text-xl">
+                  {STEP_HEADINGS[step].title}
+                </h2>
+                <p className="mt-1 text-sm text-stone-500">
+                  {STEP_HEADINGS[step].description}
+                </p>
+              </div>
+
             {step === 0 ? (
               <div className="grid gap-4 md:grid-cols-2">
                 {[
@@ -467,7 +524,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                   { name: "postalCode", label: "Postal code", type: "text" },
                 ].map((field) => (
                   <label key={field.name} className="space-y-2 md:col-span-1">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-stone-500">
                       {field.label}
                     </span>
                     <input
@@ -475,7 +532,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                       name={field.name}
                       value={formData[field.name]}
                       onChange={handleChange}
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
+                      className={authInputClass}
                     />
                   </label>
                 ))}
@@ -500,8 +557,8 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                     key={option.id}
                     className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-colors ${
                       formData.delivery === option.id
-                        ? "border-rose-500/40 bg-rose-500/10"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                        ? "border-amber-500/35 bg-amber-500/10 ring-1 ring-amber-500/15"
+                        : "border-stone-800/60 bg-white/[0.03] hover:border-stone-700/80"
                     }`}
                   >
                     <input
@@ -510,13 +567,13 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                       value={option.id}
                       checked={formData.delivery === option.id}
                       onChange={handleChange}
-                      className="mt-1"
+                      className="mt-1 border-stone-600 text-amber-600 focus:ring-amber-500/30"
                     />
                     <span>
-                      <span className="block text-sm font-semibold text-zinc-50">
+                      <span className="block text-sm font-semibold text-stone-100">
                         {option.label}
                       </span>
-                      <span className="mt-1 block text-sm text-zinc-400">
+                      <span className="mt-1 block text-sm text-stone-500">
                         {option.description}
                       </span>
                     </span>
@@ -527,12 +584,12 @@ export default function CheckoutClient({ paypalClientId = "" }) {
 
             {step === 2 ? (
               <div className="space-y-5">
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-sm">
+                <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-5 ring-1 ring-white/[0.04]">
                   <div className="flex flex-col gap-1">
-                    <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-zinc-400">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-stone-500">
                       Payment method
                     </p>
-                    <p className="text-sm text-zinc-400">
+                    <p className="text-sm text-stone-500">
                       Choose one option to complete the demo checkout.
                     </p>
                   </div>
@@ -559,8 +616,8 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                           className={[
                             "group relative cursor-pointer overflow-hidden rounded-2xl border p-4 transition",
                             active
-                              ? "border-rose-500/50 bg-rose-500/10"
-                              : "border-white/10 bg-black/20 hover:bg-white/5",
+                              ? "border-amber-500/40 bg-amber-500/10 ring-1 ring-amber-500/20"
+                              : "border-stone-800/60 bg-stone-950/30 hover:border-stone-700/80",
                           ].join(" ")}
                         >
                           <input
@@ -572,7 +629,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                             className="sr-only"
                           />
                           <div className="flex items-start gap-3">
-                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-zinc-950/40">
+                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-700/50 bg-stone-950/50">
                               {opt.id === "stripe" ? (
                                 <StripeMark className="h-7 w-7" />
                               ) : (
@@ -581,20 +638,20 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                             </span>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-3">
-                                <p className="text-sm font-semibold text-zinc-50">
+                                <p className="text-sm font-semibold text-stone-100">
                                   {opt.label}
                                 </p>
-                                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
+                                <span className="rounded-full border border-stone-700/50 bg-white/[0.05] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-stone-400">
                                   {opt.helper}
                                 </span>
                               </div>
-                              <p className="mt-1 text-xs leading-5 text-zinc-400">
+                              <p className="mt-1 text-xs leading-5 text-stone-500">
                                 {opt.description}
                               </p>
                             </div>
                           </div>
                           {active ? (
-                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-rose-400/80 via-rose-500/60 to-transparent" />
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-400/70 via-amber-500/50 to-transparent" />
                           ) : null}
                         </label>
                       );
@@ -602,13 +659,13 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                   </div>
                 </div>
 
-                <section className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-sm">
+                <section className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-5 ring-1 ring-white/[0.04]">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-zinc-50">
+                      <p className="text-sm font-semibold text-stone-100">
                         Demo payment details
                       </p>
-                      <p className="mt-1 text-xs leading-5 text-zinc-400">
+                      <p className="mt-1 text-xs leading-5 text-stone-500">
                         Optional — only needed if you want to log in to PayPal’s
                         sandbox or use the demo card values.
                       </p>
@@ -616,7 +673,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                     <button
                       type="button"
                       onClick={() => setShowDemoDetails((current) => !current)}
-                      className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-zinc-100 shadow-sm transition-colors hover:bg-white/10"
+                      className="rounded-full border border-stone-600/80 bg-transparent px-3.5 py-2 text-xs font-semibold text-stone-200 transition hover:border-stone-500 hover:bg-white/[0.04]"
                     >
                       {showDemoDetails ? "Hide" : "Show"}
                     </button>
@@ -624,16 +681,16 @@ export default function CheckoutClient({ paypalClientId = "" }) {
 
                   {showDemoDetails ? (
                     <div className="mt-4 grid gap-4 md:grid-cols-2">
-                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4 overflow-hidden">
+                      <div className="rounded-2xl border border-stone-800/60 bg-stone-950/40 p-4 overflow-hidden">
                         <div className="flex items-center gap-3">
-                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-zinc-950/40">
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-stone-700/50 bg-stone-950/50">
                             <StripeMark className="h-6 w-6" />
                           </span>
                           <div>
-                            <p className="text-xs font-semibold text-zinc-50">
+                            <p className="text-xs font-semibold text-stone-100">
                               Stripe (test card)
                             </p>
-                            <p className="text-[11px] text-zinc-500">
+                            <p className="text-[11px] text-stone-500">
                               Use these in Stripe checkout.
                             </p>
                           </div>
@@ -642,7 +699,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                           <CopyRow
                             label="Card number"
                             value={DEMO_PAYMENT_DETAILS.stripe.cardNumber}
-                            icon={<CreditCard className="size-4 text-zinc-300" />}
+                            icon={<CreditCard className="size-4 text-stone-400" />}
                           />
                           <div className="grid gap-2 sm:grid-cols-3">
                             <CopyRow
@@ -664,16 +721,16 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                         </div>
                       </div>
 
-                      <div className="rounded-2xl border border-white/10 bg-black/20 p-4 overflow-hidden">
+                      <div className="rounded-2xl border border-stone-800/60 bg-stone-950/40 p-4 overflow-hidden">
                         <div className="flex items-center gap-3">
-                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-zinc-950/40">
+                          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-stone-700/50 bg-stone-950/50">
                             <PayPalMark className="h-6 w-6" />
                           </span>
                           <div>
-                            <p className="text-xs font-semibold text-zinc-50">
+                            <p className="text-xs font-semibold text-stone-100">
                               PayPal (sandbox)
                             </p>
-                            <p className="text-[11px] text-zinc-500">
+                            <p className="text-[11px] text-stone-500">
                               Login for the PayPal demo flow.
                             </p>
                           </div>
@@ -682,12 +739,12 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                           <CopyRow
                             label="Email"
                             value={DEMO_PAYMENT_DETAILS.paypal.buyerEmail}
-                            icon={<CreditCard className="size-4 text-zinc-300" />}
+                            icon={<CreditCard className="size-4 text-stone-400" />}
                           />
                           <CopyRow
                             label="Password"
                             value={DEMO_PAYMENT_DETAILS.paypal.password}
-                            icon={<KeyRound className="size-4 text-zinc-300" />}
+                            icon={<KeyRound className="size-4 text-stone-400" />}
                           />
                         </div>
                       </div>
@@ -696,17 +753,17 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                 </section>
 
                 {formData.paymentMethod === "stripe" ? (
-                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-sm">
+                  <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-5 ring-1 ring-white/[0.04]">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-3">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-zinc-950/40">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-700/50 bg-stone-950/50">
                           <StripeMark className="h-7 w-7" />
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-zinc-50">
+                          <p className="text-sm font-semibold text-stone-100">
                             Pay with Stripe
                           </p>
-                          <p className="mt-1 text-xs leading-5 text-zinc-400">
+                          <p className="mt-1 text-xs leading-5 text-stone-500">
                             You’ll be redirected to Stripe test checkout and
                             returned after confirmation.
                           </p>
@@ -717,7 +774,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                       type="button"
                       onClick={startStripeCheckout}
                       disabled={isSubmitting}
-                      className="kinetic-gradient mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+                      className={`${authPrimaryButtonClass} mt-4 w-full sm:w-auto`}
                     >
                       {isSubmitting ? "Starting checkout..." : "Continue to Stripe"}
                       {!isSubmitting ? <ArrowRight className="size-4" /> : null}
@@ -726,16 +783,16 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                 ) : null}
 
                 {formData.paymentMethod === "paypal" ? (
-                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-sm">
+                  <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-5 ring-1 ring-white/[0.04]">
                     <div className="flex items-start gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-zinc-950/40">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-700/50 bg-stone-950/50">
                         <PayPalMark className="h-7 w-7" />
                       </span>
                       <div>
-                        <p className="text-sm font-semibold text-zinc-50">
+                        <p className="text-sm font-semibold text-stone-100">
                           Pay with PayPal
                         </p>
-                        <p className="mt-1 text-xs leading-5 text-zinc-400">
+                        <p className="mt-1 text-xs leading-5 text-stone-500">
                           Complete the demo transaction using PayPal buttons below.
                         </p>
                       </div>
@@ -805,7 +862,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
                         </PayPalScriptProvider>
                       </div>
                     ) : (
-                      <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-black/20 p-4 text-sm text-zinc-300">
+                      <div className="mt-4 rounded-2xl border border-dashed border-stone-700/50 bg-stone-950/30 p-4 text-sm text-stone-400">
                         Add `PAYPAL_CLIENT_ID` to enable PayPal buttons.
                       </div>
                     )}
@@ -826,7 +883,7 @@ export default function CheckoutClient({ paypalClientId = "" }) {
               type="button"
               onClick={previousStep}
               disabled={step === 0}
-              className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-100 shadow-sm transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`${storeSecondaryButtonClass} disabled:opacity-40`}
             >
               Back
             </button>
@@ -835,54 +892,65 @@ export default function CheckoutClient({ paypalClientId = "" }) {
               <button
                 type="button"
                 onClick={nextStep}
-                className="kinetic-gradient inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition-colors hover:brightness-110"
+                className={`${authPrimaryButtonClass} w-auto`}
               >
                 Continue <ArrowRight className="size-4" />
               </button>
             ) : (
-              <span className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-300 shadow-sm">
-                Choose a payment method above to finish the demo transaction
+              <span className="rounded-2xl border border-stone-800/60 bg-white/[0.03] px-4 py-3 text-sm text-stone-500">
+                Choose a payment method above to finish
               </span>
             )}
           </div>
         </div>
 
-        <aside className="surface-panel h-fit rounded-3xl p-6">
-          <h2 className="text-lg font-semibold text-zinc-50">Summary</h2>
+        <aside className={`${storePanelClass} h-fit p-5 sm:p-6`}>
+          <h2 className="font-heading text-lg font-semibold text-stone-100">
+            Order summary
+          </h2>
           <div className="mt-4 space-y-4">
             {items.map((item) => (
               <div key={item.slug} className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-zinc-50">{item.name}</p>
-                  <p className="text-xs text-zinc-500">Qty {item.quantity}</p>
+                  <p className="text-sm font-medium text-stone-100">{item.name}</p>
+                  <p className="text-xs text-stone-500">Qty {item.quantity}</p>
                 </div>
-                <p className="text-sm text-zinc-300">
+                <p className="text-sm tabular-nums text-stone-300">
                   {formatCurrency(item.price * item.quantity)}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 space-y-3 border-t border-white/10 pt-4 text-sm">
-            <div className="flex items-center justify-between text-zinc-300">
+          <div className="mt-6 space-y-3 border-t border-stone-800/70 pt-4 text-sm">
+            <div className="flex items-center justify-between text-stone-400">
               <span>Subtotal</span>
-              <span>{formatCurrency(checkoutTotals.subtotal)}</span>
+              <span className="tabular-nums text-stone-200">
+                {formatCurrency(checkoutTotals.subtotal)}
+              </span>
             </div>
-            <div className="flex items-center justify-between text-zinc-300">
+            <div className="flex items-center justify-between text-stone-400">
               <span>Shipping</span>
-              <span>{formatCurrency(checkoutTotals.shipping)}</span>
+              <span className="tabular-nums text-stone-200">
+                {formatCurrency(checkoutTotals.shipping)}
+              </span>
             </div>
-            <div className="flex items-center justify-between text-zinc-300">
+            <div className="flex items-center justify-between text-stone-400">
               <span>Estimated tax (8%)</span>
-              <span>{formatCurrency(checkoutTotals.tax)}</span>
+              <span className="tabular-nums text-stone-200">
+                {formatCurrency(checkoutTotals.tax)}
+              </span>
             </div>
-            <div className="flex items-center justify-between pt-2 text-base font-semibold text-zinc-50">
+            <div className="flex items-center justify-between pt-2 text-base font-semibold text-stone-100">
               <span>Total</span>
-              <span>{formatCurrency(checkoutTotals.total)}</span>
+              <span className="tabular-nums">
+                {formatCurrency(checkoutTotals.total)}
+              </span>
             </div>
           </div>
         </aside>
       </div>
     </section>
+    </div>
   );
 }

@@ -50,7 +50,6 @@ import {
   Tag,
   Star,
   UserCircle,
-  Users2,
   X,
 } from "lucide-react";
 import {
@@ -74,7 +73,6 @@ import {
   filterPaidOrders,
 } from "@/lib/admin/analytics-export-pdf";
 import SiteSettingsPanel from "@/components/admin/site-settings-panel";
-import TeamAdminPanel from "@/components/admin/team-admin-panel";
 import TestimonialsAdminPanel from "@/components/admin/testimonials-admin-panel";
 import { formatCurrency } from "@/lib/store/cart";
 import {
@@ -82,6 +80,12 @@ import {
   normalizeBookingReference,
 } from "@/lib/booking-reference";
 import { PRODUCT_CATEGORY_OPTIONS } from "@/lib/product-categories";
+import {
+  authInputClass,
+  authPrimaryButtonClass,
+  storePanelClass,
+  storeSecondaryButtonClass,
+} from "@/lib/auth-page-styles";
 
 const SECTIONS = [
   "dashboard",
@@ -90,7 +94,6 @@ const SECTIONS = [
   "orders",
   "reviews",
   "testimonials",
-  "team",
   "analytics",
   "users",
   "emails",
@@ -110,7 +113,6 @@ const ADMIN_NAV_ITEMS = [
   { key: "orders", label: "Customer Orders", icon: ShoppingCart },
   { key: "reviews", label: "Product Reviews", icon: MessageSquare },
   { key: "testimonials", label: "Testimonials", icon: Quote },
-  { key: "team", label: "Team", icon: Users2 },
   { key: "analytics", label: "Analytics", icon: BarChart3 },
   { key: "users", label: "Users", icon: Users },
   { key: "emails", label: "Emails", icon: Mail },
@@ -263,6 +265,8 @@ export default function AdminPage() {
   const [bookingDeleteLoading, setBookingDeleteLoading] = useState(false);
   const [productPendingDelete, setProductPendingDelete] = useState(null);
   const [productDeleteLoading, setProductDeleteLoading] = useState(false);
+  const [orderPendingDelete, setOrderPendingDelete] = useState(null);
+  const [orderDeleteLoading, setOrderDeleteLoading] = useState(false);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [productModalMode, setProductModalMode] = useState("create"); // create | edit | view
   const [productModalSaving, setProductModalSaving] = useState(false);
@@ -881,7 +885,7 @@ export default function AdminPage() {
         note: `${analyticsScoped.paidOrdersCount} paid orders`,
         delta: revenueDelta,
         icon: TrendingUp,
-        accent: "border-rose-500",
+        accent: "border-amber-500",
         tone: "text-sky-300",
       },
       {
@@ -984,7 +988,7 @@ export default function AdminPage() {
         value: formatCurrency(analytics.revenue),
         note: `${analytics.paidOrdersCount} paid orders`,
         icon: TrendingUp,
-        accent: "border-rose-500",
+        accent: "border-amber-500",
         tone: "text-sky-300",
       },
       {
@@ -1220,6 +1224,42 @@ export default function AdminPage() {
       toast.success("Order updated.");
     } catch {
       toast.error("Failed to update order.");
+    }
+  };
+
+  const confirmDeleteOrder = async () => {
+    if (!orderPendingDelete?._id) return;
+    setOrderDeleteLoading(true);
+    try {
+      const id = String(orderPendingDelete._id);
+      const res = await fetch(`/api/orders/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error || "Failed to delete order.");
+        return;
+      }
+      setOrders((prev) => prev.filter((o) => String(o?._id) !== id));
+      setOrderPendingDelete(null);
+      const uRes = await fetch("/api/users", { credentials: "include" });
+      if (uRes.ok) {
+        const uData = await uRes.json();
+        const list = Array.isArray(uData.users) ? uData.users : [];
+        setUsers(list);
+        if (customerOrdersUser) {
+          const fresh = list.find(
+            (u) => String(u?._id) === String(customerOrdersUser._id),
+          );
+          if (fresh) setCustomerOrdersUser(fresh);
+        }
+      }
+      toast.success(data.message || "Order deleted.");
+    } catch {
+      toast.error("Failed to delete order.");
+    } finally {
+      setOrderDeleteLoading(false);
     }
   };
 
@@ -1678,28 +1718,34 @@ export default function AdminPage() {
 
   if (checking) {
     return (
-      <main className="flex min-h-[calc(100svh-160px)] items-center justify-center bg-zinc-950 px-6">
-        <div className="rounded-xl border border-white/10 bg-white/5 px-6 py-4 text-sm font-semibold text-zinc-200">
-          Loading admin console…
-        </div>
-      </main>
+      <div className="relative min-h-[calc(100svh-160px)] bg-[#0a0908] text-stone-100">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(245,158,11,0.07),transparent_50%)]" />
+        <main className="relative z-10 flex min-h-[calc(100svh-160px)] items-center justify-center px-6">
+          <div className="rounded-2xl border border-stone-800/60 bg-[#0c0b09]/90 px-6 py-4 text-sm font-semibold text-stone-200 ring-1 ring-white/[0.04] backdrop-blur-xl">
+            Loading admin console…
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
     <>
-    <div className="mx-auto grid w-full max-w-screen-2xl gap-6 bg-zinc-950 px-4 py-6 text-zinc-100 sm:px-6 md:grid-cols-[19rem_minmax(0,1fr)] md:items-start md:gap-8">
+    <div className="relative min-h-[calc(100svh-160px)] bg-[#0a0908] text-stone-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(245,158,11,0.07),transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_100%_25%,rgba(120,113,108,0.09),transparent_55%)]" />
+    <div className="relative z-10 mx-auto grid w-full max-w-screen-2xl gap-6 px-4 py-6 sm:px-6 md:grid-cols-[19rem_minmax(0,1fr)] md:items-start md:gap-8">
       {/* self-start: default grid stretch matched aside height to main column, pushing View site / Log out below the fold */}
       <aside className="relative hidden h-fit w-full flex-col md:flex md:self-start md:sticky md:top-24">
         <div
-          className="pointer-events-none absolute left-0 top-8 bottom-8 w-px bg-gradient-to-b from-rose-500/55 via-rose-400/12 to-transparent"
+          className="pointer-events-none absolute left-0 top-8 bottom-8 w-px bg-gradient-to-b from-amber-500/55 via-amber-400/12 to-transparent"
           aria-hidden
         />
-        <div className="surface-panel relative flex min-h-0 max-h-[calc(100dvh-7rem)] flex-col overflow-hidden rounded-[1.75rem] border border-white/[0.07] bg-gradient-to-b from-zinc-900/95 via-zinc-950 to-zinc-950 p-5 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.75)] ring-1 ring-white/[0.04] sm:p-6">
+        <div className="surface-panel relative flex min-h-0 max-h-[calc(100dvh-7rem)] flex-col overflow-hidden rounded-[1.75rem] border border-stone-800/60 bg-gradient-to-b from-[#0c0b09]/98 via-[#0a0908] to-[#0a0908] p-5 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.75)] ring-1 ring-white/[0.04] sm:p-6">
           <div className="mb-6 shrink-0">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h1 className="font-heading text-2xl font-black tracking-tighter text-rose-400">
+                <h1 className="font-heading text-2xl font-black tracking-tighter text-amber-400">
                   Studio Salon
                 </h1>
                 <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
@@ -1707,7 +1753,7 @@ export default function AdminPage() {
                 </p>
               </div>
               <div
-                className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-rose-500/25 bg-rose-500/10 text-[11px] font-black tracking-tight text-rose-200 shadow-inner"
+                className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-amber-500/25 bg-amber-500/10 text-[11px] font-black tracking-tight text-amber-200 shadow-inner"
                 aria-hidden
               >
                 SS
@@ -1765,7 +1811,7 @@ export default function AdminPage() {
                   className={cx(
                     "group flex w-full items-center justify-between gap-2 rounded-xl px-2.5 py-2.5 text-left transition-all duration-200",
                     active
-                      ? "bg-gradient-to-r from-rose-500/18 via-rose-500/8 to-transparent font-bold text-rose-100 shadow-[inset_3px_0_0_0_rgb(244,63,94)]"
+                      ? "bg-gradient-to-r from-amber-500/18 via-amber-500/8 to-transparent font-bold text-amber-100 shadow-[inset_3px_0_0_0_rgb(245,158,11)]"
                       : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100",
                   )}
                 >
@@ -1774,7 +1820,7 @@ export default function AdminPage() {
                       className={cx(
                         "inline-flex size-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
                         active
-                          ? "border-rose-500/35 bg-rose-500/15 text-rose-200"
+                          ? "border-amber-500/35 bg-amber-500/15 text-amber-200"
                           : "border-white/[0.06] bg-white/[0.03] text-zinc-500 group-hover:border-white/10 group-hover:bg-white/[0.06] group-hover:text-zinc-300",
                       )}
                       aria-hidden
@@ -1790,10 +1836,10 @@ export default function AdminPage() {
                       className="inline-flex size-6 shrink-0 items-center justify-center"
                       aria-hidden
                     >
-                      <span className="size-2 rounded-full bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.55)] ring-2 ring-rose-500/40" />
+                      <span className="size-2 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.55)] ring-2 ring-amber-500/40" />
                     </span>
                   ) : badgeCount > 0 ? (
-                    <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                    <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
                       {badgeCount > 9 ? "9+" : badgeCount}
                     </span>
                   ) : null}
@@ -1813,7 +1859,7 @@ export default function AdminPage() {
             <button
               type="button"
               onClick={() => setLogoutConfirmOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-400/35 bg-rose-500/15 py-2.5 text-sm font-semibold text-rose-100 shadow-sm transition hover:bg-rose-500/25"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/35 bg-amber-500/15 py-2.5 text-sm font-semibold text-amber-100 shadow-sm transition hover:bg-amber-500/25"
             >
               <LogOut className="size-4 shrink-0" />
               Log out
@@ -1823,7 +1869,7 @@ export default function AdminPage() {
       </aside>
 
       <main className="min-w-0">
-        <header className="sticky top-0 z-40 flex w-full min-w-0 items-center gap-3 border-b border-white/[0.08] bg-zinc-950/75 px-4 backdrop-blur-md sm:gap-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-40 flex w-full min-w-0 items-center gap-3 border-b border-stone-800/50 bg-[#0a0908]/90 px-4 backdrop-blur-md sm:gap-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 shrink-0 items-center gap-3 sm:gap-4">
             <div className="flex shrink-0 items-center gap-2 md:hidden">
               <button
@@ -1839,7 +1885,7 @@ export default function AdminPage() {
               </span>
             </div>
             <div className="hidden min-w-0 md:flex md:max-w-[14rem] md:flex-col md:justify-center md:pr-2 lg:max-w-xs">
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-400/90">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400/90">
                 Admin
               </span>
               <span className="truncate font-heading text-lg font-bold tracking-tight text-zinc-50">
@@ -1848,8 +1894,7 @@ export default function AdminPage() {
             </div>
           </div>
           {activeSection !== "settings" &&
-          activeSection !== "testimonials" &&
-          activeSection !== "team" ? (
+          activeSection !== "testimonials" ? (
             <div
               ref={adminSearchWrapRef}
               className="relative w-full min-w-0 max-w-md flex-1 md:max-w-lg"
@@ -1904,7 +1949,7 @@ export default function AdminPage() {
                     setAdminSuggestSuppressed(true);
                   }
                 }}
-                className="w-full rounded-md bg-zinc-900 px-10 py-2 text-sm text-zinc-100 outline-none ring-1 ring-white/10 placeholder:text-zinc-500 focus:ring-2 focus:ring-rose-500/30"
+                className="w-full rounded-md bg-zinc-900 px-10 py-2 text-sm text-zinc-100 outline-none ring-1 ring-white/10 placeholder:text-zinc-500 focus:ring-2 focus:ring-amber-500/30"
                 placeholder={
                   activeSection === "inventory"
                     ? "Search products by name, slug, category..."
@@ -2008,13 +2053,13 @@ export default function AdminPage() {
             />
             <div
               className={cx(
-                "absolute left-0 top-0 h-full w-[min(22rem,92vw)] overflow-y-auto border-r border-white/[0.08] bg-gradient-to-b from-zinc-950 via-zinc-950 to-zinc-950 px-5 py-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[16px_0_48px_-12px_rgba(0,0,0,0.65)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 sm:py-8",
+                "absolute left-0 top-0 h-full w-[min(22rem,92vw)] overflow-y-auto border-r border-stone-800/50 bg-gradient-to-b from-[#0c0b09] via-[#0a0908] to-[#0a0908] px-5 py-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] shadow-[16px_0_48px_-12px_rgba(0,0,0,0.65)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 sm:py-8",
                 mobileNavOpen ? "translate-x-0" : "-translate-x-full",
               )}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex min-w-0 items-center gap-3.5">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-rose-200 shadow-sm">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-amber-200 shadow-sm">
                     <span className="text-sm font-black" aria-hidden>
                       SS
                     </span>
@@ -2084,7 +2129,7 @@ export default function AdminPage() {
                       className={cx(
                         "group relative flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition duration-200",
                         active
-                          ? "border-rose-500/35 bg-gradient-to-r from-rose-500/15 via-rose-500/10 to-white/[0.02] text-rose-50"
+                          ? "border-amber-500/35 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-white/[0.02] text-amber-50"
                           : "border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/5",
                       )}
                     >
@@ -2093,7 +2138,7 @@ export default function AdminPage() {
                           className={cx(
                             "inline-flex size-9 shrink-0 items-center justify-center rounded-xl border",
                             active
-                              ? "border-rose-500/35 bg-rose-500/15 text-rose-200"
+                              ? "border-amber-500/35 bg-amber-500/15 text-amber-200"
                               : "border-white/10 bg-white/5 text-zinc-300 group-hover:bg-white/10",
                           )}
                           aria-hidden
@@ -2106,13 +2151,13 @@ export default function AdminPage() {
                       </span>
                       <span className="flex shrink-0 items-center gap-2">
                         {badgeCount > 0 ? (
-                          <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
+                          <span className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-zinc-950">
                             {badgeCount > 9 ? "9+" : badgeCount}
                           </span>
                         ) : null}
                         {active ? (
                           <span
-                            className="size-2 shrink-0 rounded-full bg-rose-500"
+                            className="size-2 shrink-0 rounded-full bg-amber-500"
                             aria-hidden
                           />
                         ) : null}
@@ -2137,7 +2182,7 @@ export default function AdminPage() {
                     closeMobileNav();
                     setLogoutConfirmOpen(true);
                   }}
-                  className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-400/35 bg-rose-500/15 px-4 py-3.5 text-sm font-semibold text-rose-100 shadow-sm transition duration-200 hover:bg-rose-500/25 active:scale-[0.99]"
+                  className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-400/35 bg-amber-500/15 px-4 py-3.5 text-sm font-semibold text-amber-100 shadow-sm transition duration-200 hover:bg-amber-500/25 active:scale-[0.99]"
                 >
                   <LogOut className="size-4 shrink-0" />
                   Log out
@@ -2181,7 +2226,7 @@ export default function AdminPage() {
                   </button>
                   <button
                     type="button"
-                    className="rounded-md bg-rose-500 px-4 py-2 text-sm font-black text-zinc-950 shadow-lg shadow-rose-500/15 transition active:scale-95"
+                    className="rounded-md bg-amber-500 px-4 py-2 text-sm font-black text-zinc-950 shadow-lg shadow-amber-500/15 transition active:scale-95"
                     onClick={handleDownloadAnalyticsPdf}
                   >
                     Download Analytics (PDF)
@@ -2255,7 +2300,7 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setActiveSection("orders")}
-                    className="inline-flex items-center gap-1 text-xs font-black text-rose-300 hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-black text-amber-300 hover:underline"
                   >
                     VIEW ALL <ChevronRight className="size-4" />
                   </button>
@@ -2264,6 +2309,7 @@ export default function AdminPage() {
                   rows={filteredOrders.slice(0, 6)}
                   products={products}
                   onUpdate={updateOrderStatus}
+                  onRequestDelete={(o) => setOrderPendingDelete(o)}
                   compact
                   emptyMessage={
                     query.trim()
@@ -2282,21 +2328,21 @@ export default function AdminPage() {
               icon={Boxes}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-zinc-300">
+                <p className="text-sm text-stone-400">
                   Create, update, and remove products from your store.
                 </p>
                 <button
                   type="button"
                   onClick={openCreateProduct}
-                  className="kinetic-gradient inline-flex items-center justify-center rounded-md px-5 py-3 text-xs font-black uppercase tracking-widest text-zinc-950 transition hover:brightness-110 active:scale-95"
+                  className="inline-flex items-center justify-center rounded-full bg-stone-100 px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-stone-950 shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition hover:bg-amber-50 active:scale-95"
                 >
                   <PlusCircle className="mr-2 size-4" />
                   Create product
                 </button>
               </div>
               {filteredProducts.length ? (
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
-                  <p className="text-sm text-zinc-400">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-800/50 pb-3">
+                  <p className="text-sm text-stone-500">
                     {filteredProducts.length} product
                     {filteredProducts.length === 1 ? "" : "s"}
                     {query.trim() ? " (search)" : ""}
@@ -2309,11 +2355,11 @@ export default function AdminPage() {
                       }
                       disabled={inventoryPage <= 1}
                       aria-label="Previous page"
-                      className="inline-flex size-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-200 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex size-8 items-center justify-center rounded-lg border border-stone-800/60 bg-[#0c0b09] text-stone-200 transition hover:border-stone-700/70 hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <ChevronLeft className="size-4" />
                     </button>
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-stone-500">
                       Page {inventoryPage} / {inventoryTotalPages}
                     </span>
                     <button
@@ -2325,7 +2371,7 @@ export default function AdminPage() {
                       }
                       disabled={inventoryPage >= inventoryTotalPages}
                       aria-label="Next page"
-                      className="inline-flex size-8 items-center justify-center rounded border border-white/10 bg-zinc-900 text-zinc-200 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex size-8 items-center justify-center rounded-lg border border-stone-800/60 bg-[#0c0b09] text-stone-200 transition hover:border-stone-700/70 hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <ChevronRight className="size-4" />
                     </button>
@@ -2389,6 +2435,7 @@ export default function AdminPage() {
                 rows={pagedOrders}
                 products={products}
                 onUpdate={updateOrderStatus}
+                onRequestDelete={(o) => setOrderPendingDelete(o)}
                 emptyMessage={
                   query.trim()
                     ? "No orders match your search."
@@ -2419,7 +2466,7 @@ export default function AdminPage() {
                       className={cx(
                         "rounded border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide transition",
                         reviewStatusFilter === tab.key
-                          ? "border-rose-500 bg-rose-500/15 text-rose-200"
+                          ? "border-amber-500 bg-amber-500/15 text-amber-200"
                           : "border-white/10 bg-zinc-900 text-zinc-300 hover:border-white/20",
                       )}
                     >
@@ -2473,20 +2520,10 @@ export default function AdminPage() {
           {activeSection === "testimonials" ? (
             <SectionShell
               title="Testimonials"
-              subtitle="Quotes for the About page (between the team grid and bottom CTA). Superadmin only."
+              subtitle="Quotes for the About page (above the bottom CTA). Superadmin only."
               icon={Quote}
             >
               <TestimonialsAdminPanel />
-            </SectionShell>
-          ) : null}
-
-          {activeSection === "team" ? (
-            <SectionShell
-              title="Team"
-              subtitle="About page — “The Engineers” grid: names, roles, and portraits (saved via /api/team, max 12)."
-              icon={Users2}
-            >
-              <TeamAdminPanel />
             </SectionShell>
           ) : null}
 
@@ -2504,7 +2541,7 @@ export default function AdminPage() {
                       draft: emptyBookingDraft(),
                     })
                   }
-                  className="inline-flex items-center gap-2 rounded-xl border border-rose-500/35 bg-rose-500/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-rose-200 transition hover:bg-rose-500/20"
+                  className="inline-flex items-center gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-amber-200 transition hover:bg-amber-500/20"
                 >
                   <PlusCircle className="size-4" />
                   Add booking
@@ -2675,8 +2712,8 @@ export default function AdminPage() {
                               </p>
                             ) : null}
                             {b.adminNotes ? (
-                              <p className="mt-3 whitespace-pre-wrap border-t border-white/10 pt-3 text-xs text-rose-200/90">
-                                <span className="font-bold text-rose-300/90">
+                              <p className="mt-3 whitespace-pre-wrap border-t border-white/10 pt-3 text-xs text-amber-200/90">
+                                <span className="font-bold text-amber-300/90">
                                   Admin:{" "}
                                 </span>
                                 {b.adminNotes}
@@ -2742,7 +2779,7 @@ export default function AdminPage() {
                                   type="button"
                                   disabled={busy || bookingModalSaving}
                                   onClick={() => setBookingPendingDelete(b)}
-                                  className="inline-flex w-fit max-w-full items-center justify-center gap-2 self-center rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-rose-200 transition hover:bg-rose-500/20 disabled:opacity-50"
+                                  className="inline-flex w-fit max-w-full items-center justify-center gap-2 self-center rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-amber-200 transition hover:bg-amber-500/20 disabled:opacity-50"
                                 >
                                   <Trash2 className="size-3.5" />
                                   Delete record
@@ -2766,7 +2803,7 @@ export default function AdminPage() {
                   No bookings yet.{" "}
                   <Link
                     href="/book-a-service"
-                    className="font-semibold text-rose-400 underline-offset-2 hover:underline"
+                    className="font-semibold text-amber-400 underline-offset-2 hover:underline"
                   >
                     Open the booking page
                   </Link>
@@ -2981,7 +3018,7 @@ export default function AdminPage() {
                         "rounded-2xl border p-4 sm:p-5",
                         em.isRead
                           ? "border-white/10 bg-white/[0.03]"
-                          : "border-rose-500/25 bg-rose-500/5",
+                          : "border-amber-500/25 bg-amber-500/5",
                       )}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -2992,7 +3029,7 @@ export default function AdminPage() {
                             <p className="mt-1 text-xs text-zinc-500">{em.phone}</p>
                           ) : null}
                           {em.topic ? (
-                            <p className="mt-1 text-xs font-semibold text-rose-200/90">
+                            <p className="mt-1 text-xs font-semibold text-amber-200/90">
                               {em.topic}
                             </p>
                           ) : null}
@@ -3002,7 +3039,7 @@ export default function AdminPage() {
                         </div>
                         <div className="flex shrink-0 flex-wrap items-center gap-2">
                           {!em.isRead ? (
-                            <span className="rounded-full border border-rose-500/40 bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-rose-200">
+                            <span className="rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-200">
                               Unread
                             </span>
                           ) : null}
@@ -3071,34 +3108,34 @@ export default function AdminPage() {
             >
               <form
                 onSubmit={saveAdminProfile}
-                className="surface-panel max-w-2xl rounded-3xl p-6 sm:p-8"
+                className={cx(storePanelClass, "max-w-2xl p-6 sm:p-8")}
               >
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <label className="block">
-                    <span className="mb-2 block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                    <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                       Name
                     </span>
                     <input
                       value={profileName}
                       onChange={(e) => setProfileName(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
+                      className={cx(authInputClass, "h-11 py-0")}
                     />
                   </label>
                   <label className="block">
-                    <span className="mb-2 block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                    <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                       Email
                     </span>
                     <input
                       type="email"
                       value={profileEmail}
                       onChange={(e) => setProfileEmail(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 shadow-sm outline-none transition placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
+                      className={cx(authInputClass, "h-11 py-0")}
                     />
                   </label>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <label className="block">
-                      <span className="mb-2 block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                      <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                         Current password
                       </span>
                       <div className="relative">
@@ -3109,7 +3146,7 @@ export default function AdminPage() {
                           value={currentPassword}
                           onChange={(e) => setCurrentPassword(e.target.value)}
                           autoComplete="current-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
+                          className={cx(authInputClass, "h-11 py-0 pr-12")}
                         />
                         <button
                           type="button"
@@ -3119,7 +3156,7 @@ export default function AdminPage() {
                               current: !prev.current,
                             }))
                           }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-zinc-400 transition-colors hover:text-white"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-stone-500 transition-colors hover:text-stone-200"
                           aria-label={
                             profilePasswordVisible.current
                               ? "Hide password"
@@ -3135,7 +3172,7 @@ export default function AdminPage() {
                       </div>
                     </label>
                     <label className="block">
-                      <span className="mb-2 block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                      <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                         New password
                       </span>
                       <div className="relative">
@@ -3144,7 +3181,7 @@ export default function AdminPage() {
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
                           autoComplete="new-password"
-                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
+                          className={cx(authInputClass, "h-11 py-0 pr-12")}
                         />
                         <button
                           type="button"
@@ -3154,7 +3191,7 @@ export default function AdminPage() {
                               new: !prev.new,
                             }))
                           }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-zinc-400 transition-colors hover:text-white"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-stone-500 transition-colors hover:text-stone-200"
                           aria-label={
                             profilePasswordVisible.new
                               ? "Hide password"
@@ -3172,7 +3209,7 @@ export default function AdminPage() {
                   </div>
 
                   <label className="block">
-                    <span className="mb-2 block text-xs font-extrabold uppercase tracking-widest text-zinc-400">
+                    <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                       Confirm new password
                     </span>
                     <div className="relative">
@@ -3181,7 +3218,7 @@ export default function AdminPage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         autoComplete="new-password"
-                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-zinc-100 shadow-sm outline-none transition focus:ring-2 focus:ring-rose-500/30"
+                        className={cx(authInputClass, "h-11 py-0 pr-12")}
                       />
                       <button
                         type="button"
@@ -3191,7 +3228,7 @@ export default function AdminPage() {
                             confirm: !prev.confirm,
                           }))
                         }
-                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-zinc-400 transition-colors hover:text-white"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-stone-500 transition-colors hover:text-stone-200"
                         aria-label={
                           profilePasswordVisible.confirm
                             ? "Hide password"
@@ -3210,7 +3247,10 @@ export default function AdminPage() {
                   <button
                     type="submit"
                     disabled={profileSaving}
-                    className="kinetic-gradient inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-black uppercase tracking-tight text-zinc-950 shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                    className={cx(
+                      authPrimaryButtonClass,
+                      "!w-auto min-w-[12rem] px-8 py-3.5 disabled:cursor-not-allowed disabled:opacity-60",
+                    )}
                   >
                     {profileSaving ? (
                       <>
@@ -3253,7 +3293,7 @@ export default function AdminPage() {
                         className={cx(
                           "rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition",
                           active
-                            ? "bg-rose-500 text-zinc-950"
+                            ? "bg-amber-500 text-zinc-950"
                             : "text-zinc-300 hover:bg-white/10",
                         )}
                       >
@@ -3330,7 +3370,7 @@ export default function AdminPage() {
               <div className="rounded-md border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                 <div className="mb-2 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <BarChart3 className="size-5 text-rose-300" />
+                    <BarChart3 className="size-5 text-amber-300" />
                     <h4 className="font-heading font-bold text-zinc-50">
                       Revenue bars (paid orders)
                     </h4>
@@ -3345,7 +3385,7 @@ export default function AdminPage() {
               <div className="rounded-md border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="size-5 text-rose-300" />
+                    <DollarSign className="size-5 text-amber-300" />
                     <h4 className="font-heading font-bold text-zinc-50">
                       Paid orders by provider
                     </h4>
@@ -3361,10 +3401,11 @@ export default function AdminPage() {
         </div>
       </main>
     </div>
+    </div>
 
       {logoutConfirmOpen ? (
         <div
-          className="fixed inset-0 z-[65] flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm"
+          className="fixed inset-0 z-[65] flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby="admin-logout-title"
@@ -3372,7 +3413,7 @@ export default function AdminPage() {
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Session
                 </p>
                 <h2
@@ -3410,7 +3451,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={handleLogout}
                 disabled={logoutLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {logoutLoading ? (
                   <>
@@ -3435,15 +3476,16 @@ export default function AdminPage() {
           orders={customerUserOrders}
           products={products}
           onClose={() => setCustomerOrdersUser(null)}
+          onRequestDeleteOrder={(o) => setOrderPendingDelete(o)}
         />
       ) : null}
 
       {bookingModal ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-zinc-950/70 px-4 py-10 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#0a0908]/75 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel max-h-[min(90vh,40rem)] w-full max-w-lg overflow-y-auto rounded-3xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-amber-200">
                   {bookingModal.mode === "create" ? "New booking" : "Edit booking"}
                 </p>
                 <h2 className="mt-2 text-xl font-extrabold text-zinc-50">
@@ -3473,7 +3515,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("fullName", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3486,7 +3528,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("email", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3498,7 +3540,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("phone", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3515,7 +3557,7 @@ export default function AdminPage() {
                     )
                   }
                   placeholder="e.g. Your name, a nickname, or your pet’s name"
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3527,7 +3569,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("serviceType", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 >
                   <option>Haircut & finish</option>
                   <option>Color / gloss</option>
@@ -3551,7 +3593,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       updateBookingDraft("preferredDate", e.target.value)
                     }
-                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                   />
                 </label>
                 <label className="grid gap-1.5 text-sm">
@@ -3568,7 +3610,7 @@ export default function AdminPage() {
                     onChange={(e) =>
                       updateBookingDraft("preferredTime", e.target.value)
                     }
-                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30 disabled:opacity-50"
+                    className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30 disabled:opacity-50"
                   >
                     {!slotsForIsoDateLocal(bookingModal.draft.preferredDate)
                       .length ? (
@@ -3594,7 +3636,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("status", e.target.value)
                   }
-                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 >
                   <option value="pending">Pending</option>
                   <option value="confirmed">Confirmed</option>
@@ -3613,7 +3655,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("notes", e.target.value)
                   }
-                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 />
               </label>
               <label className="grid gap-1.5 text-sm">
@@ -3626,7 +3668,7 @@ export default function AdminPage() {
                   onChange={(e) =>
                     updateBookingDraft("adminNotes", e.target.value)
                   }
-                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+                  className="resize-y rounded-lg border border-white/10 bg-zinc-900/80 px-3 py-2 text-zinc-100 outline-none focus:ring-2 focus:ring-amber-500/30"
                 />
               </label>
             </div>
@@ -3644,7 +3686,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={saveBookingModal}
                 disabled={bookingModalSaving}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-rose-400 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400 disabled:opacity-60"
               >
                 {bookingModalSaving ? (
                   <>
@@ -3663,11 +3705,11 @@ export default function AdminPage() {
       ) : null}
 
       {bookingPendingDelete ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete booking
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -3708,7 +3750,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={confirmDeleteBooking}
                 disabled={bookingDeleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:opacity-60"
               >
                 {bookingDeleteLoading ? (
                   <>
@@ -3728,11 +3770,11 @@ export default function AdminPage() {
       ) : null}
 
       {userPendingDelete ? (
-        <div className="fixed inset-0 z-[65] flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[65] flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete user
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -3771,7 +3813,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={confirmDeleteUser}
                 disabled={userDeleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {userDeleteLoading ? (
                   <>
@@ -3791,11 +3833,11 @@ export default function AdminPage() {
       ) : null}
 
       {reviewPendingDelete ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete review
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -3834,7 +3876,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={confirmDeleteAdminReview}
                 disabled={reviewDeleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {reviewDeleteLoading ? (
                   <>
@@ -3854,11 +3896,11 @@ export default function AdminPage() {
       ) : null}
 
       {productPendingDelete ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete product
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -3897,7 +3939,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={confirmDeleteProduct}
                 disabled={productDeleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {productDeleteLoading ? (
                   <>
@@ -3916,12 +3958,75 @@ export default function AdminPage() {
         </div>
       ) : null}
 
-      {emailPendingDelete ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 px-4 py-10 backdrop-blur-sm">
+      {orderPendingDelete ? (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
           <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-rose-200">
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
+                  Delete order
+                </p>
+                <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
+                  Remove this order?
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => !orderDeleteLoading && setOrderPendingDelete(null)}
+                disabled={orderDeleteLoading}
+                className="rounded-full p-2 text-zinc-400 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Close dialog"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <p className="mt-4 text-sm leading-6 text-zinc-300">
+              This permanently deletes order{" "}
+              <span className="font-mono font-semibold text-zinc-50">
+                #{orderPendingDelete.orderNumber || "—"}
+              </span>
+              , including its line items and invoice record. This cannot be undone.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setOrderPendingDelete(null)}
+                disabled={orderDeleteLoading}
+                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 shadow-sm transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteOrder}
+                disabled={orderDeleteLoading}
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {orderDeleteLoading ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="size-4" />
+                    Yes, delete order
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {emailPendingDelete ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/65 px-4 py-10 backdrop-blur-sm">
+          <div className="surface-panel w-full max-w-md rounded-4xl p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-amber-200">
                   Delete message
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold text-zinc-50">
@@ -3960,7 +4065,7 @@ export default function AdminPage() {
                 type="button"
                 onClick={confirmDeleteEmail}
                 disabled={emailDeleteLoading}
-                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {emailDeleteLoading ? (
                   <>
@@ -4044,7 +4149,13 @@ function fulfillmentBadgeLabel(status) {
   return String(status || "pending").toUpperCase();
 }
 
-function CustomerOrdersModal({ user, orders, products, onClose }) {
+function CustomerOrdersModal({
+  user,
+  orders,
+  products,
+  onClose,
+  onRequestDeleteOrder,
+}) {
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -4058,7 +4169,7 @@ function CustomerOrdersModal({ user, orders, products, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-950/70 px-4 py-8 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-[#0a0908]/75 px-4 py-8 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="customer-orders-title"
@@ -4191,17 +4302,29 @@ function CustomerOrdersModal({ user, orders, products, onClose }) {
                         {n} line item{n === 1 ? "" : "s"} ·{" "}
                         <span className="font-bold text-zinc-100">{total}</span>
                       </p>
-                      {oid ? (
-                        <Link
-                          href={`/place-order?orderId=${encodeURIComponent(oid)}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-xs font-black uppercase tracking-wide text-white transition hover:bg-zinc-800"
-                        >
-                          <DollarSign className="size-4" aria-hidden />
-                          Order confirmation →
-                        </Link>
-                      ) : null}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {onRequestDeleteOrder && oid ? (
+                          <button
+                            type="button"
+                            onClick={() => onRequestDeleteOrder(order)}
+                            className="inline-flex items-center gap-2 rounded-lg border border-rose-500/35 bg-rose-500/10 px-4 py-2 text-xs font-black uppercase tracking-wide text-rose-100 transition hover:bg-rose-500/20"
+                          >
+                            <Trash2 className="size-4" aria-hidden />
+                            Delete
+                          </button>
+                        ) : null}
+                        {oid ? (
+                          <Link
+                            href={`/place-order?orderId=${encodeURIComponent(oid)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-xs font-black uppercase tracking-wide text-white transition hover:bg-zinc-800"
+                          >
+                            <DollarSign className="size-4" aria-hidden />
+                            Order confirmation →
+                          </Link>
+                        ) : null}
+                      </div>
                     </div>
                     <div className="mt-4 space-y-3 border-t border-white/5 pt-4">
                       {lineItems.map((line, idx) => {
@@ -4276,7 +4399,7 @@ function SectionShell({ title, subtitle, icon: Icon, headerActions, children }) 
           <div className="flex items-center gap-3">
             {Icon ? (
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-                <Icon className="size-5 text-rose-300" />
+                <Icon className="size-5 text-amber-300" />
               </span>
             ) : null}
             <h2 className="font-heading text-2xl font-extrabold tracking-tighter text-zinc-50 sm:text-3xl">
@@ -4306,53 +4429,53 @@ function InventoryTable({
   compact = false,
 }) {
   const invAct =
-    "inline-flex items-center gap-1 rounded border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-zinc-100 transition hover:bg-white/10 active:scale-95";
+    "inline-flex items-center gap-1 rounded-lg border border-stone-800/60 bg-white/[0.03] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-stone-100 transition hover:border-stone-700/70 hover:bg-white/[0.06] active:scale-95";
   const invDanger =
-    "inline-flex items-center gap-1 rounded border border-white/10 bg-red-500/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-red-100 transition hover:bg-red-500/25 active:scale-95";
+    "inline-flex items-center gap-1 rounded-lg border border-rose-500/35 bg-rose-500/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-100 transition hover:bg-rose-500/25 active:scale-95";
 
   return (
-    <div className="overflow-hidden rounded-md border border-white/10 bg-zinc-900">
+    <div className="overflow-hidden rounded-2xl border border-stone-800/60 bg-[#0c0b09]/90 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.75)] ring-1 ring-white/[0.04] backdrop-blur-xl">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[900px] text-left text-sm">
           <thead>
-            <tr className="bg-white/5">
-              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+            <tr className="bg-white/[0.03]">
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-stone-400">
                 Item
               </th>
-              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-stone-400">
                 Category
               </th>
-              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-stone-400">
                 Price
               </th>
-              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-stone-400">
                 Stock
               </th>
-              <th className="px-6 py-4 text-right text-xs font-black uppercase tracking-widest text-zinc-400">
+              <th className="px-6 py-4 text-right text-xs font-black uppercase tracking-widest text-stone-400">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-white/[0.06]">
             {rows?.length ? (
               rows.map((p) => {
                 const urls = Array.isArray(p?.gallery) ? p.gallery.filter(Boolean) : [];
                 const thumb = urls.length ? String(urls[0]).trim() : "";
                 const label = String(p?.name || "Product").trim() || "Product";
                 return (
-                <tr key={p?._id || p?.slug} className="hover:bg-white/5">
+                <tr key={p?._id || p?.slug} className="hover:bg-white/[0.03]">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                       {thumb ? (
                         <img
                           src={thumb}
                           alt={label}
-                          className="h-12 w-12 shrink-0 rounded-lg border border-white/10 bg-zinc-950 object-contain p-0.5"
+                          className="h-12 w-12 shrink-0 rounded-xl border border-stone-800/60 bg-[#0a0908] object-contain p-0.5"
                           loading="lazy"
                         />
                       ) : (
                         <div
-                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-zinc-950 text-[10px] font-bold text-zinc-500"
+                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-stone-800/60 bg-[#0a0908] text-[10px] font-bold text-stone-500"
                           aria-label={label}
                         >
                           —
@@ -4360,10 +4483,10 @@ function InventoryTable({
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">
+                  <td className="px-6 py-4 text-stone-300">
                     {p?.category || "—"}
                   </td>
-                  <td className="px-6 py-4 text-zinc-200">
+                  <td className="px-6 py-4 text-stone-200">
                     {formatCurrency(safeNum(p?.price))}
                   </td>
                   <td className="px-6 py-4">
@@ -4388,8 +4511,8 @@ function InventoryTable({
                         className={cx(
                           "text-xs font-semibold",
                           safeNum(p?.stockCount) < 5
-                            ? "text-red-300"
-                            : "text-zinc-300",
+                            ? "text-rose-300"
+                            : "text-stone-300",
                         )}
                       >
                         {safeNum(p?.stockCount)} units
@@ -4431,7 +4554,10 @@ function InventoryTable({
               })
             ) : (
               <tr>
-                <td className="px-6 py-10 text-center text-sm text-zinc-400" colSpan={5}>
+                <td
+                  className="px-6 py-10 text-center text-sm text-stone-500"
+                  colSpan={5}
+                >
                   {emptyMessage}
                 </td>
               </tr>
@@ -4517,16 +4643,16 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-10">
-      <div className="flex w-full max-w-2xl max-h-[calc(100svh-4rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl">
-        <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-6 py-4">
-          <h3 className="font-heading text-lg font-extrabold text-zinc-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0908]/75 px-4 py-10 backdrop-blur-sm">
+      <div className="flex w-full max-w-2xl max-h-[calc(100svh-4rem)] flex-col overflow-hidden rounded-2xl border border-stone-800/60 bg-[#0c0b09] shadow-2xl ring-1 ring-white/[0.04]">
+        <div className="flex shrink-0 items-center justify-between border-b border-stone-800/60 px-6 py-4">
+          <h3 className="font-heading text-lg font-extrabold text-stone-50">
             {title}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-100 transition hover:bg-white/10 active:scale-95"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-800/60 bg-white/[0.03] text-stone-100 transition hover:border-stone-700/70 hover:bg-white/[0.06] active:scale-95"
             aria-label="Close"
           >
             <X className="size-5" />
@@ -4591,17 +4717,22 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
             readOnly={readOnly}
             placeholder="42"
           />
-          <p className="sm:col-span-2 text-xs text-zinc-500">
+          <p className="sm:col-span-2 text-xs text-stone-500">
             If original price is set above current price, the catalog shows a savings badge
             automatically.
           </p>
           <div className="sm:col-span-2">
             <div className="flex items-center justify-between gap-3">
-              <div className="text-xs font-black uppercase tracking-widest text-zinc-400">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                 Gallery images (multiple)
               </div>
               {readOnly ? null : (
-                <label className={cx("inline-flex cursor-pointer items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-100 transition hover:bg-white/10 active:scale-95", !canUpload ? "cursor-not-allowed opacity-60" : "")}>
+                <label
+                  className={cx(
+                    "inline-flex cursor-pointer items-center gap-2 rounded-full border border-stone-800/60 bg-white/[0.03] px-3 py-2 text-[10px] font-black uppercase tracking-widest text-stone-100 transition hover:border-stone-700/70 hover:bg-white/[0.06] active:scale-95",
+                    !canUpload ? "cursor-not-allowed opacity-60" : "",
+                  )}
+                >
                   <PlusCircle className="size-4" />
                   {uploading ? "Uploading..." : "Upload images"}
                   <input
@@ -4625,7 +4756,7 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
                   {gallery.map((url, idx) => (
                     <div
                       key={`${idx}-${url}`}
-                      className="group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-zinc-900/80 sm:h-16"
+                      className="group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-xl border border-stone-800/60 bg-[#0a0908] sm:h-16"
                     >
                       <img
                         src={url}
@@ -4638,31 +4769,31 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
                         <button
                           type="button"
                           onClick={() => removeGalleryUrl(url)}
-                          className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-red-500/20 text-red-100 opacity-0 transition hover:bg-red-500/30 group-hover:opacity-100"
+                          className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/35 bg-rose-500/20 text-rose-100 opacity-0 transition hover:bg-rose-500/30 group-hover:opacity-100"
                           aria-label="Remove image"
                         >
                           <Trash2 className="size-4" />
                         </button>
                       )}
-                      <div className="absolute bottom-2 left-2 right-2 truncate text-[10px] font-black uppercase tracking-widest text-zinc-200 opacity-0 transition group-hover:opacity-100">
+                      <div className="absolute bottom-2 left-2 right-2 truncate text-[10px] font-black uppercase tracking-widest text-stone-200 opacity-0 transition group-hover:opacity-100">
                         Image {idx + 1}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-400">
+                <div className="rounded-xl border border-stone-800/60 bg-white/[0.03] px-4 py-3 text-sm text-stone-500">
                   No images yet.
                 </div>
               )}
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-stone-500">
                 Upload 1+ images. The first image can be treated as the primary image on the product page.
               </p>
             </div>
           </div>
           <div className="sm:col-span-2">
             <label className="grid gap-2">
-              <span className="text-xs font-black uppercase tracking-widest text-zinc-400">
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
                 Description
               </span>
               <textarea
@@ -4673,31 +4804,37 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
                 readOnly={readOnly}
                 rows={5}
                 placeholder="Full product description for the product page and search."
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30"
+                className={cx(
+                  authInputClass,
+                  "min-h-[7.5rem] resize-y py-3 text-stone-100",
+                )}
               />
             </label>
           </div>
           <div className="sm:col-span-2">
-            <label className="inline-flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-200">
-              <span className="font-semibold text-zinc-100">In stock</span>
+            <label className="inline-flex items-center justify-between gap-3 rounded-xl border border-stone-800/60 bg-white/[0.03] px-4 py-3 text-sm text-stone-200">
+              <span className="font-semibold text-stone-100">In stock</span>
               <input
                 type="checkbox"
                 checked={Boolean(form.inStock)}
                 onChange={(e) => setForm((p) => ({ ...p, inStock: e.target.checked }))}
                 disabled={readOnly}
-                className="size-4 accent-rose-500"
+                className="size-4 accent-amber-500"
               />
             </label>
           </div>
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-white/10 px-6 py-4">
+        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-stone-800/60 px-6 py-4">
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="rounded-md border border-white/10 bg-white/5 px-5 py-3 text-xs font-black uppercase tracking-widest text-zinc-100 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+            className={cx(
+              storeSecondaryButtonClass,
+              "!w-auto px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60",
+            )}
           >
             Close
           </button>
@@ -4706,7 +4843,10 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="kinetic-gradient rounded-md px-5 py-3 text-xs font-black uppercase tracking-widest text-zinc-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+              className={cx(
+                authPrimaryButtonClass,
+                "!w-auto min-w-[9rem] px-8 py-3.5 disabled:cursor-not-allowed disabled:opacity-60",
+              )}
             >
               {saving ? "Saving..." : "Save"}
             </button>
@@ -4720,7 +4860,7 @@ function ProductModal({ mode, saving, form, setForm, onClose, onSave }) {
 function Field({ label, value, onChange, readOnly = false, placeholder = "" }) {
   return (
     <label className="grid gap-2">
-      <span className="text-xs font-black uppercase tracking-widest text-zinc-400">
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
         {label}
       </span>
       <input
@@ -4728,7 +4868,10 @@ function Field({ label, value, onChange, readOnly = false, placeholder = "" }) {
         onChange={(e) => onChange?.(e.target.value)}
         readOnly={readOnly}
         placeholder={placeholder}
-        className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30 read-only:opacity-70"
+        className={cx(
+          authInputClass,
+          "h-11 py-0 leading-none read-only:opacity-70",
+        )}
       />
     </label>
   );
@@ -4744,14 +4887,17 @@ function SelectField({
 }) {
   return (
     <label className="grid gap-2">
-      <span className="text-xs font-black uppercase tracking-widest text-zinc-400">
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
         {label}
       </span>
       <select
         value={value}
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.value)}
-        className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+        className={cx(
+          authInputClass,
+          "h-11 cursor-pointer py-0 pr-8 disabled:cursor-not-allowed disabled:opacity-60",
+        )}
       >
         {options.map((opt) => (
           <option key={opt || "__empty__"} value={opt}>
@@ -4767,6 +4913,7 @@ function OrdersTable({
   rows,
   products = [],
   onUpdate,
+  onRequestDelete,
   compact = false,
   emptyMessage = "No orders yet.",
 }) {
@@ -4974,7 +5121,7 @@ function OrdersTable({
                       </button>
                     ) : (
                       <select
-                        className="h-8 min-w-0 w-full rounded-lg border border-white/10 bg-zinc-950 px-1 text-[10px] font-black uppercase tracking-wider text-zinc-100 outline-none focus:ring-1 focus:ring-rose-500/40"
+                        className="h-8 min-w-0 w-full rounded-lg border border-white/10 bg-zinc-950 px-1 text-[10px] font-black uppercase tracking-wider text-zinc-100 outline-none focus:ring-1 focus:ring-amber-500/40"
                         value={String(o?.status || "pending")}
                         onChange={(e) => onUpdate?.(o?._id, { status: e.target.value })}
                       >
@@ -4994,6 +5141,17 @@ function OrdersTable({
                       <ChevronRight className="size-3.5 shrink-0 opacity-80" />
                     </Link>
                   </div>
+
+                  {onRequestDelete && oid ? (
+                    <button
+                      type="button"
+                      onClick={() => onRequestDelete(o)}
+                      className="inline-flex h-8 w-full min-w-0 items-center justify-center gap-1.5 rounded-lg border border-rose-500/35 bg-rose-500/10 px-2 text-[10px] font-black uppercase tracking-wider text-rose-100 transition hover:bg-rose-500/20 active:scale-[0.99]"
+                    >
+                      <Trash2 className="size-3.5 shrink-0" aria-hidden />
+                      Delete order
+                    </button>
+                  ) : null}
                 </section>
               </div>
             </article>
@@ -5051,7 +5209,7 @@ function ReviewEditStars({ value, onChange, disabled }) {
           onMouseEnter={() => {
             if (!disabled) setHover(star);
           }}
-          className="rounded-lg p-0.5 outline-none transition-[transform,opacity] duration-200 hover:scale-110 focus-visible:ring-2 focus-visible:ring-rose-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          className="rounded-lg p-0.5 outline-none transition-[transform,opacity] duration-200 hover:scale-110 focus-visible:ring-2 focus-visible:ring-amber-500/30 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
         >
           <Star
             size={22}
@@ -5184,7 +5342,7 @@ function ReviewsTable({
               className={cx(
                 "rounded-4xl border p-4 shadow-sm transition-[box-shadow,background-color,border-color] duration-300 ease-out sm:p-5",
                 isEditing
-                  ? "border-white/20 bg-white/[0.05] ring-2 ring-rose-500/10 shadow-md"
+                  ? "border-white/20 bg-white/[0.05] ring-2 ring-amber-500/10 shadow-md"
                   : "border-white/10 bg-white/[0.03] hover:bg-white/[0.04]",
               )}
             >
@@ -5201,7 +5359,7 @@ function ReviewsTable({
                     String(r?.status) === "approved"
                       ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-200"
                       : String(r?.status) === "rejected"
-                        ? "border-rose-500/25 bg-rose-500/10 text-rose-200"
+                        ? "border-amber-500/25 bg-amber-500/10 text-amber-200"
                         : "border-amber-500/25 bg-amber-500/10 text-amber-200",
                   )}
                 >
@@ -5230,7 +5388,7 @@ function ReviewsTable({
                       <button
                         type="button"
                         onClick={() => onRequestDelete?.(r)}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/25 bg-rose-500/10 text-rose-200 shadow-sm transition-all duration-200 hover:bg-rose-500/15 active:scale-[0.98]"
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-amber-200 shadow-sm transition-all duration-200 hover:bg-amber-500/15 active:scale-[0.98]"
                         aria-label="Delete review"
                       >
                         <Trash2 className="size-3" />
@@ -5259,7 +5417,7 @@ function ReviewsTable({
                       value={editComment}
                       onChange={(e) => setEditComment(e.target.value)}
                       disabled={savingId === id}
-                      className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-rose-500/30 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="min-h-22 w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-relaxed text-zinc-100 shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-amber-500/30 disabled:cursor-not-allowed disabled:opacity-70"
                       placeholder="Your feedback..."
                     />
 
@@ -5314,7 +5472,7 @@ function ReviewsTable({
                   {slug ? (
                     <Link
                       href={`/products/${slug}`}
-                      className="inline-flex min-w-0 items-center gap-2 font-bold normal-case tracking-normal text-zinc-200 hover:text-rose-200"
+                      className="inline-flex min-w-0 items-center gap-2 font-bold normal-case tracking-normal text-zinc-200 hover:text-amber-200"
                     >
                       {productThumb}
                       <span className="line-clamp-1">{productName}</span>
@@ -5380,8 +5538,8 @@ function RevenueBars({ orders }) {
             <div
               key={idx}
               className={cx(
-                "flex-1 rounded-t bg-rose-500/20 transition-all hover:bg-rose-500/35",
-                idx === 0 ? "bg-rose-500" : null,
+                "flex-1 rounded-t bg-amber-500/20 transition-all hover:bg-amber-500/35",
+                idx === 0 ? "bg-amber-500" : null,
               )}
               style={{ height: `${Math.round((t / bars.max) * 100)}%` }}
               title={formatCurrency(t)}
@@ -5395,7 +5553,7 @@ function RevenueBars({ orders }) {
       </div>
       <div className="mt-4 flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400">
         <span>RECENT</span>
-        <span className="text-rose-300">PAID</span>
+        <span className="text-amber-300">PAID</span>
       </div>
     </>
   );
@@ -5443,7 +5601,6 @@ function PaymentProviderPie({ orders = [] }) {
     responsive: true,
     maintainAspectRatio: false,
     onHover: (_event, elements, chart) => {
-      // eslint-disable-next-line no-param-reassign
       chart.canvas.style.cursor = elements?.length ? "pointer" : "default";
     },
     plugins: {

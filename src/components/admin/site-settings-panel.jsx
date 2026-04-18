@@ -5,6 +5,15 @@ import { Loader2, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import { isLikelyGalleryPageUrl } from "@/lib/site-hero";
 import { SITE_SETTINGS_STRING_LIMITS } from "@/lib/site-settings-string-limits";
+import {
+  authInputClass,
+  authPrimaryButtonClass,
+  storeSecondaryButtonClass,
+} from "@/lib/auth-page-styles";
+
+function cx(...parts) {
+  return parts.filter(Boolean).join(" ");
+}
 
 function buildSiteSettingsSaveBody(draft) {
   const body = {};
@@ -20,7 +29,10 @@ function SiteSettingsSaveButton({ onClick, saving, disabled }) {
       type="button"
       onClick={onClick}
       disabled={disabled || saving}
-      className="kinetic-gradient inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-black uppercase tracking-widest text-zinc-950 shadow-lg shadow-black/25 transition hover:brightness-110 disabled:opacity-50"
+      className={cx(
+        authPrimaryButtonClass,
+        "inline-flex shrink-0 !w-auto gap-2 px-6 py-3 disabled:opacity-50",
+      )}
     >
       {saving ? <Loader2 className="size-4 animate-spin" /> : null}
       Save changes
@@ -72,14 +84,13 @@ function SettingsTextField({
   placeholder,
   wide,
 }) {
-  const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30";
+  const inputClass = cx(authInputClass, "text-stone-100");
   const v = draft[fieldKey] || "";
   const on = (x) =>
     setDraft((d) => (d ? { ...d, [fieldKey]: x } : d));
   const wrap = wide ? "block sm:col-span-2" : "block";
   const spanClass =
-    "mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-zinc-500";
+    "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500";
   if (multiline) {
     return (
       <label className={`${wrap}`}>
@@ -89,7 +100,7 @@ function SettingsTextField({
           value={v}
           onChange={(e) => on(e.target.value)}
           placeholder={placeholder}
-          className={`${inputClass} resize-y`}
+          className={cx(inputClass, "resize-y")}
         />
       </label>
     );
@@ -101,7 +112,7 @@ function SettingsTextField({
         value={v}
         onChange={(e) => on(e.target.value)}
         placeholder={placeholder}
-        className={inputClass}
+        className={cx(inputClass, "h-11 py-0")}
       />
     </label>
   );
@@ -163,26 +174,26 @@ function ImageFieldGroup({
   };
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+    <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+      <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
         {title}
       </p>
-      <p className="mt-1 text-sm font-semibold text-zinc-200">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-stone-200">{label}</p>
       {urlHelp ? (
-        <p className="mt-2 text-xs leading-relaxed text-zinc-500">{urlHelp}</p>
+        <p className="mt-2 text-xs leading-relaxed text-stone-500">{urlHelp}</p>
       ) : null}
       <label className="mt-3 block">
-        <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+        <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
           Image URL
         </span>
         <input
           value={rawUrl}
           onChange={(e) => setUrl(e.target.value)}
-          className={`w-full rounded-xl border bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30 ${
-            showGalleryWarning
-              ? "border-amber-500/50"
-              : "border-white/10"
-          }`}
+          className={cx(
+            authInputClass,
+            "text-stone-100",
+            showGalleryWarning ? "border-amber-500/50" : "",
+          )}
           placeholder="https://…"
         />
       </label>
@@ -192,20 +203,20 @@ function ImageFieldGroup({
           direct image file. Use <strong className="font-semibold">Upload</strong>, or open the
           image on the stock site, choose &quot;Copy image address&quot; / download link, and paste
           a URL that points to a .jpg, .webp, or similar file (often{" "}
-          <code className="rounded bg-white/10 px-1 py-0.5 text-[11px]">
+          <code className="rounded bg-stone-800/50 px-1 py-0.5 text-[11px] text-stone-200">
             images.pexels.com
           </code>{" "}
           for Pexels).
         </p>
       ) : null}
       <label className="mt-3 block">
-        <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+        <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-stone-500">
           {altFieldLabel}
         </span>
         <input
           value={draft?.[altKey] || ""}
           onChange={(e) => setAlt(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-rose-500/30"
+          className={cx(authInputClass, "text-stone-100", "h-11 py-0")}
         />
       </label>
       <div className="mt-3">
@@ -218,7 +229,10 @@ function ImageFieldGroup({
         />
         <label
           htmlFor={uploadId}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold uppercase tracking-wide text-zinc-200 transition hover:bg-white/10"
+          className={cx(
+            storeSecondaryButtonClass,
+            "cursor-pointer !w-auto rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wide",
+          )}
         >
           {isBusy ? (
             <Loader2 className="size-4 animate-spin" />
@@ -334,7 +348,7 @@ export default function SiteSettingsPanel({ active }) {
 
   if (loading && !draft) {
     return (
-      <div className="flex items-center gap-2 text-sm text-zinc-400">
+      <div className="flex items-center gap-2 text-sm text-stone-400">
         <Loader2 className="size-5 animate-spin" />
         Loading settings…
       </div>
@@ -343,7 +357,7 @@ export default function SiteSettingsPanel({ active }) {
 
   if (!draft) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-stone-500">
         Could not load settings. Refresh or try again.
       </p>
     );
@@ -352,24 +366,24 @@ export default function SiteSettingsPanel({ active }) {
   return (
     <div className="space-y-8">
       {/* top-20 (5rem): when this bar sticks, it sits below the h-16 header with breathing room — no extra offset while still in normal flow */}
-      <div className="sticky top-20 z-30 -mx-4 border-b border-white/10 bg-zinc-950/90 px-4 py-3 shadow-[0_6px_20px_-4px_rgba(0,0,0,0.45)] backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="sticky top-20 z-30 -mx-4 border-b border-stone-800/60 bg-[#0a0908]/90 px-4 py-3 shadow-[0_6px_20px_-4px_rgba(0,0,0,0.45)] backdrop-blur-md sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <p className="text-xs text-zinc-400 sm:text-sm">
-            <span className="text-zinc-300">
+          <p className="text-xs text-stone-400 sm:text-sm">
+            <span className="text-stone-300">
               Save stays here while you scroll.
             </span>{" "}
             Upload or paste direct image URLs.{" "}
-            <span className="text-rose-200/90">
+            <span className="text-amber-200/90">
               Nothing is live until you save.
             </span>
           </p>
           <SiteSettingsSaveButton onClick={save} saving={saving} />
         </div>
         <nav
-          className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3"
+          className="mt-3 flex flex-wrap items-center gap-2 border-t border-stone-800/50 pt-3"
           aria-label="Jump to section"
         >
-          <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+          <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-stone-500">
             Go to
           </span>
           {SITE_SETTINGS_SECTIONS.map((s) => {
@@ -382,8 +396,8 @@ export default function SiteSettingsPanel({ active }) {
                 onClick={() => goToSettingsSection(s.id)}
                 className={`rounded-lg border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide transition ${
                   isActive
-                    ? "border-rose-500/70 bg-rose-500/15 text-rose-100 shadow-[0_0_0_1px_rgba(244,114,182,0.25)]"
-                    : "border-white/10 bg-white/[0.04] text-zinc-300 hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-200"
+                    ? "border-amber-500/70 bg-amber-500/15 text-amber-100 shadow-[0_0_0_1px_rgba(245,158,11,0.28)]"
+                    : "border-stone-800/60 bg-white/[0.04] text-stone-300 hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-200"
                 }`}
               >
                 {s.label}
@@ -397,22 +411,22 @@ export default function SiteSettingsPanel({ active }) {
         id="site-settings-home"
         className="scroll-mt-36"
       >
-        <h3 className="text-xs font-black uppercase tracking-widest text-rose-300/90">
+        <h3 className="text-xs font-black uppercase tracking-widest text-amber-300/90">
           Home page
         </h3>
-        <p className="mt-2 text-xs text-zinc-500">
-          Hero and Precision Tuning grid for <span className="text-zinc-300">/</span>{" "}
+        <p className="mt-2 text-xs text-stone-500">
+          Hero and Precision Tuning grid for <span className="text-stone-300">/</span>{" "}
           only — independent from the services page.
         </p>
         <div className="mt-4 flex flex-col gap-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               Home page
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Hero — copy & calls to action
             </p>
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-stone-500">
               Empty fields use built-in defaults on the live site.
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -488,14 +502,14 @@ export default function SiteSettingsPanel({ active }) {
           />
 
           <div className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
                 Home page
               </p>
-              <p className="mt-1 text-sm font-semibold text-zinc-200">
+              <p className="mt-1 text-sm font-semibold text-stone-200">
                 Precision Tuning — section header
               </p>
-              <p className="mt-2 text-xs text-zinc-500">
+              <p className="mt-2 text-xs text-stone-500">
                 Same as the hero: empty copy fields use built-in defaults. Each
                 card can use a direct image URL or Upload (no stock gallery
                 page links). Click Save changes when done.
@@ -525,8 +539,8 @@ export default function SiteSettingsPanel({ active }) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 1 — wide (e.g. Engine Diagnostics)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -574,8 +588,8 @@ export default function SiteSettingsPanel({ active }) {
               setUploadingKey={setUploadingKey}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 2 — narrow (e.g. fluid exchange + price)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -631,11 +645,11 @@ export default function SiteSettingsPanel({ active }) {
               setUploadingKey={setUploadingKey}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 3 — narrow (e.g. braking)
               </p>
-              <p className="mt-2 text-xs text-zinc-500">
+              <p className="mt-2 text-xs text-stone-500">
                 Optional link: set both label and URL, or leave both empty to
                 show the + accent only.
               </p>
@@ -684,8 +698,8 @@ export default function SiteSettingsPanel({ active }) {
               setUploadingKey={setUploadingKey}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 4 — wide (copy + side image)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -740,23 +754,23 @@ export default function SiteSettingsPanel({ active }) {
         id="site-settings-services"
         className="scroll-mt-36"
       >
-        <h3 className="text-xs font-black uppercase tracking-widest text-rose-300/90">
+        <h3 className="text-xs font-black uppercase tracking-widest text-amber-300/90">
           Services page
         </h3>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-stone-500">
           Hero and Precision Tuning grid for{" "}
-          <span className="text-zinc-300">/services</span> — separate from the home
+          <span className="text-stone-300">/services</span> — separate from the home
           page. Standard banner is only on services.
         </p>
         <div className="mt-4 flex flex-col gap-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               Services page
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Hero — copy & calls to action
             </p>
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-stone-500">
               Empty fields use built-in defaults on the live site.
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -832,14 +846,14 @@ export default function SiteSettingsPanel({ active }) {
           />
 
           <div className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
                 Services page
               </p>
-              <p className="mt-1 text-sm font-semibold text-zinc-200">
+              <p className="mt-1 text-sm font-semibold text-stone-200">
                 Precision Tuning — section header
               </p>
-              <p className="mt-2 text-xs text-zinc-500">
+              <p className="mt-2 text-xs text-stone-500">
                 Same as the hero: empty copy fields use built-in defaults. Each
                 card can use a direct image URL or Upload (no stock gallery page
                 links).
@@ -869,8 +883,8 @@ export default function SiteSettingsPanel({ active }) {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 1 — wide (e.g. Engine Diagnostics)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -918,8 +932,8 @@ export default function SiteSettingsPanel({ active }) {
               setUploadingKey={setUploadingKey}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 2 — narrow (e.g. fluid exchange + price)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -975,11 +989,11 @@ export default function SiteSettingsPanel({ active }) {
               setUploadingKey={setUploadingKey}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 3 — narrow (e.g. braking)
               </p>
-              <p className="mt-2 text-xs text-zinc-500">
+              <p className="mt-2 text-xs text-stone-500">
                 Optional link: set both label and URL, or leave both empty to show
                 the + accent only.
               </p>
@@ -1028,8 +1042,8 @@ export default function SiteSettingsPanel({ active }) {
               setUploadingKey={setUploadingKey}
             />
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-300/80">
+            <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-300/80">
                 Card 4 — wide (copy + side image)
               </p>
               <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -1078,14 +1092,14 @@ export default function SiteSettingsPanel({ active }) {
             />
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               Services page
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Bottom “standard” banner — copy & CTAs
             </p>
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-stone-500">
               Three checklist lines; leave one empty to hide that row. Watermark
               is the large faded text behind the content.
             </p>
@@ -1170,22 +1184,22 @@ export default function SiteSettingsPanel({ active }) {
         id="site-settings-about"
         className="scroll-mt-36"
       >
-        <h3 className="text-xs font-black uppercase tracking-widest text-rose-300/90">
+        <h3 className="text-xs font-black uppercase tracking-widest text-amber-300/90">
           About page
         </h3>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-stone-500">
           Same full-bleed hero layout as home/services, with its own copy. Sections
           below follow the public page top to bottom.
         </p>
         <div className="mt-4 flex flex-col gap-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               About · Hero
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Full-height banner — same structure as home
             </p>
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-stone-500">
               Empty fields use the built-in About defaults on the live site.
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -1261,12 +1275,12 @@ export default function SiteSettingsPanel({ active }) {
 
           <div
             id="site-settings-about-heritage"
-            className="scroll-mt-36 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5"
+            className="scroll-mt-36 rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]"
           >
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               About · Heritage
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Copy & stats (two columns)
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -1333,11 +1347,11 @@ export default function SiteSettingsPanel({ active }) {
             wide
           />
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               About · Engineers strip
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Above the team grid
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -1373,11 +1387,11 @@ export default function SiteSettingsPanel({ active }) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="rounded-2xl border border-stone-800/60 bg-white/[0.03] p-4 sm:p-5 ring-1 ring-white/[0.04]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">
               About · Bottom CTA
             </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-200">
+            <p className="mt-1 text-sm font-semibold text-stone-200">
               Orange strip — copy & button
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">

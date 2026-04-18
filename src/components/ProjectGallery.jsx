@@ -2,14 +2,20 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import NoImage from "@/components/ui/NoImage";
 
 export default function ProjectGallery({ images, title }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!images || images.length === 0) {
     return (
-      <div className="flex aspect-video min-h-48 w-full items-center justify-center bg-zinc-900 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-        No images
+      <div className="relative aspect-video min-h-48 w-full overflow-hidden rounded-lg">
+        <NoImage
+          fill
+          tone="zinc"
+          label="No image"
+          className="border-zinc-800/60"
+        />
       </div>
     );
   }

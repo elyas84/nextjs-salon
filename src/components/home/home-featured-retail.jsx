@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import NoImage from "@/components/ui/NoImage";
+import { isUsableImageUrl } from "@/lib/site-hero";
 import { formatCurrency } from "@/lib/store/cart";
 
 export default function HomeFeaturedRetail({ products = [] }) {
@@ -92,10 +94,12 @@ export default function HomeFeaturedRetail({ products = [] }) {
 function FeaturedCard({ product, className = "", large = false }) {
   const slug = String(product.slug || "").trim();
   const href = slug ? `/products/${encodeURIComponent(slug)}` : "/products";
-  const primary =
+  const rawPrimary =
     Array.isArray(product.gallery) && product.gallery.length
       ? String(product.gallery[0] || "").trim()
       : "";
+  const primary =
+    rawPrimary && isUsableImageUrl(rawPrimary) ? rawPrimary : "";
   const hasCompare =
     Number(product.compareAtPrice || 0) > Number(product.price || 0);
 
@@ -123,9 +127,12 @@ function FeaturedCard({ product, className = "", large = false }) {
                 }
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold uppercase tracking-[0.3em] text-stone-600">
-                No image
-              </div>
+              <NoImage
+                fill
+                tone="store"
+                size="compact"
+                className="rounded-xl border-stone-800/50"
+              />
             )}
             <span className="absolute left-3 top-3 rounded-full bg-stone-950/85 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-amber-100/95 ring-1 ring-white/10 backdrop-blur-sm">
               New

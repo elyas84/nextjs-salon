@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ImageOff } from "lucide-react";
+import NoImage from "@/components/ui/NoImage";
 
 export default function ProductImageGallery({ images = [], alt = "Product image" }) {
   const [selectedImage, setSelectedImage] = useState(images[0] || "");
@@ -12,9 +12,13 @@ export default function ProductImageGallery({ images = [], alt = "Product image"
 
   if (!images.length) {
     return (
-      <div className="flex aspect-square max-h-[min(24rem,65vh)] items-center justify-center gap-2 text-xs text-stone-500">
-        <ImageOff className="size-4" />
-        No product image
+      <div className="relative mx-auto aspect-square w-full max-w-xl max-h-[min(24rem,65vh)]">
+        <NoImage
+          fill
+          tone="store"
+          label="No image"
+          className="rounded-2xl border-stone-800/60"
+        />
       </div>
     );
   }

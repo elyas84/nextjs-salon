@@ -1,5 +1,6 @@
 import Image from "next/image";
 import HeroCtaLink from "@/components/kinetic/hero-cta-link";
+import NoImage from "@/components/ui/NoImage";
 import { isUsableImageUrl } from "@/lib/site-hero";
 import { resolveServicesStandardBanner } from "@/lib/services-standard-banner";
 
@@ -26,7 +27,15 @@ export default function ServicesStandardBanner({ settings }) {
               />
               <div className="absolute inset-0 bg-[#0a0908]/85" />
             </div>
-          ) : null}
+          ) : (
+            <div className="pointer-events-none absolute inset-0 z-0 opacity-20">
+              <NoImage
+                fill
+                tone="stone"
+                className="rounded-3xl border-stone-800/40"
+              />
+            </div>
+          )}
           <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center overflow-hidden">
             <span className="select-none font-heading text-[6.5rem] font-semibold uppercase leading-none text-stone-800/40 sm:text-[9rem] md:text-[12rem]">
               {b.watermark}

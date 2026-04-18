@@ -4,6 +4,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ArrowRight, Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
+import AuthPageBackground from "@/components/auth/auth-page-background";
+import AuthPageFooter from "@/components/auth/auth-page-footer";
+import {
+  authCardClass,
+  authInputClass,
+  authPrimaryButtonClass,
+} from "@/lib/auth-page-styles";
 
 export default function ResetPasswordClient() {
   const searchParams = useSearchParams();
@@ -14,9 +21,6 @@ export default function ResetPasswordClient() {
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const inputClass =
-    "w-full rounded-xl border border-white/10 bg-zinc-950/80 px-4 py-3.5 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/20";
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -56,70 +60,51 @@ export default function ResetPasswordClient() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-15%,rgba(244,114,182,0.12),transparent_55%)]"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_100%_100%,rgba(244,114,182,0.06),transparent_50%)]"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
-            backgroundSize: "48px 48px",
-          }}
-          aria-hidden
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/25 to-transparent"
-          aria-hidden
-        />
-      </div>
+    <div className="min-h-screen bg-[#0a0908] text-stone-100">
+      <AuthPageBackground />
 
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-20 pt-6 sm:px-6 lg:px-10">
         <header className="flex shrink-0 items-center justify-between gap-4">
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 transition hover:text-rose-300"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-stone-400 transition hover:text-amber-200/90"
           >
             <ArrowRight className="size-4 rotate-180 transition group-hover:-translate-x-0.5" />
-            <span className="font-heading text-xs font-black uppercase tracking-[0.2em] text-zinc-200 group-hover:text-rose-200">
-              Studio <span className="text-rose-400">Salon</span>
+            <span className="font-heading text-xs font-semibold uppercase tracking-[0.2em] text-stone-200 group-hover:text-stone-50">
+              Studio{" "}
+              <span className="text-amber-200/95 group-hover:text-amber-100">
+                Salon
+              </span>
             </span>
           </Link>
         </header>
 
         <div className="flex flex-1 flex-col items-center justify-center py-12">
           <div className="w-full max-w-md">
-            <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-8 shadow-2xl shadow-black/50 backdrop-blur-xl sm:p-10">
-              <div className="mb-6 flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-                <KeyRound className="size-6 text-rose-300" />
+            <div className={authCardClass}>
+              <div className="mb-6 flex size-12 items-center justify-center rounded-2xl border border-stone-700/50 bg-white/[0.04]">
+                <KeyRound className="size-6 text-amber-200/90" />
               </div>
 
-              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-rose-300/90">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/80">
                 Password reset
               </p>
-              <h1 className="mt-2 font-heading text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">
+              <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-stone-100 sm:text-3xl">
                 Set a new password
               </h1>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-                Choose a strong password you have not used elsewhere.
+              <p className="mt-2 text-sm leading-relaxed text-stone-500">
+                Choose a strong password you haven&apos;t used elsewhere.
               </p>
 
               {!token ? (
                 <div className="mt-8 space-y-4">
-                  <p className="rounded-xl border border-rose-500/25 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                  <p className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95">
                     This link is invalid or incomplete. Request a new reset
                     email.
                   </p>
                   <Link
                     href="/forgot-password"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-rose-300 transition hover:text-rose-200"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-amber-200/90 transition hover:text-amber-100"
                   >
                     Request new link <ArrowRight className="size-4" />
                   </Link>
@@ -127,12 +112,11 @@ export default function ResetPasswordClient() {
               ) : done ? (
                 <div className="mt-8 space-y-5">
                   <p className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-200">
-                    Your password was updated. You can sign in with the new
-                    one.
+                    Your password was updated. You can sign in with the new one.
                   </p>
                   <Link
                     href="/login"
-                    className="kinetic-gradient inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 text-sm font-black uppercase tracking-widest text-zinc-950 shadow-lg shadow-black/30 transition hover:brightness-110"
+                    className={`${authPrimaryButtonClass} text-center`}
                   >
                     Go to sign in <ArrowRight className="size-4" />
                   </Link>
@@ -141,7 +125,7 @@ export default function ResetPasswordClient() {
                 <form onSubmit={onSubmit} className="mt-8 space-y-5">
                   <div>
                     <label
-                      className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-zinc-500"
+                      className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-stone-500"
                       htmlFor="newPassword"
                     >
                       New password
@@ -153,14 +137,14 @@ export default function ResetPasswordClient() {
                         required
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className={`${inputClass} pr-12`}
+                        className={`${authInputClass} pr-12`}
                         placeholder="At least 8 characters"
                         autoComplete="new-password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-zinc-400 transition-colors hover:text-white"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-stone-400 transition-colors hover:text-stone-100"
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
                         }
@@ -183,14 +167,14 @@ export default function ResetPasswordClient() {
                   <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
                     <Link
                       href="/login"
-                      className="text-sm font-semibold text-zinc-400 transition hover:text-zinc-200"
+                      className="text-sm font-semibold text-stone-400 transition hover:text-stone-100"
                     >
                       Back to sign in
                     </Link>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="kinetic-gradient inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-black uppercase tracking-widest text-zinc-950 shadow-lg shadow-black/30 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+                      className={`${authPrimaryButtonClass} w-full sm:w-auto`}
                     >
                       {loading ? (
                         <>
@@ -212,19 +196,12 @@ export default function ResetPasswordClient() {
         </div>
       </div>
 
-      <footer className="fixed bottom-0 left-0 right-0 z-20 border-t border-white/5 bg-zinc-950/80 px-4 py-4 backdrop-blur-md sm:px-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-[10px] uppercase tracking-widest text-zinc-600 sm:flex-row">
-          <span>© Studio Salon</span>
-          <div className="flex gap-6">
-            <Link href="/" className="transition hover:text-zinc-400">
-              Home
-            </Link>
-            <Link href="/login" className="transition hover:text-zinc-400">
-              Sign in
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <AuthPageFooter
+        links={[
+          { label: "Home", href: "/" },
+          { label: "Sign in", href: "/login" },
+        ]}
+      />
     </div>
   );
 }

@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import AuthPageBackground from "@/components/auth/auth-page-background";
+import AuthPageFooter from "@/components/auth/auth-page-footer";
+import {
+  authCardClass,
+  authInputClass,
+  authPrimaryButtonClass,
+} from "@/lib/auth-page-styles";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -38,103 +45,136 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="relative flex min-h-[calc(100svh-160px)] items-center justify-center overflow-hidden px-4 py-20">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 opacity-40">
-          <div className="flex h-full w-full items-center justify-center px-6">
-            <div className="w-full max-w-6xl rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-xs font-extrabold uppercase tracking-[0.25em] text-zinc-500">
-              No image
+    <div className="min-h-screen bg-[#0a0908] text-stone-100">
+      <AuthPageBackground />
+
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-20 pt-6 sm:px-6 lg:px-10">
+        <header className="flex shrink-0 items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="group inline-flex items-center gap-2 text-sm font-semibold text-stone-400 transition hover:text-amber-200/90"
+          >
+            <ArrowRight className="size-4 rotate-180 transition group-hover:-translate-x-0.5" />
+            <span className="font-heading text-xs font-semibold uppercase tracking-[0.2em] text-stone-200 group-hover:text-stone-50">
+              Studio{" "}
+              <span className="text-amber-200/95 group-hover:text-amber-100">
+                Salon
+              </span>
+            </span>
+          </Link>
+        </header>
+
+        <div className="grid flex-1 grid-cols-1 items-center gap-12 py-12 lg:grid-cols-2 lg:gap-20 lg:py-16">
+          <div className="hidden max-w-lg lg:block">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.45em] text-amber-200/85">
+              Account
+            </p>
+            <h1 className="mt-5 font-heading text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-[1.08] tracking-tight text-stone-100">
+              Reset your{" "}
+              <span className="text-stone-500">password</span>
+            </h1>
+            <p className="mt-6 text-[15px] leading-relaxed text-stone-500 sm:text-base">
+              We&apos;ll email you a secure link to choose a new password. The
+              link expires after a short time for your safety.
+            </p>
+            <div className="mt-10 hidden items-center gap-4 sm:flex">
+              <div className="h-px w-16 bg-gradient-to-r from-amber-200/50 to-transparent" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-stone-600">
+                Same login as booking & shop
+              </span>
             </div>
           </div>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-950/80 to-transparent" />
-      </div>
 
-      <div className="relative z-10 w-full max-w-lg">
-        <section className="rounded-xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-2xl md:p-12">
-          <div className="mb-10">
-            <Link
-              href="/"
-              className="font-heading text-2xl font-black italic tracking-tighter text-rose-500"
-            >
-              Studio Salon
-            </Link>
-            <div className="mt-8 flex flex-col gap-2">
-              <h1 className="font-heading text-4xl font-extrabold uppercase leading-none tracking-tight text-white md:text-5xl">
-                Recover access
-              </h1>
-              <p className="mt-4 max-w-xs text-sm font-medium leading-relaxed text-zinc-300">
-                Enter your registered email address to receive a password reset
-                link.
+          <div className="w-full justify-self-stretch lg:max-w-md lg:justify-self-end">
+            <div className={authCardClass}>
+              <div className="mb-8 lg:hidden">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-amber-200/80">
+                  Account
+                </p>
+                <h2 className="mt-2 font-heading text-2xl font-semibold text-stone-100">
+                  Recover access
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-stone-500">
+                  Enter the email you used to register. We&apos;ll send a reset
+                  link if we find an account.
+                </p>
+              </div>
+
+              <div className="mb-8 hidden lg:block">
+                <h2 className="font-heading text-xl font-semibold text-stone-100">
+                  Recover access
+                </h2>
+                <p className="mt-2 text-sm text-stone-500">
+                  Enter your registered email — we&apos;ll send a password reset
+                  link.
+                </p>
+              </div>
+
+              <form onSubmit={onSubmit} className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-stone-500"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    className={authInputClass}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={authPrimaryButtonClass}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Sending…
+                    </>
+                  ) : (
+                    <>
+                      Send reset link
+                      <ArrowRight className="size-4" aria-hidden />
+                    </>
+                  )}
+                </button>
+
+                <div className="flex justify-center pt-2">
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-400 transition hover:text-amber-200/90"
+                  >
+                    <span aria-hidden>←</span>
+                    Back to sign in
+                  </Link>
+                </div>
+              </form>
+
+              <p className="mt-10 border-t border-stone-800/70 pt-8 text-center text-xs leading-relaxed text-stone-600">
+                Didn&apos;t get an email? Check spam, or try again in a few
+                minutes.
               </p>
             </div>
           </div>
-
-          <form onSubmit={onSubmit} className="space-y-8">
-            <div className="group space-y-2">
-              <label
-                htmlFor="email"
-                className="block text-xs font-extrabold uppercase tracking-wider text-zinc-300 transition-colors group-focus-within:text-rose-300"
-              >
-                Registered Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@precision.com"
-                className="w-full rounded-md border-b-2 border-transparent bg-zinc-800 px-4 py-3.5 text-sm text-zinc-50 placeholder:text-zinc-500 outline-none transition-all focus:border-rose-500 focus:ring-0"
-              />
-            </div>
-
-            <div className="space-y-6 pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="kinetic-gradient group inline-flex w-full items-center justify-center gap-2 rounded-xl py-4 font-heading text-sm font-bold uppercase tracking-tight text-zinc-950 transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,114,182,0.35)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? "Initializing..." : "Initialize recovery"}
-                {!loading ? (
-                  <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-                ) : null}
-              </button>
-
-              <div className="flex items-center justify-center">
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-300 transition-colors duration-300 hover:text-rose-300"
-                >
-                  <span aria-hidden>←</span>
-                  Back to login
-                </Link>
-              </div>
-            </div>
-          </form>
-
-          <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-8 opacity-60">
-            <div className="flex flex-col">
-              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-300">
-                Security Protocol
-              </span>
-              <span className="font-heading text-xs font-black tracking-tighter text-white">
-                RSA-4096 / AES-256
-              </span>
-            </div>
-            <div className="h-px w-12 bg-white/20" />
-            <div className="flex flex-col text-right">
-              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-300">
-                Auth Status
-              </span>
-              <span className="font-heading text-xs font-black tracking-tighter text-white">
-                WAITING_FOR_INPUT
-              </span>
-            </div>
-          </div>
-        </section>
+        </div>
       </div>
-    </main>
+
+      <AuthPageFooter
+        links={[
+          { label: "Home", href: "/" },
+          { label: "Sign in", href: "/login" },
+        ]}
+      />
+    </div>
   );
 }

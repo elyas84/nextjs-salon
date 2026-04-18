@@ -75,6 +75,7 @@ function SiteHeaderInner() {
     searchChannel === "mobile" && headerPanelOpenBase;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset highlight when query changes
     setHeaderSearchHighlight(-1);
   }, [search]);
 
@@ -108,6 +109,7 @@ function SiteHeaderInner() {
   );
 
   useLayoutEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- menu open/close animation gate */
     if (!open) {
       setMenuMotionEnter(false);
       return;
@@ -128,6 +130,7 @@ function SiteHeaderInner() {
       cancelAnimationFrame(outer);
       cancelAnimationFrame(inner);
     };
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [open]);
 
   useEffect(() => {
@@ -259,6 +262,7 @@ function SiteHeaderInner() {
 
   const [menuPortalReady, setMenuPortalReady] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount gate for portal SSR
     setMenuPortalReady(true);
   }, []);
 

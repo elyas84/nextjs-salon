@@ -4,6 +4,12 @@ import { jwtVerify } from "jose";
 import { requiredEnv } from "@/lib/env";
 import LoginClient from "./LoginClient";
 
+export const metadata = {
+  title: "Sign in",
+  description:
+    "Sign in to your Studio Salon account — shop, bookings, and order history.",
+};
+
 const JWT_SECRET = new TextEncoder().encode(requiredEnv("JWT_SECRET"));
 
 export default async function LoginPage() {

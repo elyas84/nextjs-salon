@@ -11,10 +11,6 @@
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^9.1.0",
-    "@tiptap/extension-link": "^3.21.0",
-    "@tiptap/pm": "^3.21.0",
-    "@tiptap/react": "^3.21.0",
-    "@tiptap/starter-kit": "^3.21.0",
     "bcryptjs": "^3.0.3",
     "chart.js": "^4.5.1",
     "cloudinary": "^2.9.0",

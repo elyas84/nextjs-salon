@@ -1,19 +1,16 @@
 import Image from "next/image";
-import {
-  isUsableImageUrl,
-  resolveHomeHero,
-} from "@/lib/site-hero";
+import { isUsableImageUrl, resolveAboutHero } from "@/lib/site-hero";
 import HeroCtaLink from "@/components/kinetic/hero-cta-link";
 import NoImage from "@/components/ui/NoImage";
 
-const HERO_STATS = [
-  { k: "Studio", v: "Appointments" },
+const ABOUT_HERO_STATS = [
+  { k: "Studio", v: "Neighborhood" },
   { k: "Focus", v: "Cut & color" },
-  { k: "Retail", v: "Curated care" },
+  { k: "Care", v: "Thoughtful" },
 ];
 
-export default function HomeHero({ settings }) {
-  const hero = resolveHomeHero(settings);
+export default function AboutHero({ settings }) {
+  const hero = resolveAboutHero(settings);
   const showImage = isUsableImageUrl(hero.imageUrl);
 
   return (
@@ -34,7 +31,7 @@ export default function HomeHero({ settings }) {
             </span>
           </h1>
 
-          <p className="mt-8 max-w-md text-[15px] leading-relaxed text-stone-400 sm:text-base">
+          <p className="mt-8 max-w-md whitespace-pre-line text-[15px] leading-relaxed text-stone-400 sm:text-base">
             {hero.description}
           </p>
 
@@ -54,7 +51,7 @@ export default function HomeHero({ settings }) {
           </div>
 
           <dl className="mt-14 grid w-full max-w-lg grid-cols-3 gap-x-6 gap-y-3 border-t border-stone-800/70 pt-10 sm:gap-x-8">
-            {HERO_STATS.map((row) => (
+            {ABOUT_HERO_STATS.map((row) => (
               <dt
                 key={`h-${row.k}`}
                 className="text-[10px] font-semibold uppercase tracking-[0.28em] text-stone-500"
@@ -62,7 +59,7 @@ export default function HomeHero({ settings }) {
                 {row.k}
               </dt>
             ))}
-            {HERO_STATS.map((row) => (
+            {ABOUT_HERO_STATS.map((row) => (
               <dd
                 key={`v-${row.k}`}
                 className="font-heading text-[0.9375rem] font-semibold leading-snug tracking-tight text-balance text-stone-100"
@@ -99,7 +96,7 @@ export default function HomeHero({ settings }) {
 
           <div className="pointer-events-none absolute -bottom-6 left-6 right-6 hidden rounded-2xl border border-stone-700/40 bg-stone-900/40 px-6 py-4 backdrop-blur-md lg:block">
             <p className="text-center font-heading text-sm italic text-stone-400">
-              Hair as a quiet luxury — cut, color, and finish with intention.
+              Small studio, big heart — we grow with the neighborhood we serve.
             </p>
           </div>
         </div>

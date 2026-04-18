@@ -1,16 +1,5 @@
 import mongoose from "mongoose";
 
-const TeamMemberSchema = new mongoose.Schema(
-  {
-    name: { type: String, default: "", trim: true },
-    role: { type: String, default: "", trim: true },
-    imageUrl: { type: String, default: "", trim: true },
-    imageAlt: { type: String, default: "", trim: true },
-    order: { type: Number, default: 0 },
-  },
-  { _id: false },
-);
-
 const homeHero = {
   homeHeroImageUrl: { type: String, default: "", trim: true },
   homeHeroImageAlt: { type: String, default: "", trim: true },
@@ -157,10 +146,6 @@ const SiteSettingsSchema = new mongoose.Schema(
     servicesStandardWatermark: { type: String, default: "", trim: true },
     servicesStandardBannerImageUrl: { type: String, default: "", trim: true },
     servicesStandardBannerImageAlt: { type: String, default: "", trim: true },
-    teamMembers: {
-      type: [TeamMemberSchema],
-      default: [],
-    },
   },
   { timestamps: true },
 );

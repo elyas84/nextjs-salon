@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { isUsableImageUrl, resolveServicesHero } from "@/lib/site-hero";
 import HeroCtaLink from "@/components/kinetic/hero-cta-link";
+import NoImage from "@/components/ui/NoImage";
 
 const SERVICES_HERO_STATS = [
   { k: "Studio", v: "Appointments" },
@@ -84,7 +85,11 @@ export default function ServicesHero({ settings }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0908]/90 via-[#0a0908]/15 to-transparent lg:bg-gradient-to-l lg:from-[#0a0908]/75 lg:via-transparent lg:to-transparent" />
               </>
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-stone-800 via-stone-900 to-[#0a0908]" />
+              <NoImage
+                fill
+                tone="stone"
+                className="rounded-[2rem] border-stone-700/40"
+              />
             )}
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(253,230,138,0.12),transparent_50%)] mix-blend-overlay" />
           </div>

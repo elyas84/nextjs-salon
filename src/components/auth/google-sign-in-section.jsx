@@ -54,17 +54,17 @@ export default function GoogleSignInSection({ className = "" }) {
     <div className={className}>
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center" aria-hidden>
-          <div className="w-full border-t border-white/10" />
+          <div className="w-full border-t border-stone-700/50" />
         </div>
-        <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest text-zinc-600">
-          <span className="bg-zinc-900/70 px-3 backdrop-blur-sm">
+        <div className="relative flex justify-center text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-600">
+          <span className="bg-[#0c0b09]/95 px-3 backdrop-blur-sm">
             Or continue with
           </span>
         </div>
       </div>
       <a
         href="/api/auth/google"
-        className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200/25 bg-zinc-100 px-5 py-3.5 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-white"
+        className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-stone-600/80 bg-stone-100 px-5 py-3.5 text-sm font-semibold text-stone-950 shadow-sm transition hover:bg-amber-50"
       >
         <GoogleMark className="size-5 shrink-0" />
         Google
