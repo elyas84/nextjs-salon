@@ -73,7 +73,7 @@ export async function POST(req, { params }) {
 
     return NextResponse.json(
       {
-        message: "Review submitted and waiting for approval.",
+        message: "Review submitted.",
         review,
       },
       { status: 201 },

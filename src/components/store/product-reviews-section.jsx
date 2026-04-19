@@ -32,6 +32,13 @@ function getStars(rating) {
   });
 }
 
+function myReviewStatusLabel(status) {
+  const s = String(status || "").toLowerCase();
+  if (s === "approved") return "Approved";
+  if (s === "rejected") return "Submitted";
+  return "Submitted";
+}
+
 function StarRating({ rating = 0, size = "size-3.5" }) {
   const stars = useMemo(() => getStars(rating), [rating]);
 
@@ -259,9 +266,6 @@ export default function ProductReviewsSection({
           <h2 className="mt-3 font-heading text-2xl font-semibold text-stone-50">
             What guests are saying
           </h2>
-          <p className="mt-2 text-sm leading-6 text-stone-400">
-            Reviews are only published after admin approval.
-          </p>
         </div>
 
         <div className="rounded-3xl border border-stone-700/60 bg-stone-950/40 px-4 py-3 shadow-sm">
@@ -272,7 +276,7 @@ export default function ProductReviewsSection({
                 {summary.averageRating ? summary.averageRating.toFixed(1) : "0.0"}
               </p>
               <p className="text-xs text-stone-500">
-                {summary.reviewCount || 0} approved review{summary.reviewCount === 1 ? "" : "s"}
+                {summary.reviewCount || 0} review{summary.reviewCount === 1 ? "" : "s"}
               </p>
             </div>
           </div>
@@ -301,7 +305,7 @@ export default function ProductReviewsSection({
                       </p>
                     </div>
                     <span className="rounded-full border border-stone-700/60 bg-stone-950/50 px-3 py-1 text-[11px] font-semibold text-stone-200 shadow-sm">
-                      {myReview.status}
+                      {myReviewStatusLabel(myReview.status)}
                     </span>
                   </div>
 
@@ -336,8 +340,7 @@ export default function ProductReviewsSection({
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {myReview ? (
                     <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-                      You already submitted a review. You can update it here before
-                      it is published.
+                      You already submitted a review. You can update it here.
                     </div>
                   ) : null}
 
@@ -465,8 +468,7 @@ export default function ProductReviewsSection({
             ))
           ) : (
             <div className="rounded-3xl border border-dashed border-stone-700/50 bg-stone-950/25 p-8 text-center text-sm text-stone-400">
-              No approved reviews yet. Be the first to share feedback after
-              your review is approved.
+              No reviews yet. Be the first to share your feedback.
             </div>
           )}
         </div>

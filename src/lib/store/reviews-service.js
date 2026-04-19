@@ -22,6 +22,22 @@ const normalizeReview = (review) => ({
   updatedAt: review.updatedAt,
 });
 
+/** Shapes list payload for the review author: moderation rejections are not disclosed. */
+function normalizeReviewForOwner(review) {
+  const base = normalizeReview(review);
+  if (base.status !== "rejected") {
+    return base;
+  }
+  return {
+    ...base,
+    status: "pending",
+    adminNote: "",
+    approvedBy: null,
+    approvedAt: null,
+    rejectedAt: null,
+  };
+}
+
 async function recalculateProductStats(productId) {
   const objectId = new mongoose.Types.ObjectId(productId);
   const stats = await Review.aggregate([
@@ -107,7 +123,7 @@ export async function listReviewsByUser(userId) {
     .sort({ createdAt: -1 })
     .lean();
 
-  return reviews.map(normalizeReview);
+  return reviews.map(normalizeReviewForOwner);
 }
 
 export async function createReview({

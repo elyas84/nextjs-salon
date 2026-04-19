@@ -220,7 +220,8 @@ function reviewStatusTone(status) {
     case "approved":
       return "border-emerald-500/25 bg-emerald-500/10 text-emerald-200";
     case "rejected":
-      return "border-rose-500/25 bg-rose-500/10 text-rose-200";
+      // Fallback if raw status ever appears: show as submitted (rejections are hidden from customers).
+      return "border-amber-500/25 bg-amber-500/10 text-amber-200";
     default:
       return "border-amber-500/25 bg-amber-500/10 text-amber-200";
   }
@@ -231,9 +232,9 @@ function reviewStatusLabel(status) {
     case "approved":
       return "Approved";
     case "rejected":
-      return "Rejected";
+      return "Submitted";
     default:
-      return "Pending";
+      return "Submitted";
   }
 }
 
@@ -486,7 +487,7 @@ export default function DashboardClient() {
   const reviewDecisionCount = useMemo(() => {
     return reviews.reduce((count, review) => {
       const status = String(review?.status || "").toLowerCase();
-      if (!["approved", "rejected"].includes(status)) return count;
+      if (status !== "approved") return count;
       const updatedAt = new Date(review?.updatedAt || 0).getTime() || 0;
       const createdAt = new Date(review?.createdAt || 0).getTime() || 0;
       const eventAt = Math.max(updatedAt, createdAt);
@@ -552,8 +553,10 @@ export default function DashboardClient() {
       }).length,
       bookings: bookings.length,
       reviews: reviews.length,
-      pendingReviews: reviews.filter((review) => review.status === "pending")
-        .length,
+      pendingReviews: reviews.filter((review) => {
+        const s = String(review.status || "").toLowerCase();
+        return s === "pending" || s === "rejected";
+      }).length,
       approvedReviews: reviews.filter((review) => review.status === "approved")
         .length,
       totalSpend,
@@ -1681,7 +1684,7 @@ export default function DashboardClient() {
                   </h2>
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">
-                  {stats.pendingReviews} pending
+                  {stats.pendingReviews} submitted
                 </div>
               </div>
 
